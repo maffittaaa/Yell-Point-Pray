@@ -7,6 +7,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
+#include "Interfaces/Interactable.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "YellPointAndPray.h"
 
@@ -59,6 +60,9 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		// Looking/Aiming
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::LookInput);
 		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::LookInput);
+
+		//Interacting
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::Interact);
 	}
 	else
 	{
@@ -117,4 +121,39 @@ void AYellPointAndPrayCharacter::DoJumpEnd()
 {
 	// pass StopJumping to the character
 	StopJumping();
+}
+
+void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject, AYellPointAndPrayCharacter* character)
+{
+	if (!HasAuthority()) return;
+
+	if (hitObject->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+	{
+		IInteractable::Execute_Interact(hitObject, character);
+	}	
+}
+
+void AYellPointAndPrayCharacter::Interact() {
+	UE_LOG(LogTemp, Warning, TEXT("YOU CALLED INTERACT"));
+
+	//Get vector to do the ray
+	FVector start;
+	FRotator dir;
+	GetController()->GetPlayerViewPoint(start, dir);
+
+	FVector end = start + (dir.Vector() * 300);
+
+	//Not hit player
+	FHitResult hit;
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(this);
+
+	//ray
+
+	if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECC_Visibility, params)) {
+		if (AActor* hitObject = hit.GetActor()) {
+			this->ServerInteract(hitObject, this);
+		}
+	}
+
 }

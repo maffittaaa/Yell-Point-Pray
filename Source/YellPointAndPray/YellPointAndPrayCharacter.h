@@ -48,6 +48,10 @@ protected:
 	/** Mouse Look Input Action */
 	UPROPERTY(EditAnywhere, Category ="Input")
 	class UInputAction* MouseLookAction;
+
+	//Interact Input
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	class UInputAction* InteractAction;
 	
 public:
 	AYellPointAndPrayCharacter();
@@ -90,5 +94,12 @@ public:
 	/** Returns first person camera component **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+private:
+	UFUNCTION()
+	void Interact();
+
+	UFUNCTION(Server, Reliable)
+	void ServerInteract(AActor* hitObject, AYellPointAndPrayCharacter* character);
 };
+
 
