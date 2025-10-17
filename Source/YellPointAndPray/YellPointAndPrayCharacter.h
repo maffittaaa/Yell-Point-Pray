@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "UI/Inventory/Inventory.h"
 #include "Logging/LogMacros.h"
 #include "YellPointAndPrayCharacter.generated.h"
 
@@ -55,6 +56,9 @@ protected:
 	
 public:
 	AYellPointAndPrayCharacter();
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Inventory")
+	class UInventory* InventoryComponent;
 
 protected:
 

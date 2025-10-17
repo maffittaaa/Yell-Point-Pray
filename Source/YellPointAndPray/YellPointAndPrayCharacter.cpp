@@ -43,6 +43,8 @@ AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 	// Configure character movement
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 	GetCharacterMovement()->AirControl = 0.5f;
+
+	InventoryComponent = CreateDefaultSubobject<UInventory>(TEXT("Inventory"));
 }
 
 void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -129,6 +131,9 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 
 	if (hitObject->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("PickedUpItem! Inventory"));
+		InventoryComponent->SetInventory(2);
+		UE_LOG(LogTemp, Warning, TEXT("PickedUpItem! Interacting"));
 		IInteractable::Execute_Interact(hitObject, character);
 	}	
 }
@@ -155,5 +160,4 @@ void AYellPointAndPrayCharacter::Interact() {
 			this->ServerInteract(hitObject, this);
 		}
 	}
-
 }
