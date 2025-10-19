@@ -1,4 +1,8 @@
 #include "Inventory.h"
+#include <string>
+
+
+using namespace std;
 
 UInventory::UInventory()
 {
@@ -23,11 +27,11 @@ int UInventory::GetInventorySize()
 bool UInventory::IsInventoryFull()
 {
 	int quantity = 0;
-	for (int slot : InventorySlots) 
+	for (UTexture2D* slot : InventorySlots)
 	{
-		if (slot != 0) 
+		if (slot != 0)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Slot id: %i"), slot);
+			//UE_LOG(LogTemp, Warning, TEXT("Slot id: %i"), slot);
 			quantity++;
 		}
 	}
@@ -39,18 +43,18 @@ bool UInventory::IsInventoryFull()
 	return false;
 }
 
-void UInventory::SetInventory(int ItemID)
+void UInventory::SetInventory(int ItemID, UTexture2D* PreviewImage)
 {
 	if (!IsInventoryFull())
 	{
 		for (int i = 0; i < GetInventorySize(); i++)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Slot Content: %d"), InventorySlots[i]);
+			//UE_LOG(LogTemp, Warning, TEXT("Slot Content: %d"), InventorySlots[i]);
 
 			if (InventorySlots[i] == 0)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Item added to slot"));
-				InventorySlots[i] = ItemID;
+				InventorySlots[i] = PreviewImage;
 				break;
 			}
 		}
@@ -61,7 +65,7 @@ void UInventory::SetInventory(int ItemID)
 	}
 }
 
-int UInventory::GetSlotItem(int SlotID)
+UTexture2D* UInventory::GetSlotItem(int SlotID)
 {
 	if (SlotID < 0 || SlotID >= GetInventorySize())
 	{

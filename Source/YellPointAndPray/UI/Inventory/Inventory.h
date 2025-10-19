@@ -2,8 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include <string>
 #include "Inventory.generated.h"
 
+using namespace std;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class YELLPOINTANDPRAY_API UInventory : public UActorComponent
@@ -13,13 +15,14 @@ class YELLPOINTANDPRAY_API UInventory : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UInventory();
-	int InventorySlots[3];
+	UTexture2D* InventorySlots[3];
 
+	bool IsInventoryFull();
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	bool IsInventoryFull();
+	
 
 	int GetInventorySize();
 
@@ -27,10 +30,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UFUNCTION(BlueprintCallable)
-	int GetSlotItem(int SlotID);
-
 	UFUNCTION()
-	void SetInventory(int ItemID);
-		
+	void SetInventory(int ItemID, UTexture2D* PreviewImage);
+	
+	UFUNCTION(BlueprintCallable)
+	UTexture2D* GetSlotItem(int SlotID);
 };

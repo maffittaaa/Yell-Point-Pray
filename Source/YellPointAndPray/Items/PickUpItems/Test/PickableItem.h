@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,8 +5,10 @@
 #include "YellPointAndPrayCharacter.h"
 #include <Components/SphereComponent.h>
 #include "Interfaces/Interactable.h"
+#include <string>
 #include "PickableItem.generated.h"
 
+using namespace std;
 
 UCLASS()
 class YELLPOINTANDPRAY_API APickableItem : public AActor, public IInteractable
@@ -22,6 +22,10 @@ public:
 	UPROPERTY()
 	int Id;
 
+	string Name;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PreviewImage")
+	UTexture2D* PreviewImage;
 
 protected:
 	// Called when the game starts or when spawned

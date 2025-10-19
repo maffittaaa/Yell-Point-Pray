@@ -2,6 +2,7 @@
 
 #include "YellPointAndPrayCharacter.h"
 #include "Animation/AnimInstance.h"
+#include "Items/PickUpItems/Test/PickableItem.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -131,10 +132,23 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 
 	if (hitObject->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PickedUpItem! Inventory"));
-		InventoryComponent->SetInventory(2);
-		UE_LOG(LogTemp, Warning, TEXT("PickedUpItem! Interacting"));
-		IInteractable::Execute_Interact(hitObject, character);
+		if (!InventoryComponent->IsInventoryFull()) 
+		{
+			APickableItem* PickableItem = Cast<APickableItem>(hitObject);
+
+			if (PickableItem)
+			{
+				InventoryComponent->SetInventory(PickableItem->Id, PickableItem->PreviewImage);
+				UE_LOG(LogTemp, Warning, TEXT("PickedUpItem! Inventory"));
+			}
+
+			IInteractable::Execute_Interact(hitObject, character);
+			UE_LOG(LogTemp, Warning, TEXT("PickedUpItem! Interacting"));
+		}
+		else 
+		{
+			//INVENTORY IS FULL
+		}
 	}	
 }
 
