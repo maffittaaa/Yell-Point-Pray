@@ -132,22 +132,21 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 
 	if (hitObject->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 	{
-		if (!InventoryComponent->IsInventoryFull()) 
+		if (InventoryComponent->IsInventoryFull()) 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("INVENTORY IS FULL"));
+		}
+		else 
 		{
 			APickableItem* PickableItem = Cast<APickableItem>(hitObject);
 
 			if (PickableItem)
 			{
 				InventoryComponent->SetInventory(PickableItem->Id, PickableItem->PreviewImage);
-				UE_LOG(LogTemp, Warning, TEXT("PickedUpItem! Inventory"));
 			}
 
 			IInteractable::Execute_Interact(hitObject, character);
-			UE_LOG(LogTemp, Warning, TEXT("PickedUpItem! Interacting"));
-		}
-		else 
-		{
-			//INVENTORY IS FULL
+			UE_LOG(LogTemp, Warning, TEXT("PickedUpItem!"));
 		}
 	}	
 }

@@ -1,5 +1,6 @@
 #include "Inventory.h"
 #include <string>
+#include <Net/UnrealNetwork.h>
 
 
 using namespace std;
@@ -9,7 +10,9 @@ UInventory::UInventory()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	SetIsReplicatedByDefault(true);
 
+	InventorySlots.SetNum(InventorySize);
 	// ...
 }
 
@@ -21,20 +24,21 @@ void UInventory::BeginPlay()
 
 int UInventory::GetInventorySize() 
 {
-	return sizeof(InventorySlots) / sizeof(int);
+	return InventorySize;
 }
 
 bool UInventory::IsInventoryFull()
 {
 	int quantity = 0;
-	for (UTexture2D* slot : InventorySlots)
+	for (FUInventoryStruct slot : InventorySlots)
 	{
-		if (slot != 0)
+		if (slot.ID != -1)
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("Slot id: %i"), slot);
+			//UE_LOG(LogTemp, Warning, TEXT("Slot Content Name: %s"), *slot->GetName());
 			quantity++;
 		}
 	}
+
 	if (quantity >= GetInventorySize()) 
 	{
 		return true;
@@ -45,23 +49,15 @@ bool UInventory::IsInventoryFull()
 
 void UInventory::SetInventory(int ItemID, UTexture2D* PreviewImage)
 {
-	if (!IsInventoryFull())
+	for (int i = 0; i < GetInventorySize(); i++)
 	{
-		for (int i = 0; i < GetInventorySize(); i++)
+		if (InventorySlots[i].ID == -1)
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("Slot Content: %d"), InventorySlots[i]);
-
-			if (InventorySlots[i] == 0)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Item added to slot"));
-				InventorySlots[i] = PreviewImage;
-				break;
-			}
+			//UE_LOG(LogTemp, Warning, TEXT("Item added to slot"));
+			InventorySlots[i].ID = ItemID;
+			InventorySlots[i].PreviewImage = PreviewImage;
+			break;
 		}
-	}
-	else
-	{
-		//SHOW THAT INVENTORY IS FULL
 	}
 }
 
@@ -70,16 +66,26 @@ UTexture2D* UInventory::GetSlotItem(int SlotID)
 	if (SlotID < 0 || SlotID >= GetInventorySize())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("GetSlotItem: SlotID %d out of range"), SlotID);
-		return 0;
+		return nullptr;
 	}
 
-	return InventorySlots[SlotID];
-}
+	if (InventorySlots[SlotID].ID == -1) // empty
+	{
+		return nullptr;
+	}
 
+	return InventorySlots[SlotID].PreviewImage;
+}
 
 // Called every frame
 void UInventory::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
+
+void UInventory::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UInventory, InventorySlots);
 }
 
