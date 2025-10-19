@@ -47,15 +47,15 @@ bool UInventory::IsInventoryFull()
 	return false;
 }
 
-void UInventory::SetInventory(int ItemID, UTexture2D* PreviewImage)
+void UInventory::SetInventory(APickableItem* Item)
 {
 	for (int i = 0; i < GetInventorySize(); i++)
 	{
 		if (InventorySlots[i].ID == -1)
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("Item added to slot"));
-			InventorySlots[i].ID = ItemID;
-			InventorySlots[i].PreviewImage = PreviewImage;
+			InventorySlots[i].ID = Item->ID;
+			InventorySlots[i].PreviewImage = Item->PreviewImage;
 			break;
 		}
 	}

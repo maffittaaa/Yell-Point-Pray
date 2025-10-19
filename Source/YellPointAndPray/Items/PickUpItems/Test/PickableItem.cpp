@@ -3,7 +3,6 @@
 #include "PickableItem.h"
 #include "GameFramework/Character.h"
 #include <Kismet/GameplayStatics.h>
-#include "YellPointAndPrayCharacter.h"
 
 // Sets default values
 APickableItem::APickableItem()

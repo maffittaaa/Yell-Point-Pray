@@ -2,16 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include <string>
+#include <Items/PickUpItems/Test/PickableItem.h>
 #include "Inventory.generated.h"
-
-using namespace std;
-
-//struct UInventoryStruct
-//{
-//	int ID = -1;
-//	UTexture2D* PreviewImage = nullptr;
-//};
 
 USTRUCT(BlueprintType)
 struct FUInventoryStruct
@@ -25,6 +17,8 @@ public:
 
 	UPROPERTY()
 	UTexture2D* PreviewImage = nullptr;
+
+
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -50,13 +44,15 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int CurrentItemSelected = 0;
 
 	bool IsInventoryFull();
 	
 	int GetInventorySize();
 
 	UFUNCTION()
-	void SetInventory(int ItemID, UTexture2D* PreviewImage);
+	void SetInventory(APickableItem* Item);
 	
 	UFUNCTION(BlueprintCallable)
 	UTexture2D* GetSlotItem(int SlotID);

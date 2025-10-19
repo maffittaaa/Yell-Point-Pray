@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "YellPointAndPrayCharacter.h"
 #include <Components/SphereComponent.h>
 #include "Interfaces/Interactable.h"
 #include <string>
@@ -20,7 +19,7 @@ public:
 	APickableItem();
 	
 	UPROPERTY()
-	int Id;
+	int ID;
 
 	string Name;
 	
