@@ -126,6 +126,48 @@ void AYellPointAndPrayCharacter::DoJumpEnd()
 	StopJumping();
 }
 
+void AYellPointAndPrayCharacter::OnItemSelected(int SlotID)
+{
+	UE_LOG(LogTemp, Warning, TEXT("OnItemCalled"));
+
+	if (InventoryComponent->GetSlotID(SlotID) != -1)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Id is valid"));
+
+		HoldingItemClass = InventoryComponent->GetSlotObj(SlotID);
+
+		if (HoldingItemClass)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Spawning the item"));
+
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+
+			if(HoldingItem != nullptr && HoldingItem != GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams))
+			{
+				HoldingItem = GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+
+				if (HoldingItem)
+				{
+					HoldingItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
+				}
+			}
+		}
+	}
+	else
+	{
+		if (HoldingItem != nullptr)
+		{
+			FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
+			HoldingItem->DetachFromActor(DetachRules);
+			HoldingItem->Destroy();
+			HoldingItem = nullptr;
+		}
+
+		HoldingItemClass = nullptr;
+	}
+}
+
 void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject, AYellPointAndPrayCharacter* character)
 {
 	if (!HasAuthority()) return;

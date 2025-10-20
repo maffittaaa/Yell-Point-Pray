@@ -6,5 +6,6 @@
 AToyHammer::AToyHammer() 
 {
 	Name = "ToyHammer";
+	ID = 1;
 }
 

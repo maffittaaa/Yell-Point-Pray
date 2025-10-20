@@ -55,10 +55,21 @@ void UInventory::SetInventory(APickableItem* Item)
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("Item added to slot"));
 			InventorySlots[i].ID = Item->ID;
+			InventorySlots[i].Item = Item->GetClass();
 			InventorySlots[i].PreviewImage = Item->PreviewImage;
 			break;
 		}
 	}
+}
+
+UClass* UInventory::GetSlotObj(int SlotID)
+{
+	return InventorySlots[SlotID].Item;
+}
+
+int UInventory::GetSlotID(int SlotID)
+{
+	return InventorySlots[SlotID].ID;
 }
 
 UTexture2D* UInventory::GetSlotItem(int SlotID)

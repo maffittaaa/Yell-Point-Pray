@@ -89,8 +89,13 @@ protected:
 	/** Set up input action bindings */
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	
+	UClass* HoldingItemClass = nullptr;
+	AActor* HoldingItem = nullptr;
 
 public:
+
+	UFUNCTION(BlueprintCallable)
+	void OnItemSelected(int SlotID);
 
 	/** Returns the first person mesh **/
 	USkeletalMeshComponent* GetFirstPersonMesh() const { return FirstPersonMesh; }

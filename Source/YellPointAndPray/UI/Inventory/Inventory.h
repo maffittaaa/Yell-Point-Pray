@@ -19,7 +19,7 @@ public:
 	UTexture2D* PreviewImage = nullptr;
 
 	UPROPERTY()
-	APickableItem* Item = nullptr;
+	UClass* Item = nullptr;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -40,7 +40,6 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -51,6 +50,10 @@ public:
 	bool IsInventoryFull();
 	
 	int GetInventorySize();
+
+	int GetSlotID(int SlotID);
+	
+	UClass* GetSlotObj(int SlotID);
 
 	UFUNCTION()
 	void SetInventory(APickableItem* Item);

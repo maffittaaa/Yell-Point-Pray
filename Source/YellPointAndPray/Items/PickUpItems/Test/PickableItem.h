@@ -19,9 +19,9 @@ public:
 	APickableItem();
 	
 	UPROPERTY()
-	int ID;
+	int ID = 0;
 
-	string Name;
+	string Name = "Item";
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PreviewImage")
 	UTexture2D* PreviewImage;
