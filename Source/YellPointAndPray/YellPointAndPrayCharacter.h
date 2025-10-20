@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "UI/Inventory/Inventory.h"
+#include "Interfaces/Caughtable.h"
 #include "Logging/LogMacros.h"
 #include "YellPointAndPrayCharacter.generated.h"
 
@@ -20,7 +21,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
  *  A basic first person character
  */
 UCLASS(abstract)
-class AYellPointAndPrayCharacter : public ACharacter
+class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 {
 	GENERATED_BODY()
 
@@ -95,6 +96,8 @@ protected:
 	int OldItemSelected = 0;
 	bool ItemCreated = false;
 
+	
+
 public:
 
 	UFUNCTION(BlueprintCallable)
@@ -105,6 +108,8 @@ public:
 
 	/** Returns first person camera component **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+
+	virtual void Caught_Implementation() override;
 
 private:
 	UFUNCTION()

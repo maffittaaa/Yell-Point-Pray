@@ -231,3 +231,7 @@ void AYellPointAndPrayCharacter::Interact() {
 		}
 	}
 }
+
+void AYellPointAndPrayCharacter::Caught_Implementation() {
+	UE_LOG(LogTemp, Warning, TEXT("YOU GOT CAUGTH NOOB L"));
+}

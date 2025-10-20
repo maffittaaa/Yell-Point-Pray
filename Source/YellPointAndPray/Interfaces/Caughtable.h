@@ -4,19 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "Interactable.generated.h"
-
-
+#include "Caughtable.generated.h"
 
 UINTERFACE(BlueprintType)
-class UInteractable : public UInterface
+class YELLPOINTANDPRAY_API UCaughtable : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class IInteractable{
+class ICaughtable {
 	GENERATED_BODY()
+
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-	void Interact(AActor* Interactor);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
+	void Caught();
 };
