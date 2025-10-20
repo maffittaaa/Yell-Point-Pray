@@ -128,7 +128,7 @@ void AYellPointAndPrayCharacter::DoJumpEnd()
 
 void AYellPointAndPrayCharacter::OnItemSelected(int SlotID)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnItemCalled"));
+	//UE_LOG(LogTemp, Warning, TEXT("OnItemCalled"));
 
 	if (InventoryComponent->GetSlotID(SlotID) != -1)
 	{
