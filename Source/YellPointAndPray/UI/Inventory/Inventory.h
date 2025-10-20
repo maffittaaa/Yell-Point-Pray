@@ -18,7 +18,8 @@ public:
 	UPROPERTY()
 	UTexture2D* PreviewImage = nullptr;
 
-
+	UPROPERTY()
+	APickableItem* Item = nullptr;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
