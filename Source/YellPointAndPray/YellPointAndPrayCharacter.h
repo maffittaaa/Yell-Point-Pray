@@ -92,6 +92,9 @@ protected:
 	UClass* HoldingItemClass = nullptr;
 	AActor* HoldingItem = nullptr;
 
+	int OldItemSelected = 0;
+	bool ItemCreated = false;
+
 public:
 
 	UFUNCTION(BlueprintCallable)

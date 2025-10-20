@@ -130,32 +130,12 @@ void AYellPointAndPrayCharacter::OnItemSelected(int SlotID)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("OnItemCalled"));
 
-	if (InventoryComponent->GetSlotID(SlotID) != -1)
+	//If the slot changed
+	if (OldItemSelected != InventoryComponent->CurrentItemSelected)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Id is valid"));
+		UE_LOG(LogTemp, Warning, TEXT("Slot has Changed"));
+		OldItemSelected = InventoryComponent->CurrentItemSelected;
 
-		HoldingItemClass = InventoryComponent->GetSlotObj(SlotID);
-
-		if (HoldingItemClass)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Spawning the item"));
-
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = this;
-
-			if(HoldingItem != nullptr && HoldingItem != GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams))
-			{
-				HoldingItem = GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
-
-				if (HoldingItem)
-				{
-					HoldingItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
-				}
-			}
-		}
-	}
-	else
-	{
 		if (HoldingItem != nullptr)
 		{
 			FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
@@ -164,7 +144,42 @@ void AYellPointAndPrayCharacter::OnItemSelected(int SlotID)
 			HoldingItem = nullptr;
 		}
 
+		ItemCreated = false;
 		HoldingItemClass = nullptr;
+	}
+
+	//If Slot has a valid Item
+	if (InventoryComponent->GetSlotID(SlotID) != -1) 
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Slot has a valid Item"));
+
+		//If Item has not been created
+		if (!ItemCreated) 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Slot Item has not been Created"));
+
+			HoldingItemClass = InventoryComponent->GetSlotObj(SlotID);
+
+			if (HoldingItemClass)
+			{
+				FActorSpawnParameters SpawnParams;
+				SpawnParams.Owner = this;
+
+				if (HoldingItem == nullptr || HoldingItem != GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams))
+				{
+					HoldingItem = GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+					HoldingItem->SetActorEnableCollision(false);
+					HoldingItem->SetReplicates(true);
+					if (HoldingItem)
+					{
+						HoldingItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
+						UE_LOG(LogTemp, Warning, TEXT("Slot Item has been Created"));
+					}
+				}
+			}
+
+			ItemCreated = true;
+		}
 	}
 }
 

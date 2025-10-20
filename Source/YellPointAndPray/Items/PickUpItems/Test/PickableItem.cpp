@@ -14,6 +14,7 @@ APickableItem::APickableItem()
 	RootComponent = Mesh;
 
 	bReplicates = true;
+	bAlwaysRelevant = true;
 }
 
 // Called when the game starts or when spawned
