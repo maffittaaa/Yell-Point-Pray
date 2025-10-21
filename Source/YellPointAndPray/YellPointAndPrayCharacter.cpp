@@ -94,7 +94,13 @@ void AYellPointAndPrayCharacter::AddTraceAndWidget() {
 	FVector start;
 	FRotator direction;
 	
-	GetController()->GetPlayerViewPoint(start, direction);
+	AController* controller = GetController();
+	
+	if (!controller) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Controller Good: %d"), controller);
+	controller->GetPlayerViewPoint(start, direction);
+	UE_LOG(LogTemp, Warning, TEXT("All good"));
 
 	FVector end = start + (direction.Vector() * distance);
 
