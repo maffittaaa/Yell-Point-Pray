@@ -13,6 +13,8 @@ APickableItem::APickableItem()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
 
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
 	bReplicates = true;
 	bAlwaysRelevant = true;
 }

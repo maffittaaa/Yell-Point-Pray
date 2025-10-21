@@ -126,35 +126,16 @@ void AYellPointAndPrayCharacter::DoJumpEnd()
 	StopJumping();
 }
 
-void AYellPointAndPrayCharacter::OnItemSelected(int SlotID)
+void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID) 
 {
+	if (!HasAuthority()) return;
 	//UE_LOG(LogTemp, Warning, TEXT("OnItemCalled"));
 
-	//If the slot changed
-	if (OldItemSelected != InventoryComponent->CurrentItemSelected)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Slot has Changed"));
-		OldItemSelected = InventoryComponent->CurrentItemSelected;
-
-		if (HoldingItem != nullptr)
-		{
-			FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
-			HoldingItem->DetachFromActor(DetachRules);
-			HoldingItem->Destroy();
-			HoldingItem = nullptr;
-		}
-
-		ItemCreated = false;
-		HoldingItemClass = nullptr;
-	}
-
 	//If Slot has a valid Item
-	if (InventoryComponent->GetSlotID(SlotID) != -1) 
+	if (InventoryComponent->GetSlotID(SlotID) != -1)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Slot has a valid Item"));
-
 		//If Item has not been created
-		if (!ItemCreated) 
+		if (!ItemCreated)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Slot Item has not been Created"));
 
@@ -169,7 +150,7 @@ void AYellPointAndPrayCharacter::OnItemSelected(int SlotID)
 				{
 					HoldingItem = GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 					HoldingItem->SetActorEnableCollision(false);
-					HoldingItem->SetReplicates(true);
+					
 					if (HoldingItem)
 					{
 						HoldingItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
@@ -181,6 +162,34 @@ void AYellPointAndPrayCharacter::OnItemSelected(int SlotID)
 			ItemCreated = true;
 		}
 	}
+}
+
+void AYellPointAndPrayCharacter::ServerDeleteItem_Implementation() 
+{
+	if (HoldingItem != nullptr)
+	{
+		FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
+		HoldingItem->DetachFromActor(DetachRules);
+		HoldingItem->Destroy();
+		HoldingItem = nullptr;
+	}
+
+	ItemCreated = false;
+	HoldingItemClass = nullptr;
+}
+
+void AYellPointAndPrayCharacter::OnItemSelected(int SlotID)
+{
+	//If the slot changed
+	if (OldItemSelected != InventoryComponent->CurrentItemSelected)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Slot has Changed"));
+		OldItemSelected = InventoryComponent->CurrentItemSelected;
+
+		this->ServerDeleteItem();
+	}
+	
+	this->ServerOnItemSelected(SlotID);
 }
 
 void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject, AYellPointAndPrayCharacter* character)

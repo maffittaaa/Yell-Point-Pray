@@ -117,6 +117,12 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void ServerInteract(AActor* hitObject, AYellPointAndPrayCharacter* character);
+
+	UFUNCTION(Server, Reliable)
+	void ServerOnItemSelected(int SlotID);
+
+	UFUNCTION(Server, Reliable)
+	void ServerDeleteItem();
 };
 
 
