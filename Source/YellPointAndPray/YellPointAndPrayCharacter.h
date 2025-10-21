@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "UI/Inventory/Inventory.h"
 #include "Interfaces/Caughtable.h"
+#include "Interfaces/Usable.h"
 #include "Logging/LogMacros.h"
 #include "YellPointAndPrayCharacter.generated.h"
 
@@ -54,6 +55,10 @@ protected:
 	//Interact Input
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	class UInputAction* InteractAction;
+
+	//Use Input
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	class UInputAction* UseAction;
 	
 public:
 	AYellPointAndPrayCharacter();
@@ -114,6 +119,9 @@ public:
 private:
 	UFUNCTION()
 	void Interact();
+	
+	UFUNCTION()
+	void Use();
 
 	UFUNCTION(Server, Reliable)
 	void ServerInteract(AActor* hitObject, AYellPointAndPrayCharacter* character);

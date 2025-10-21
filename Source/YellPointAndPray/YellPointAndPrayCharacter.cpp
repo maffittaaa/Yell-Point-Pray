@@ -66,6 +66,9 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		//Interacting
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::Interact);
+
+		//Use
+		EnhancedInputComponent->BindAction(UseAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::Use);
 	}
 	else
 	{
@@ -124,6 +127,17 @@ void AYellPointAndPrayCharacter::DoJumpEnd()
 {
 	// pass StopJumping to the character
 	StopJumping();
+}
+
+void AYellPointAndPrayCharacter::Use() 
+{
+	if (InventoryComponent->GetSlotID(0) != -1)
+	{
+		if (InventoryComponent->GetSlotObj(0)->GetClass()->ImplementsInterface(UUsable::StaticClass())) 
+		{
+			IUsable::Execute_Use(InventoryComponent->GetSlotObj(0), this);
+		}
+	}
 }
 
 void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID) 
