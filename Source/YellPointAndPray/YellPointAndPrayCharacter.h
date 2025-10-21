@@ -34,103 +34,123 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
 
-protected:
+	protected:
 
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, Category ="Input")
-	UInputAction* JumpAction;
+		/** Jump Input Action */
+		UPROPERTY(EditAnywhere, Category ="Input")
+		UInputAction* JumpAction;
 
-	/** Move Input Action */
-	UPROPERTY(EditAnywhere, Category ="Input")
-	UInputAction* MoveAction;
+		/** Move Input Action */
+		UPROPERTY(EditAnywhere, Category ="Input")
+		UInputAction* MoveAction;
 
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, Category ="Input")
-	class UInputAction* LookAction;
+		UPROPERTY(EditAnywhere, Category="Input")
+		UInputAction* CrouchAction;
 
-	/** Mouse Look Input Action */
-	UPROPERTY(EditAnywhere, Category ="Input")
-	class UInputAction* MouseLookAction;
+		/** Look Input Action */
+		UPROPERTY(EditAnywhere, Category ="Input")
+		class UInputAction* LookAction;
 
-	//Interact Input
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	class UInputAction* InteractAction;
+		/** Mouse Look Input Action */
+		UPROPERTY(EditAnywhere, Category ="Input")
+		class UInputAction* MouseLookAction;
 
-	//Use Input
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	class UInputAction* UseAction;
-	
-public:
-	AYellPointAndPrayCharacter();
+		//Interact Input
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		class UInputAction* InteractAction;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Inventory")
-	class UInventory* InventoryComponent;
+		//Use Input
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		class UInputAction* UseAction;
+		
+	public:
+		AYellPointAndPrayCharacter();
 
-protected:
+		UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Inventory")
+		class UInventory* InventoryComponent;
 
-	/** Called from Input Actions for movement input */
-	void MoveInput(const FInputActionValue& Value);
+		void Duck();
+		void StopDuck();
 
-	/** Called from Input Actions for looking input */
-	void LookInput(const FInputActionValue& Value);
+		UPROPERTY()
+		UUserWidget* HUDWidget;
 
-	/** Handles aim inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoAim(float Yaw, float Pitch);
+		UPROPERTY(EditAnywhere, Category = "Components")
+		TSubclassOf<UUserWidget> widgetClass;
 
-	/** Handles move inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoMove(float Right, float Forward);
+		UFUNCTION(BlueprintCallable, Category="Widget")
+		void AddAndRemoveWidget();
+			
+		FHitResult RV_Hit;
+		bool bHit;
+		void AddTrace();
 
-	/** Handles jump start inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpStart();
+	protected:
 
-	/** Handles jump end inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpEnd();
+		/** Called from Input Actions for movement input */
+		void MoveInput(const FInputActionValue& Value);
 
-protected:
+		/** Called from Input Actions for looking input */
+		void LookInput(const FInputActionValue& Value);
 
-	/** Set up input action bindings */
-	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
-	
-	UClass* HoldingItemClass = nullptr;
-	AActor* HoldingItem = nullptr;
+		/** Handles aim inputs from either controls or UI interfaces */
+		UFUNCTION(BlueprintCallable, Category="Input")
+		virtual void DoAim(float Yaw, float Pitch);
 
-	int OldItemSelected = 0;
-	bool ItemCreated = false;
+		/** Handles move inputs from either controls or UI interfaces */
+		UFUNCTION(BlueprintCallable, Category="Input")
+		virtual void DoMove(float Right, float Forward);
 
-	
+		/** Handles jump start inputs from either controls or UI interfaces */
+		UFUNCTION(BlueprintCallable, Category="Input")
+		virtual void DoJumpStart();
 
-public:
+		/** Handles jump end inputs from either controls or UI interfaces */
+		UFUNCTION(BlueprintCallable, Category="Input")
+		virtual void DoJumpEnd();
 
-	UFUNCTION(BlueprintCallable)
-	void OnItemSelected(int SlotID);
+	protected:
+		
+		virtual void BeginPlay() override;
+		/** Set up input action bindings */
+		virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
+		
+		UClass* HoldingItemClass = nullptr;
+		AActor* HoldingItem = nullptr;
 
-	/** Returns the first person mesh **/
-	USkeletalMeshComponent* GetFirstPersonMesh() const { return FirstPersonMesh; }
+		int OldItemSelected = 0;
+		bool ItemCreated = false;
 
-	/** Returns first person camera component **/
-	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+		virtual void Tick(float DeltaTime) override;
 
-	virtual void Caught_Implementation() override;
+	public:
 
-private:
-	UFUNCTION()
-	void Interact();
-	
-	UFUNCTION()
-	void Use();
+		UFUNCTION(BlueprintCallable)
+		void OnItemSelected(int SlotID);
 
-	UFUNCTION(Server, Reliable)
-	void ServerInteract(AActor* hitObject, AYellPointAndPrayCharacter* character);
+		/** Returns the first person mesh **/
+		USkeletalMeshComponent* GetFirstPersonMesh() const { return FirstPersonMesh; }
 
-	UFUNCTION(Server, Reliable)
-	void ServerOnItemSelected(int SlotID);
+		/** Returns first person camera component **/
+		UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
-	UFUNCTION(Server, Reliable)
-	void ServerDeleteItem();
+		virtual void Caught_Implementation() override;
+
+	private:
+		UFUNCTION()
+		void Interact();
+		
+		UFUNCTION()
+		void Use();
+
+		UFUNCTION(Server, Reliable)
+		void ServerInteract(AActor* hitObject, AYellPointAndPrayCharacter* character);
+
+		UFUNCTION(Server, Reliable)
+		void ServerOnItemSelected(int SlotID);
+
+		UFUNCTION(Server, Reliable)
+		void ServerDeleteItem();
 };
 
 

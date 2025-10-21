@@ -11,6 +11,7 @@
 #include "Interfaces/Interactable.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "YellPointAndPray.h"
+#include "Blueprint/UserWidget.h"
 
 AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 {
@@ -59,6 +60,10 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::MoveInput);
+		
+		//Crouching
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::Duck);
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AYellPointAndPrayCharacter::StopDuck);
 
 		// Looking/Aiming
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::LookInput);
@@ -76,6 +81,43 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 	}
 }
 
+void AYellPointAndPrayCharacter::BeginPlay() {
+	Super::BeginPlay();
+
+	if (widgetClass)
+		HUDWidget = CreateWidget<UUserWidget>(GetWorld(), widgetClass, FName("HUD"));
+}
+
+void AYellPointAndPrayCharacter::AddTrace() {
+	float distance = 150.0f;
+	FVector startTrace = GetActorLocation();
+	FVector endTrace = startTrace + (GetActorForwardVector() * distance);
+
+	ECollisionChannel traceChannel = ECC_Visibility;
+	FCollisionQueryParams RV_TraceParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), false, this);
+	RV_TraceParams.bTraceComplex = false;
+	RV_TraceParams.bReturnPhysicalMaterial = false;
+	RV_TraceParams.AddIgnoredActor(this);
+
+	// DrawDebugLine(GetWorld(), startTrace, endTrace, FColor::Red, false, -1.0f, 0, 1.0f);
+
+	bHit = GetWorld()->LineTraceSingleByChannel(
+		RV_Hit,
+		startTrace,
+		endTrace,
+		traceChannel,
+		RV_TraceParams
+	);
+}
+
+void AYellPointAndPrayCharacter::AddAndRemoveWidget() {
+	AddTrace();
+	UPrimitiveComponent* hitComponent = RV_Hit.GetComponent();
+	if (bHit && hitComponent->ComponentHasTag(FName("CanInteract")) && !HUDWidget->IsInViewport())
+		HUDWidget->AddToViewport();
+	else if (!bHit || !hitComponent->ComponentHasTag(FName("CanInteract")))
+		HUDWidget->RemoveFromParent();
+}
 
 void AYellPointAndPrayCharacter::MoveInput(const FInputActionValue& Value)
 {
@@ -127,6 +169,16 @@ void AYellPointAndPrayCharacter::DoJumpEnd()
 {
 	// pass StopJumping to the character
 	StopJumping();
+}
+
+void AYellPointAndPrayCharacter::Duck() {
+	// signal the character to crouch
+	ACharacter::Crouch(false);	
+}
+
+void AYellPointAndPrayCharacter::StopDuck() {
+	// signal the character to stop crouching
+	ACharacter::UnCrouch(false);
 }
 
 void AYellPointAndPrayCharacter::Use() 
@@ -257,4 +309,10 @@ void AYellPointAndPrayCharacter::Interact() {
 
 void AYellPointAndPrayCharacter::Caught_Implementation() {
 	UE_LOG(LogTemp, Warning, TEXT("YOU GOT CAUGTH NOOB L"));
+}
+
+void AYellPointAndPrayCharacter::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+	if (widgetClass)
+		AddAndRemoveWidget();
 }

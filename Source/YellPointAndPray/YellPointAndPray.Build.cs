@@ -18,10 +18,10 @@ public class YellPointAndPray : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
-			"Slate"
+			"Slate",  "Niagara" 
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { });
+		PrivateDependencyModuleNames.AddRange(new string[] {});
 
 		PublicIncludePaths.AddRange(new string[] {
 			"YellPointAndPray",
