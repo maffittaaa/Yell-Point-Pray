@@ -5,7 +5,7 @@
 
 AToyHammer::AToyHammer() 
 {
-	Name = "ToyHammer";
+	Name = "Toy Hammer that tp yha coiso cenas";
 	ID = 1;
 }
 

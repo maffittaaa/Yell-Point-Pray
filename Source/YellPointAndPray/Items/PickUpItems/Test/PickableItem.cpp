@@ -37,7 +37,3 @@ void APickableItem::Interact_Implementation(AActor* Interactor) {
 	UE_LOG(LogTemp, Warning, TEXT("Item interacted with! :D"));
 	Destroy();
 }
-
-
-
-

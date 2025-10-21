@@ -16,6 +16,9 @@ public:
 	int32 ID = -1;
 
 	UPROPERTY()
+	FString Name = "DefaultName";
+
+	UPROPERTY()
 	UTexture2D* PreviewImage = nullptr;
 
 	UPROPERTY()
@@ -52,6 +55,8 @@ public:
 	int GetInventorySize();
 
 	int GetSlotID(int SlotID);
+
+	FString GetSlotName(int SlotID);
 	
 	UClass* GetSlotObj(int SlotID);
 

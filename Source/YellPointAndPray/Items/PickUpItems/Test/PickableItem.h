@@ -21,7 +21,7 @@ public:
 	UPROPERTY()
 	int ID = 0;
 
-	string Name = "Item";
+	FString Name = "Item";
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PreviewImage")
 	UTexture2D* PreviewImage;

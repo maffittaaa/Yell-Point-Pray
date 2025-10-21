@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "YellPointAndPrayCharacter.h"
+#include <string>
 #include "Animation/AnimInstance.h"
 #include "Items/PickUpItems/Test/PickableItem.h"
 #include "Camera/CameraComponent.h"
@@ -12,6 +13,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "YellPointAndPray.h"
 #include "Blueprint/UserWidget.h"
+
+using namespace std;
 
 AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 {
@@ -88,9 +91,10 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 		HUDWidget = CreateWidget<UUserWidget>(GetWorld(), widgetClass, FName("HUD"));
 }
 
-void AYellPointAndPrayCharacter::AddTraceAndWidget() {
+void AYellPointAndPrayCharacter::AddTraceAndWidget() 
+{
 	float distance = 150.0f;
-	
+
 	FVector start;
 	FRotator direction;
 	
@@ -101,6 +105,7 @@ void AYellPointAndPrayCharacter::AddTraceAndWidget() {
 	UE_LOG(LogTemp, Warning, TEXT("Controller Good: %d"), controller);
 	controller->GetPlayerViewPoint(start, direction);
 	UE_LOG(LogTemp, Warning, TEXT("All good"));
+	GetController()->GetPlayerViewPoint(start, direction);
 
 	FVector end = start + (direction.Vector() * distance);
 
@@ -192,10 +197,20 @@ void AYellPointAndPrayCharacter::StopDuck() {
 
 void AYellPointAndPrayCharacter::Use() 
 {
-	if (InventoryComponent->GetSlotID(0) != -1)
+	UE_LOG(LogTemp, Warning, TEXT("Use has been called"));
+	if (InventoryComponent->GetSlotID(InventoryComponent->CurrentItemSelected) != -1)
 	{
-		if (InventoryComponent->GetSlotObj(0)->GetClass()->ImplementsInterface(UUsable::StaticClass())) 
+		UE_LOG(LogTemp, Warning, TEXT("Item being used as a valid ID"));
+
+		FString name = InventoryComponent->GetSlotName(InventoryComponent->CurrentItemSelected);
+
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *name);
+		UE_LOG(LogTemp, Warning, TEXT("Has Usable %s"), *InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->GetClass()->GetName());
+
+		if (InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->GetClass()->ImplementsInterface(UUsable::StaticClass()))
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Item being used is a usable"));
+
 			IUsable::Execute_Use(InventoryComponent->GetSlotObj(0), this);
 		}
 	}
@@ -303,7 +318,7 @@ void AYellPointAndPrayCharacter::Interact() {
 
 	//ray
 	if (GetWorld()->LineTraceSingleByChannel( hit, start, end, ECC_Visibility, params)) {
-		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.0f, 0, 1.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.0f, 0, 1.0f);
 		if (AActor* hitObject = hit.GetActor()) {
 			this->ServerInteract(hitObject, this);
 		}
