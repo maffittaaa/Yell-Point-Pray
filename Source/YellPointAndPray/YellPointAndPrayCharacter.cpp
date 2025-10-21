@@ -102,9 +102,7 @@ void AYellPointAndPrayCharacter::AddTraceAndWidget()
 	
 	if (!controller) return;
 
-	UE_LOG(LogTemp, Warning, TEXT("Controller Good: %d"), controller);
 	controller->GetPlayerViewPoint(start, direction);
-	UE_LOG(LogTemp, Warning, TEXT("All good"));
 	GetController()->GetPlayerViewPoint(start, direction);
 
 	FVector end = start + (direction.Vector() * distance);
