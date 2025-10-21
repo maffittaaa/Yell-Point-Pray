@@ -6,8 +6,6 @@
 #include "UObject/Interface.h"
 #include "Interactable.generated.h"
 
-
-
 UINTERFACE(BlueprintType)
 class UInteractable : public UInterface
 {

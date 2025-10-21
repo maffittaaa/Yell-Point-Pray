@@ -88,10 +88,15 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 		HUDWidget = CreateWidget<UUserWidget>(GetWorld(), widgetClass, FName("HUD"));
 }
 
-void AYellPointAndPrayCharacter::AddTrace() {
+void AYellPointAndPrayCharacter::AddTraceAndWidget() {
 	float distance = 150.0f;
-	FVector startTrace = GetActorLocation();
-	FVector endTrace = startTrace + (GetActorForwardVector() * distance);
+	
+	FVector start;
+	FRotator direction;
+	
+	GetController()->GetPlayerViewPoint(start, direction);
+
+	FVector end = start + (direction.Vector() * distance);
 
 	ECollisionChannel traceChannel = ECC_Visibility;
 	FCollisionQueryParams RV_TraceParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), false, this);
@@ -103,19 +108,17 @@ void AYellPointAndPrayCharacter::AddTrace() {
 
 	bHit = GetWorld()->LineTraceSingleByChannel(
 		RV_Hit,
-		startTrace,
-		endTrace,
+		start,
+		end,
 		traceChannel,
 		RV_TraceParams
 	);
-}
 
-void AYellPointAndPrayCharacter::AddAndRemoveWidget() {
-	AddTrace();
-	UPrimitiveComponent* hitComponent = RV_Hit.GetComponent();
-	if (bHit && hitComponent->ComponentHasTag(FName("CanInteract")) && !HUDWidget->IsInViewport())
+	AActor* hitComponent = RV_Hit.GetActor();
+	if (bHit && hitComponent->GetClass()->ImplementsInterface(UInteractable::StaticClass()) && !HUDWidget->IsInViewport()) {
 		HUDWidget->AddToViewport();
-	else if (!bHit || !hitComponent->ComponentHasTag(FName("CanInteract")))
+	}
+	else if (!bHit || !hitComponent->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 		HUDWidget->RemoveFromParent();
 }
 
@@ -262,20 +265,14 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 {
 	if (!HasAuthority()) return;
 
-	if (hitObject->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
-	{
-		if (InventoryComponent->IsInventoryFull()) 
-		{
+	if (hitObject->GetClass()->ImplementsInterface(UInteractable::StaticClass())) {
+		if (InventoryComponent->IsInventoryFull()){
 			UE_LOG(LogTemp, Warning, TEXT("INVENTORY IS FULL"));
-		}
-		else 
-		{
+		} else {
 			APickableItem* PickableItem = Cast<APickableItem>(hitObject);
 
 			if (PickableItem)
-			{
 				InventoryComponent->SetInventory(PickableItem);
-			}
 
 			IInteractable::Execute_Interact(hitObject, character);
 			UE_LOG(LogTemp, Warning, TEXT("PickedUpItem!"));
@@ -299,8 +296,8 @@ void AYellPointAndPrayCharacter::Interact() {
 	params.AddIgnoredActor(this);
 
 	//ray
-
-	if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECC_Visibility, params)) {
+	if (GetWorld()->LineTraceSingleByChannel( hit, start, end, ECC_Visibility, params)) {
+		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.0f, 0, 1.0f);
 		if (AActor* hitObject = hit.GetActor()) {
 			this->ServerInteract(hitObject, this);
 		}
@@ -314,5 +311,5 @@ void AYellPointAndPrayCharacter::Caught_Implementation() {
 void AYellPointAndPrayCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 	if (widgetClass)
-		AddAndRemoveWidget();
+		AddTraceAndWidget();
 }

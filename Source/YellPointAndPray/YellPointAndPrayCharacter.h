@@ -77,13 +77,11 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 
 		UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf<UUserWidget> widgetClass;
-
-		UFUNCTION(BlueprintCallable, Category="Widget")
-		void AddAndRemoveWidget();
+	
 			
 		FHitResult RV_Hit;
 		bool bHit;
-		void AddTrace();
+		void AddTraceAndWidget();
 
 	protected:
 
