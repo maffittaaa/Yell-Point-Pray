@@ -34,11 +34,8 @@ void AWhiteBoard::Interact_Implementation(AActor* Interactor) {
 
 
 	ACharacter* PlayerChar = Cast<ACharacter>(Interactor);
-	if (!PlayerChar) return;
-
 	APlayerController* Controller = Cast<APlayerController>(PlayerChar->GetController());
 
-	if (!Controller) return;
 
 	Controller->bShowMouseCursor = true;
 	Controller->bEnableClickEvents = true;
@@ -49,7 +46,6 @@ void AWhiteBoard::Interact_Implementation(AActor* Interactor) {
 
 	FInputModeUIOnly InputMode;
 	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	InputMode.SetWidgetToFocus(nullptr);
 	Controller->SetInputMode(InputMode);
 
 
