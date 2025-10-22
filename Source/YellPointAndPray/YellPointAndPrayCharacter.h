@@ -135,6 +135,8 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 		virtual void Caught_Implementation() override;
 
 	private:
+		ACharacter* ItemOwner;
+
 		UFUNCTION()
 		void Interact();
 		
@@ -147,8 +149,13 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 		UFUNCTION(Server, Reliable)
 		void ServerOnItemSelected(int SlotID);
 
+		UFUNCTION(NetMulticast, Reliable)
+		void Multicast_SpawnAndAttachItem(TSubclassOf<AActor> ItemClass, ACharacter* TargetCharacter, ACharacter* ItemCharacterOwner);
+
 		UFUNCTION(Server, Reliable)
 		void ServerDeleteItem();
+
+		void DeleteItem();
 };
 
 

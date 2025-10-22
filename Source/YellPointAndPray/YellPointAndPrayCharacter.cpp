@@ -206,7 +206,7 @@ void AYellPointAndPrayCharacter::Use()
 	}
 }
 
-void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID) 
+void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 {
 	if (!HasAuthority()) return;
 	//UE_LOG(LogTemp, Warning, TEXT("OnItemCalled"));
@@ -218,25 +218,58 @@ void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 		if (!ItemCreated)
 		{
 			HoldingItemClass = InventoryComponent->GetSlotObj(SlotID)->GetClass();
+			ItemCreated = true;
 
-			if (HoldingItemClass)
+			if (!ItemOwner) 
 			{
-				FActorSpawnParameters SpawnParams;
-				SpawnParams.Owner = this;
-
-				if (HoldingItem == nullptr || HoldingItem != GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams))
-				{
-					HoldingItem = GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
-					HoldingItem->SetActorEnableCollision(false);
-					
-					if (HoldingItem)
-					{
-						HoldingItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
-					}
-				}
+				ItemOwner = this;
+				UE_LOG(LogTemp, Warning, TEXT("THIIIIIS: %s"), *this->GetName());
 			}
 
+			UE_LOG(LogTemp, Warning, TEXT("ITEMOWNERRR: %s"), *ItemOwner->GetName());
+
+			// Call multicast WITHOUT _Implementation
+			Multicast_SpawnAndAttachItem(HoldingItemClass, this, this->ItemOwner);
+
+			//if (HoldingItemClass)
+			//{
+			//	FActorSpawnParameters SpawnParams;
+			//	SpawnParams.Owner = this;
+			//	SpawnParams.Instigator = Cast<APawn>(this);
+
+			//	if (HoldingItem == nullptr || HoldingItem != GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams))
+			//	{
+			//		HoldingItem = GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+			//		
+			//		if (HoldingItem)
+			//		{
+			//			HoldingItem->SetActorEnableCollision(false);
+			//			HoldingItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
+			//		}
+			//	}
+			//}
+
 			ItemCreated = true;
+		}
+	}
+}
+
+void AYellPointAndPrayCharacter::Multicast_SpawnAndAttachItem_Implementation(TSubclassOf<AActor> ItemClass, ACharacter* TargetCharacter, ACharacter* ItemCharacterOwner)
+{
+	// This automatically doesn't execute on the client that called the server function
+	
+	UE_LOG(LogTemp, Warning, TEXT("ItemClass: %s"), *ItemClass->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("TargetCharacter: %s"), *TargetCharacter->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("This: %s"), *this->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("ItemOwner: %s"), *ItemCharacterOwner->GetName());
+
+	if (ItemCharacterOwner != this)
+	{
+		AActor* SpawnedItem = GetWorld()->SpawnActor<AActor>(ItemClass, FVector::ZeroVector, FRotator::ZeroRotator);
+		if (SpawnedItem)
+		{
+			SpawnedItem->SetActorEnableCollision(false);
+			SpawnedItem->AttachToComponent(ItemCharacterOwner->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
 		}
 	}
 }
@@ -261,10 +294,54 @@ void AYellPointAndPrayCharacter::OnItemSelected(int SlotID)
 	if (OldItemSelected != InventoryComponent->CurrentItemSelected)
 	{
 		OldItemSelected = InventoryComponent->CurrentItemSelected;
+
+		DeleteItem();
 		this->ServerDeleteItem();
 	}
-	
+
 	this->ServerOnItemSelected(SlotID);
+
+	if (InventoryComponent->GetSlotID(SlotID) != -1)
+	{
+		//If Item has not been created
+		if (!ItemCreated)
+		{
+			HoldingItemClass = InventoryComponent->GetSlotObj(SlotID)->GetClass();
+
+			if (HoldingItemClass)
+			{
+				FActorSpawnParameters SpawnParams;
+				SpawnParams.Owner = this;
+
+				if (HoldingItem == nullptr || HoldingItem != GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams))
+				{
+					HoldingItem = GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+					HoldingItem->SetActorEnableCollision(false);
+
+					if (HoldingItem)
+					{
+						HoldingItem->AttachToComponent(FirstPersonMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
+					}
+				}
+			}
+
+			ItemCreated = true;
+		}
+	}
+}
+
+void AYellPointAndPrayCharacter::DeleteItem()
+{
+	if (HoldingItem != nullptr)
+	{
+		FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
+		HoldingItem->DetachFromActor(DetachRules);
+		HoldingItem->Destroy();
+		HoldingItem = nullptr;
+	}
+
+	ItemCreated = false;
+	HoldingItemClass = nullptr;
 }
 
 void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject, AYellPointAndPrayCharacter* character)
