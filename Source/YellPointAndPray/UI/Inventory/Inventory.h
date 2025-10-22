@@ -2,7 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include <Items/PickUpItems/Test/PickableItem.h>
+#include "Items/PickableItemsParent/PickableItem.h"
+#include "Items/UsableItemsParent/UsableItem.h"
 #include "Inventory.generated.h"
 
 USTRUCT(BlueprintType)
@@ -22,7 +23,7 @@ public:
 	UTexture2D* PreviewImage = nullptr;
 
 	UPROPERTY()
-	UClass* Item = nullptr;
+	AUsableItem* Item = nullptr;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -58,7 +59,7 @@ public:
 
 	FString GetSlotName(int SlotID);
 	
-	UClass* GetSlotObj(int SlotID);
+	AUsableItem* GetSlotObj(int SlotID);
 
 	UFUNCTION()
 	void SetInventory(APickableItem* Item);

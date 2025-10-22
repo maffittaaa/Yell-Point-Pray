@@ -53,17 +53,36 @@ void UInventory::SetInventory(APickableItem* Item)
 	{
 		if (InventorySlots[i].ID == -1)
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("Item added to slot"));
-			InventorySlots[i].ID = Item->ID;
-			InventorySlots[i].Name = Item->Name;
-			InventorySlots[i].Item = Item->GetClass();
-			InventorySlots[i].PreviewImage = Item->PreviewImage;
+			if (Item->Obj) 
+			{
+				AUsableItem* UsableItem = Cast<AUsableItem>(Item->Obj->GetDefaultObject());
+
+				if (Item->Obj->IsChildOf(AUsableItem::StaticClass()))
+				{
+					InventorySlots[i].Item = UsableItem;
+					InventorySlots[i].ID = UsableItem->ID;
+					InventorySlots[i].Name = UsableItem->Name;
+					InventorySlots[i].PreviewImage = UsableItem->PreviewImage;
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Item is not a Usable item class"));
+					UE_LOG(LogTemp, Warning, TEXT("Actual parent class: %s"), *Item->Obj->GetSuperClass()->GetName());
+				}
+			}
+			else 
+			{
+				InventorySlots[i].ID = Item->ID;
+				InventorySlots[i].Name = Item->Name;
+				InventorySlots[i].PreviewImage = Item->PreviewImage;
+			}
+			
 			break;
 		}
 	}
 }
 
-UClass* UInventory::GetSlotObj(int SlotID)
+AUsableItem* UInventory::GetSlotObj(int SlotID)
 {
 	return InventorySlots[SlotID].Item;
 }

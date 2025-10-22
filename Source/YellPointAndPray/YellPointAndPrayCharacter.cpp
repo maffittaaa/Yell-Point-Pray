@@ -3,7 +3,7 @@
 #include "YellPointAndPrayCharacter.h"
 #include <string>
 #include "Animation/AnimInstance.h"
-#include "Items/PickUpItems/Test/PickableItem.h"
+#include "Items/PickableItemsParent/PickableItem.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -195,21 +195,13 @@ void AYellPointAndPrayCharacter::StopDuck() {
 
 void AYellPointAndPrayCharacter::Use() 
 {
-	UE_LOG(LogTemp, Warning, TEXT("Use has been called"));
 	if (InventoryComponent->GetSlotID(InventoryComponent->CurrentItemSelected) != -1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Item being used as a valid ID"));
-
 		FString name = InventoryComponent->GetSlotName(InventoryComponent->CurrentItemSelected);
-
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *name);
-		UE_LOG(LogTemp, Warning, TEXT("Has Usable %s"), *InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->GetClass()->GetName());
 
 		if (InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->GetClass()->ImplementsInterface(UUsable::StaticClass()))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Item being used is a usable"));
-
-			IUsable::Execute_Use(InventoryComponent->GetSlotObj(0), this);
+			IUsable::Execute_Use(InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected), this);
 		}
 	}
 }
@@ -225,9 +217,7 @@ void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 		//If Item has not been created
 		if (!ItemCreated)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Slot Item has not been Created"));
-
-			HoldingItemClass = InventoryComponent->GetSlotObj(SlotID);
+			HoldingItemClass = InventoryComponent->GetSlotObj(SlotID)->GetClass();
 
 			if (HoldingItemClass)
 			{
@@ -242,7 +232,6 @@ void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 					if (HoldingItem)
 					{
 						HoldingItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
-						UE_LOG(LogTemp, Warning, TEXT("Slot Item has been Created"));
 					}
 				}
 			}
@@ -271,9 +260,7 @@ void AYellPointAndPrayCharacter::OnItemSelected(int SlotID)
 	//If the slot changed
 	if (OldItemSelected != InventoryComponent->CurrentItemSelected)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Slot has Changed"));
 		OldItemSelected = InventoryComponent->CurrentItemSelected;
-
 		this->ServerDeleteItem();
 	}
 	
@@ -290,8 +277,10 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 		} else {
 			APickableItem* PickableItem = Cast<APickableItem>(hitObject);
 
-			if (PickableItem)
+			if (PickableItem) 
+			{
 				InventoryComponent->SetInventory(PickableItem);
+			}
 
 			IInteractable::Execute_Interact(hitObject, character);
 			UE_LOG(LogTemp, Warning, TEXT("PickedUpItem!"));
