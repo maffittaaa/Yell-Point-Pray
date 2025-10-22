@@ -127,13 +127,10 @@ void AYellPointAndPrayCharacter::AddTraceAndWidget()
 	AActor* hitComponent = RV_Hit.GetActor();
 	if (bHit && hitComponent->GetClass()->ImplementsInterface(UInteractable::StaticClass()) && !HUDWidget->IsInViewport() && TimesWidgetCreated == 0) {
 		HUDWidget->AddToViewport();
-		TimesWidgetCreated = 1;
+		TimesWidgetCreated++;
 	}
 	else if (!bHit || !hitComponent->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
-	{
 		HUDWidget->RemoveFromParent();
-		TimesWidgetCreated = 0;
-	}
 }
 
 void AYellPointAndPrayCharacter::MoveInput(const FInputActionValue& Value)

@@ -75,6 +75,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 		UPROPERTY()
 		UUserWidget* HUDWidget;
 
+		UPROPERTY()
+		int TimesWidgetCreated = 0;
+
 		UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf<UUserWidget> widgetClass;
 	
@@ -148,9 +151,6 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 
 		UFUNCTION(Server, Reliable)
 		void ServerOnItemSelected(int SlotID);
-
-		UFUNCTION(NetMulticast, Reliable)
-		void Multicast_SpawnAndAttachItem(TSubclassOf<AActor> ItemClass, ACharacter* TargetCharacter, ACharacter* ItemCharacterOwner);
 
 		UFUNCTION(Server, Reliable)
 		void ServerDeleteItem();
