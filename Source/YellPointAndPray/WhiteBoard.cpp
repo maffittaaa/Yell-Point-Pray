@@ -8,7 +8,10 @@
 AWhiteBoard::AWhiteBoard() {
 	PrimaryActorTick.bCanEverTick = true;
 
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+	meshComp->SetupAttachment(RootComponent);
 	
 	dynamicMaterialInstance = nullptr;
 }
@@ -16,8 +19,8 @@ AWhiteBoard::AWhiteBoard() {
 void AWhiteBoard::BeginPlay() {
 	Super::BeginPlay();
 
-	dynamicMaterialInstance->Parent = markerP1Material;
-	renderTargetWhiteboard->ClearColor = FColor::Black;
+	//dynamicMaterialInstance->Parent = markerP1Material;
+	//renderTargetWhiteboard->ClearColor = FColor::Black;
 }
 
 void AWhiteBoard::Tick(float DeltaTime) {
