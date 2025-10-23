@@ -3,7 +3,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include <Kismet/GameplayStatics.h>
 #include "Engine/TextureRenderTarget2D.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetRenderingLibrary.h"
 
 AWhiteBoard::AWhiteBoard() {
