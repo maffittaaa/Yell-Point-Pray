@@ -30,6 +30,7 @@ void ADoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 
 	DOREPLIFETIME(ADoor, IsOpen);
 	DOREPLIFETIME(ADoor, Play);
+	DOREPLIFETIME(ADoor, Side);
 }
 
 // Called when the game starts or when spawned
@@ -47,13 +48,19 @@ void ADoor::Tick(float DeltaTime)
 		FRotator Rotation = Mesh->GetRelativeRotation();
 		Rotation.Yaw += 90 * DeltaTime * IsOpen;
 		Mesh->SetRelativeRotation(Rotation);
-		if (Rotation.Yaw > 90) {
+		if (Rotation.Yaw > 90 && IsOpen == 1) {
 			Rotation.Yaw = 90;
 			Mesh->SetRelativeRotation(Rotation);
 			Play = false;
 			return;
 		}
-		if (Rotation.Yaw < 0) {
+		if (Rotation.Yaw < -90 && IsOpen == 1) {
+			Rotation.Yaw = -90;
+			Mesh->SetRelativeRotation(Rotation);
+			Play = false;
+			return;
+		}
+		if (Rotation.Yaw < 0 && IsOpen == -1) {
 			Rotation.Yaw = 0;
 			Mesh->SetRelativeRotation(Rotation);
 			Play = false;
@@ -69,7 +76,31 @@ void ADoor::Tick(float DeltaTime)
 
 void ADoor::Interact_Implementation(AActor* Interactor) 
 {
+	//FVector DoorLoc = GetActorLocation();
+	//FVector PlayerLoc = Interactor->GetActorLocation();
+
+	//FVector Dir = PlayerLoc - DoorLoc;
+	//FVector Forward = GetActorForwardVector();
+
+	//UE_LOG(LogTemp, Warning, TEXT("DoorLoc: %s"), *DoorLoc.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("PlayerLoc: %s"), *PlayerLoc.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("Dir: %s"), *Dir.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("Forward: %s"), *Forward.ToString());
+
+	//float Dot = FVector::DotProduct(Dir, Forward);
+
+	//if (Dot < 0.f) {
+	//	Side = -1;
+	//}
+	//else {
+	//	Side = 1;
+	//}
 	IsOpen = -IsOpen;
+	//if (IsOpen == -1) {
+	//	Side = 1;
+	//}
+	//UE_LOG(LogTemp, Warning, TEXT("Side: %d"), Side);
+	//UE_LOG(LogTemp, Warning, TEXT("IsOpen: %d"), IsOpen);
 	Play = true;
 }
 

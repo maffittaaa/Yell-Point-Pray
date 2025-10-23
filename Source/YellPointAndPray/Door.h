@@ -34,12 +34,12 @@ protected:
 	UCurveFloat* CurveFloat;
 
 	UPROPERTY(Replicated)
-	int IsOpen = 1;
+	int IsOpen = -1;
+	UPROPERTY(Replicated)
+	int Side = 1;
 	UPROPERTY(Replicated)
 	bool Play = false;
 
-	UPROPERTY(EditAnywhere)
-	float RotateAngle = 90.f;
 
 	bool Locked;
 
