@@ -13,6 +13,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "YellPointAndPray.h"
 #include "Blueprint/UserWidget.h"
+#include <Net/UnrealNetwork.h>
 
 using namespace std;
 
@@ -124,11 +125,15 @@ void AYellPointAndPrayCharacter::AddTraceAndWidget()
 	);
 
 	AActor* hitComponent = RV_Hit.GetActor();
-	if (bHit && hitComponent->GetClass()->ImplementsInterface(UInteractable::StaticClass()) && !HUDWidget->IsInViewport()) {
+	if (bHit && hitComponent->GetClass()->ImplementsInterface(UInteractable::StaticClass()) && !HUDWidget->IsInViewport() && TimesWidgetCreated == 0) {
 		HUDWidget->AddToViewport();
+		TimesWidgetCreated = 1;
 	}
 	else if (!bHit || !hitComponent->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+	{
 		HUDWidget->RemoveFromParent();
+		TimesWidgetCreated = 0;
+	}
 }
 
 void AYellPointAndPrayCharacter::MoveInput(const FInputActionValue& Value)
@@ -206,42 +211,59 @@ void AYellPointAndPrayCharacter::Use()
 	}
 }
 
-void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID) 
+void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 {
 	if (!HasAuthority()) return;
-	//UE_LOG(LogTemp, Warning, TEXT("OnItemCalled"));
 
-	//If Slot has a valid Item
 	if (InventoryComponent->GetSlotID(SlotID) != -1)
 	{
-		//If Item has not been created
 		if (!ItemCreated)
 		{
-			HoldingItemClass = InventoryComponent->GetSlotObj(SlotID)->GetClass();
+			TSubclassOf<AActor> NewHoldingItemClass = InventoryComponent->GetSlotObj(SlotID)->GetClass();
 
-			if (HoldingItemClass)
+			if (NewHoldingItemClass)
 			{
 				FActorSpawnParameters SpawnParams;
 				SpawnParams.Owner = this;
+				SpawnParams.Instigator = Cast<APawn>(this);
 
-				if (HoldingItem == nullptr || HoldingItem != GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams))
+				// Only spawn on server - this will replicate to clients
+				HoldingItem = GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+
+				if (HoldingItem)
 				{
-					HoldingItem = GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 					HoldingItem->SetActorEnableCollision(false);
-					
-					if (HoldingItem)
-					{
-						HoldingItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
-					}
+					// Don't attach here - let OnRep_HoldingItem handle attachment based on ownership
+					ItemCreated = true;
 				}
 			}
-
-			ItemCreated = true;
 		}
 	}
 }
 
-void AYellPointAndPrayCharacter::ServerDeleteItem_Implementation() 
+void AYellPointAndPrayCharacter::ServerDeleteItem_Implementation()
+{
+	if (HoldingItem != nullptr)
+	{
+		HoldingItem->Destroy();
+		HoldingItem = nullptr;
+	}
+	ItemCreated = false;
+}
+
+void AYellPointAndPrayCharacter::OnItemSelected(int SlotID)
+{
+	// If the slot changed
+	if (OldItemSelected != InventoryComponent->CurrentItemSelected)
+	{
+		OldItemSelected = InventoryComponent->CurrentItemSelected;
+		this->ServerDeleteItem();
+	}
+
+	this->ServerOnItemSelected(SlotID);
+}
+
+void AYellPointAndPrayCharacter::DeleteItem()
 {
 	if (HoldingItem != nullptr)
 	{
@@ -255,16 +277,35 @@ void AYellPointAndPrayCharacter::ServerDeleteItem_Implementation()
 	HoldingItemClass = nullptr;
 }
 
-void AYellPointAndPrayCharacter::OnItemSelected(int SlotID)
+void AYellPointAndPrayCharacter::OnRep_HoldingItem()
 {
-	//If the slot changed
-	if (OldItemSelected != InventoryComponent->CurrentItemSelected)
+	if (HoldingItem)
 	{
-		OldItemSelected = InventoryComponent->CurrentItemSelected;
-		this->ServerDeleteItem();
+		// Attach to the appropriate mesh based on ownership
+		if (IsLocallyControlled())
+		{
+			// Local player sees it on first person mesh
+			HoldingItem->AttachToComponent(FirstPersonMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
+			//HoldingItem->SetActorRelativeLocation(FVector(20, 0, 0)); // Replace X, Y, Z with your values			
+			//HoldingItem->SetActorRelativeRotation(FRotator(Pitch, Yaw, Roll)); // In degrees
+		}
+		else
+		{
+			// Other players see it on the regular mesh
+			HoldingItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
+		}
+		HoldingItem->SetActorEnableCollision(false);
+
 	}
-	
-	this->ServerOnItemSelected(SlotID);
+}
+
+
+void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AYellPointAndPrayCharacter, HoldingItem);
+	DOREPLIFETIME(AYellPointAndPrayCharacter, ItemCreated);
 }
 
 void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject, AYellPointAndPrayCharacter* character)

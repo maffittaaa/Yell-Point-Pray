@@ -75,6 +75,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 		UPROPERTY()
 		UUserWidget* HUDWidget;
 
+		UPROPERTY()
+		int TimesWidgetCreated = 0;
+
 		UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf<UUserWidget> widgetClass;
 	
@@ -114,10 +117,17 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 		virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 		
 		UClass* HoldingItemClass = nullptr;
-		AActor* HoldingItem = nullptr;
+
+		UPROPERTY(ReplicatedUsing = OnRep_HoldingItem)
+		AActor* HoldingItem;
+
+		UFUNCTION()
+		void OnRep_HoldingItem();
+
+		UPROPERTY(Replicated)
+		bool ItemCreated = false;
 
 		int OldItemSelected = 0;
-		bool ItemCreated = false;
 
 		virtual void Tick(float DeltaTime) override;
 
@@ -135,6 +145,8 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 		virtual void Caught_Implementation() override;
 
 	private:
+		ACharacter* ItemOwner;
+
 		UFUNCTION()
 		void Interact();
 		
@@ -149,6 +161,8 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 
 		UFUNCTION(Server, Reliable)
 		void ServerDeleteItem();
+
+		void DeleteItem();
 };
 
 
