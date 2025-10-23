@@ -18,7 +18,7 @@ class YELLPOINTANDPRAY_API AWhiteBoard : public AActor, public IInteractable
 		UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* meshComp;
 
-		/*
+		
 		UPROPERTY()
 		UMaterialInstanceDynamic* dynamicMaterialInstance;
 
@@ -32,9 +32,9 @@ class YELLPOINTANDPRAY_API AWhiteBoard : public AActor, public IInteractable
 		UMaterialInterface* markerP2Material;
 
 		UPROPERTY(EditAnywhere, Category = "Materials")
-		UMaterialInterface* markerP3Material;*/
+		UMaterialInterface* markerP3Material;
 
-		// void DrawOnWhiteboard(FVector2D* locationToDraw);
+		void DrawOnWhiteboard(FVector2D* locationToDraw);
 	
 	protected:
 		virtual void BeginPlay() override;

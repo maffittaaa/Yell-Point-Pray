@@ -11,14 +11,14 @@ AWhiteBoard::AWhiteBoard() {
 
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	
-// 	dynamicMaterialInstance = nullptr;
+	dynamicMaterialInstance = nullptr;
 }
 
 void AWhiteBoard::BeginPlay() {
 	Super::BeginPlay();
 
-	// dynamicMaterialInstance->Parent = markerP1Material;
-	// renderTargetWhiteboard->ClearColor = FColor::Black;
+	dynamicMaterialInstance->Parent = markerP1Material;
+	renderTargetWhiteboard->ClearColor = FColor::Black;
 }
 
 void AWhiteBoard::Tick(float DeltaTime) {
@@ -26,17 +26,17 @@ void AWhiteBoard::Tick(float DeltaTime) {
 
 }
 
-// void AWhiteBoard::DrawOnWhiteboard(FVector2D* locationToDraw) {
-// 	FLinearColor drawLocationColor = FLinearColor(locationToDraw->X, locationToDraw->Y, 0.0f, 1.0f);
-// 	dynamicMaterialInstance->SetVectorParameterValue(FName("DrawLocation"), drawLocationColor);
-//
-// 	UKismetRenderingLibrary::DrawMaterialToRenderTarget(
-// 		GetWorld(),
-// 		renderTargetWhiteboard,
-// 		dynamicMaterialInstance
-// 		);
-// 	
-// }
+void AWhiteBoard::DrawOnWhiteboard(FVector2D* locationToDraw) {
+	FLinearColor drawLocationColor = FLinearColor(locationToDraw->X, locationToDraw->Y, 0.0f, 1.0f);
+	dynamicMaterialInstance->SetVectorParameterValue(FName("DrawLocation"), drawLocationColor);
+
+UKismetRenderingLibrary::DrawMaterialToRenderTarget(
+		GetWorld(),
+		renderTargetWhiteboard,
+		dynamicMaterialInstance
+		);
+	
+}
 
 void AWhiteBoard::Interact_Implementation(AActor* Interactor) {
 	UE_LOG(LogTemp, Warning, TEXT("Show Board"));
