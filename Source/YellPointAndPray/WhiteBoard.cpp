@@ -1,37 +1,45 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "WhiteBoard.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include <Kismet/GameplayStatics.h>
+#include "Engine/TextureRenderTarget2D.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetRenderingLibrary.h"
 
-// Sets default values
-AWhiteBoard::AWhiteBoard()
-{
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+AWhiteBoard::AWhiteBoard() {
 	PrimaryActorTick.bCanEverTick = true;
 
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-}
-
-// Called when the game starts or when spawned
-void AWhiteBoard::BeginPlay()
-{
-	Super::BeginPlay();
+	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	
+// 	dynamicMaterialInstance = nullptr;
 }
 
-// Called every frame
-void AWhiteBoard::Tick(float DeltaTime)
-{
+void AWhiteBoard::BeginPlay() {
+	Super::BeginPlay();
+
+	// dynamicMaterialInstance->Parent = markerP1Material;
+	// renderTargetWhiteboard->ClearColor = FColor::Black;
+}
+
+void AWhiteBoard::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
 }
 
+// void AWhiteBoard::DrawOnWhiteboard(FVector2D* locationToDraw) {
+// 	FLinearColor drawLocationColor = FLinearColor(locationToDraw->X, locationToDraw->Y, 0.0f, 1.0f);
+// 	dynamicMaterialInstance->SetVectorParameterValue(FName("DrawLocation"), drawLocationColor);
+//
+// 	UKismetRenderingLibrary::DrawMaterialToRenderTarget(
+// 		GetWorld(),
+// 		renderTargetWhiteboard,
+// 		dynamicMaterialInstance
+// 		);
+// 	
+// }
+
 void AWhiteBoard::Interact_Implementation(AActor* Interactor) {
 	UE_LOG(LogTemp, Warning, TEXT("Show Board"));
-
 
 	ACharacter* PlayerChar = Cast<ACharacter>(Interactor);
 	if (!PlayerChar) return;
@@ -54,9 +62,7 @@ void AWhiteBoard::Interact_Implementation(AActor* Interactor) {
 
 
 	if (PlayerChar)
-	{
 		PlayerChar->GetCharacterMovement()->DisableMovement();
-	}
 }
 
 void AWhiteBoard::CloseBoard() {
@@ -73,8 +79,7 @@ void AWhiteBoard::CloseBoard() {
 	Controller->SetInputMode(InputMode);
 
 	ACharacter* PlayerChar = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	if (PlayerChar)
-	{
+	if (PlayerChar) {
 		PlayerChar->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	}
 }
