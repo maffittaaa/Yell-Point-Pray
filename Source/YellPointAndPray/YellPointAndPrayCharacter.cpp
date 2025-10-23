@@ -214,96 +214,53 @@ void AYellPointAndPrayCharacter::Use()
 void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 {
 	if (!HasAuthority()) return;
-	//UE_LOG(LogTemp, Warning, TEXT("OnItemCalled"));
 
-	//If Slot has a valid Item
 	if (InventoryComponent->GetSlotID(SlotID) != -1)
 	{
-		//If Item has not been created
 		if (!ItemCreated)
 		{
-			HoldingItemClass = InventoryComponent->GetSlotObj(SlotID)->GetClass();
-			ItemCreated = true;
+			TSubclassOf<AActor> NewHoldingItemClass = InventoryComponent->GetSlotObj(SlotID)->GetClass();
 
-			if (HoldingItemClass)
+			if (NewHoldingItemClass)
 			{
 				FActorSpawnParameters SpawnParams;
 				SpawnParams.Owner = this;
 				SpawnParams.Instigator = Cast<APawn>(this);
 
-				if (HoldingItem == nullptr || HoldingItem != GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams))
+				// Only spawn on server - this will replicate to clients
+				HoldingItem = GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+
+				if (HoldingItem)
 				{
-					HoldingItem = GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
-					
-					if (HoldingItem)
-					{
-						HoldingItem->SetActorEnableCollision(false);
-						HoldingItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
-					}
+					HoldingItem->SetActorEnableCollision(false);
+					// Don't attach here - let OnRep_HoldingItem handle attachment based on ownership
+					ItemCreated = true;
 				}
 			}
-
-			ItemCreated = true;
 		}
 	}
 }
 
-void AYellPointAndPrayCharacter::ServerDeleteItem_Implementation() 
+void AYellPointAndPrayCharacter::ServerDeleteItem_Implementation()
 {
 	if (HoldingItem != nullptr)
 	{
-		FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
-		HoldingItem->DetachFromActor(DetachRules);
 		HoldingItem->Destroy();
 		HoldingItem = nullptr;
 	}
-
 	ItemCreated = false;
-	HoldingItemClass = nullptr;
 }
 
 void AYellPointAndPrayCharacter::OnItemSelected(int SlotID)
 {
-	//If the slot changed
+	// If the slot changed
 	if (OldItemSelected != InventoryComponent->CurrentItemSelected)
 	{
 		OldItemSelected = InventoryComponent->CurrentItemSelected;
-
-		DeleteItem();
 		this->ServerDeleteItem();
 	}
 
 	this->ServerOnItemSelected(SlotID);
-
-	if (InventoryComponent->GetSlotID(SlotID) != -1)
-	{
-		//If Item has not been created
-		if (!ItemCreated)
-		{
-			HoldingItemClass = InventoryComponent->GetSlotObj(SlotID)->GetClass();
-
-			if (HoldingItemClass)
-			{
-				FActorSpawnParameters SpawnParams;
-				SpawnParams.Owner = this;
-
-				DeleteItem();
-
-				if (HoldingItem == nullptr || HoldingItem != GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams))
-				{
-					HoldingItem = GetWorld()->SpawnActor<AActor>(HoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
-					HoldingItem->SetActorEnableCollision(false);
-
-					if (HoldingItem)
-					{
-						HoldingItem->AttachToComponent(FirstPersonMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
-					}
-				}
-			}
-
-			ItemCreated = true;
-		}
-	}
 }
 
 void AYellPointAndPrayCharacter::DeleteItem()
@@ -317,6 +274,38 @@ void AYellPointAndPrayCharacter::DeleteItem()
 	}
 
 	ItemCreated = false;
+	HoldingItemClass = nullptr;
+}
+
+void AYellPointAndPrayCharacter::OnRep_HoldingItem()
+{
+	if (HoldingItem)
+	{
+		// Attach to the appropriate mesh based on ownership
+		if (IsLocallyControlled())
+		{
+			// Local player sees it on first person mesh
+			HoldingItem->AttachToComponent(FirstPersonMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
+			//HoldingItem->SetActorRelativeLocation(FVector(20, 0, 0)); // Replace X, Y, Z with your values			
+			//HoldingItem->SetActorRelativeRotation(FRotator(Pitch, Yaw, Roll)); // In degrees
+		}
+		else
+		{
+			// Other players see it on the regular mesh
+			HoldingItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
+		}
+		HoldingItem->SetActorEnableCollision(false);
+
+	}
+}
+
+
+void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AYellPointAndPrayCharacter, HoldingItem);
+	DOREPLIFETIME(AYellPointAndPrayCharacter, ItemCreated);
 }
 
 void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject, AYellPointAndPrayCharacter* character)

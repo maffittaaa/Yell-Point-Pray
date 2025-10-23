@@ -117,10 +117,17 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 		virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 		
 		UClass* HoldingItemClass = nullptr;
-		AActor* HoldingItem = nullptr;
+
+		UPROPERTY(ReplicatedUsing = OnRep_HoldingItem)
+		AActor* HoldingItem;
+
+		UFUNCTION()
+		void OnRep_HoldingItem();
+
+		UPROPERTY(Replicated)
+		bool ItemCreated = false;
 
 		int OldItemSelected = 0;
-		bool ItemCreated = false;
 
 		virtual void Tick(float DeltaTime) override;
 
