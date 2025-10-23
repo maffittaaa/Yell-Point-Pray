@@ -81,10 +81,14 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 		UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf<UUserWidget> widgetClass;
 	
-			
 		FHitResult RV_Hit;
 		bool bHit;
 		void AddTraceAndWidget();
+
+		bool isDrawing;
+
+		void Draw();
+		void StopDrawing();
 
 	protected:
 

@@ -136,6 +136,11 @@ void AYellPointAndPrayCharacter::AddTraceAndWidget()
 	}
 }
 
+void AYellPointAndPrayCharacter::Draw() {
+	
+}
+
+
 void AYellPointAndPrayCharacter::MoveInput(const FInputActionValue& Value)
 {
 	// get the Vector2D move axis
