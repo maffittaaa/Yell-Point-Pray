@@ -234,6 +234,7 @@ void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 
 				// Only spawn on server - this will replicate to clients
 				HoldingItem = GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+				HoldingItem->SetOwner(this);
 
 				if (HoldingItem)
 				{
@@ -373,6 +374,10 @@ void AYellPointAndPrayCharacter::Interact() {
 	FVector start;
 	FRotator dir;
 	GetController()->GetPlayerViewPoint(start, dir);
+	UE_LOG(LogTemp, Warning, TEXT("Player Controller: %s | Role: %s | World: %s"),
+		*GetController()->GetName(),
+		*UEnum::GetValueAsString(GetLocalRole()),
+		*GetWorld()->GetName());
 
 	FVector end = start + (dir.Vector() * 300);
 

@@ -17,5 +17,9 @@ class YELLPOINTANDPRAY_API AUsableLockPick : public AUsableItem
 private:
 	AUsableLockPick();
 public:
-	virtual void Use_Implementation(AActor* User) override;
+		virtual void Use_Implementation(AActor* User) override;
+
+
+		UFUNCTION(Client, Reliable)
+		void UseReal(AActor* User);
 };

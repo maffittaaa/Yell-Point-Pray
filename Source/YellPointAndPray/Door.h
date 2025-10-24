@@ -28,11 +28,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	FTimeline TimeLine;
-
-	UPROPERTY(EditAnywhere)
-	UCurveFloat* CurveFloat;
-
 	UPROPERTY(Replicated)
 	int IsOpen = -1;
 	UPROPERTY(Replicated)
@@ -40,7 +35,7 @@ protected:
 	UPROPERTY(Replicated)
 	bool Play = false;
 
-
+	UPROPERTY(EditAnywhere, Replicated)
 	bool Locked;
 
 
@@ -49,4 +44,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Interact_Implementation(AActor* Interactor) override;
+
+	UFUNCTION(Server, Reliable)
+	void UnlockDoor();
 };

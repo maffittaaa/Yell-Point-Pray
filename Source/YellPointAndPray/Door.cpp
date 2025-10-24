@@ -31,6 +31,7 @@ void ADoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ADoor, IsOpen);
 	DOREPLIFETIME(ADoor, Play);
 	DOREPLIFETIME(ADoor, Side);
+	DOREPLIFETIME(ADoor, Locked);
 }
 
 // Called when the game starts or when spawned
@@ -76,6 +77,7 @@ void ADoor::Tick(float DeltaTime)
 
 void ADoor::Interact_Implementation(AActor* Interactor) 
 {
+	if (Locked) return;
 	//FVector DoorLoc = GetActorLocation();
 	//FVector PlayerLoc = Interactor->GetActorLocation();
 
@@ -104,5 +106,8 @@ void ADoor::Interact_Implementation(AActor* Interactor)
 	Play = true;
 }
 
-
+void ADoor::UnlockDoor_Implementation() {
+	UE_LOG(LogTemp, Warning, TEXT("Door Unlocked."));
+	Locked = false;
+}
 
