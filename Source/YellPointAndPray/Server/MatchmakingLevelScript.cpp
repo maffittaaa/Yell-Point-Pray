@@ -34,7 +34,7 @@ void AMatchmakingLevelScript::BeginPlay() {
 			HostButton->OnClicked.AddDynamic(this, &AMatchmakingLevelScript::OnHostClicked);
 			HostButton->SetIsEnabled(false);
 		}
-		ServerListScrollBoxWidget = Cast<UScrollBox>(MatchmakingWidget->GetWidgetFromName(TEXT("MyScrollBox")));
+		ServerListScrollBoxWidget = Cast<UScrollBox>(MatchmakingWidget->GetWidgetFromName(TEXT("ScrollBox")));
 	}
 }
 
@@ -78,7 +78,7 @@ void AMatchmakingLevelScript::OnHostClicked() {
 void AMatchmakingLevelScript::OnHostRequested(int32 Port) {
 	// Called when server accepted our host request
 	if (APlayerController* PC = GetWorld()->GetFirstPlayerController()) {
-		FString Cmd = FString::Printf(TEXT("open Lvl_ThirdPerson?listen"));
+		FString Cmd = FString::Printf(TEXT("open Lvl_FirstPerson?listen"));
 		PC->ConsoleCommand(*Cmd);
 	}
 }
