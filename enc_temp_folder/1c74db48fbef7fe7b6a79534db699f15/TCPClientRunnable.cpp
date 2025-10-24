@@ -6,13 +6,12 @@
 #include "Async/Async.h"
 #include <Interfaces/IPv4/IPv4Address.h>
 
-FTCPClientRunnable::FTCPClientRunnable(UMatchmakingSubsystem* InOwner, const FString& ServerIP)
+FTCPClientRunnable::FTCPClientRunnable(UMatchmakingSubsystem* InOwner)
 	: Thread(nullptr)
 	, Socket(nullptr)
 	, bRun(true)
 	, bConnected(false)
 	, OwnerSubsystem(InOwner)
-	, MatchmakingServerIP(ServerIP)  // Store the IP
 {
 	Thread = FRunnableThread::Create(this, TEXT("FTCPClientRunnable"), 0, TPri_Normal);
 }
@@ -37,14 +36,10 @@ bool FTCPClientRunnable::Init() {
 	int32 NewSize = 0;
 	Socket->SetReceiveBufferSize(1024, NewSize);
 	// connect to local server 127.0.0.1:8856 (same as original)
-	//FIPv4Address Addr(127, 0, 0, 1);
+	FIPv4Address Addr(127, 0, 0, 1);
 	TSharedRef<FInternetAddr> InternetAddr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
-
-	FIPv4Address Addr;
-	FIPv4Address::Parse(MatchmakingServerIP, Addr);
 	InternetAddr->SetIp(Addr.Value);
 	InternetAddr->SetPort(8856);
-
 	bConnected = Socket->Connect(*InternetAddr);
 
 	// Notify subsystem about connection status on game thread

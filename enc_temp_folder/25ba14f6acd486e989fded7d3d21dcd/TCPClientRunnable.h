@@ -10,7 +10,7 @@ class UMatchmakingSubsystem;
 // always marshals messages back to game thread using AsyncTask.
 class FTCPClientRunnable : public FRunnable {
 public:
-	FTCPClientRunnable(UMatchmakingSubsystem* InOwner, const FString& ServerIP);
+	FTCPClientRunnable(UMatchmakingSubsystem* InOwner);
 	virtual ~FTCPClientRunnable();
 
 	// FRunnable interface
@@ -23,7 +23,6 @@ public:
 	void RequestSessionList();
 	bool IsConnected() const { return bConnected; }
 private:
-	FString MatchmakingServerIP;
 	FRunnableThread* Thread;
 	FSocket* Socket;
 	FThreadSafeBool bRun;
