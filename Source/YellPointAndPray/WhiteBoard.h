@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Interactable.h"
+#include "Camera/CameraActor.h"
 #include "WhiteBoard.generated.h"
 
 UCLASS()
@@ -18,23 +19,7 @@ class YELLPOINTANDPRAY_API AWhiteBoard : public AActor, public IInteractable
 		UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* meshComp;
 
-		
-		UPROPERTY()
-		UMaterialInstanceDynamic* dynamicMaterialInstance;
 
-		UPROPERTY(EditAnywhere, Category = "Materials")
-		UTextureRenderTarget2D* renderTargetWhiteboard;
-
-		UPROPERTY(EditAnywhere, Category = "Materials")
-		UMaterialInterface* markerP1Material;
-
-		UPROPERTY(EditAnywhere, Category = "Materials")
-		UMaterialInterface* markerP2Material;
-
-		UPROPERTY(EditAnywhere, Category = "Materials")
-		UMaterialInterface* markerP3Material;
-
-		void DrawOnWhiteboard(FVector2D* locationToDraw);
 	
 	protected:
 		virtual void BeginPlay() override;

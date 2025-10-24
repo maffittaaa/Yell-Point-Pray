@@ -15,6 +15,8 @@
 #include "Blueprint/UserWidget.h"
 #include <Net/UnrealNetwork.h>
 
+#include "WhiteBoard.h"
+
 using namespace std;
 
 AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
@@ -78,6 +80,7 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		//Use
 		EnhancedInputComponent->BindAction(UseAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::Use);
+			
 	}
 	else
 	{
@@ -90,6 +93,8 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 
 	if (widgetClass)
 		HUDWidget = CreateWidget<UUserWidget>(GetWorld(), widgetClass, FName("HUD"));
+
+	enumVariable = InGame;
 }
 
 void AYellPointAndPrayCharacter::AddTraceAndWidget() 
@@ -135,11 +140,6 @@ void AYellPointAndPrayCharacter::AddTraceAndWidget()
 		TimesWidgetCreated = 0;
 	}
 }
-
-void AYellPointAndPrayCharacter::Draw() {
-	
-}
-
 
 void AYellPointAndPrayCharacter::MoveInput(const FInputActionValue& Value)
 {
@@ -304,6 +304,34 @@ void AYellPointAndPrayCharacter::OnRep_HoldingItem()
 	}
 }
 
+void AYellPointAndPrayCharacter::OnRepState() {
+	UE_LOG(LogTemp, Warning, TEXT("STATE: %d"), static_cast<int>(enumVariable));
+	if (enumVariable == InWhiteboard)
+	{
+		APlayerController* playerController = Cast<APlayerController>(GetController());
+		if (!playerController) return;
+		
+		float blendTime = 0.0f;
+		ACameraActor* camera = whiteboardCamera.LoadSynchronous(); //to get the actual camera object
+		
+		playerController->SetViewTargetWithBlend(camera, blendTime, VTBlend_EaseIn);
+		UE_LOG(LogTemp, Warning, TEXT("Camera and movement locked"));
+		
+		SetActorHiddenInGame(true);
+		GetCharacterMovement()->DisableMovement();
+		SetActorEnableCollision(false);
+		
+		playerController->bShowMouseCursor = true;
+		playerController->SetShowMouseCursor(true);
+		UE_LOG(LogTemp, Warning, TEXT("Cursor visibility after set: %d"), playerController->bShowMouseCursor);
+	
+		FInputModeUIOnly inputMode;
+		inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		playerController->SetInputMode(inputMode);
+	}
+}
+
+
 
 void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -311,6 +339,7 @@ void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 
 	DOREPLIFETIME(AYellPointAndPrayCharacter, HoldingItem);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, ItemCreated);
+	DOREPLIFETIME(AYellPointAndPrayCharacter, enumVariable);
 }
 
 void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject, AYellPointAndPrayCharacter* character)
@@ -324,19 +353,22 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 			APickableItem* PickableItem = Cast<APickableItem>(hitObject);
 
 			if (PickableItem) 
-			{
 				InventoryComponent->SetInventory(PickableItem);
-			}
 
+			if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard"))
+			{
+				enumVariable = InWhiteboard;
+				OnRepState();
+			}
+			
 			IInteractable::Execute_Interact(hitObject, character);
-			UE_LOG(LogTemp, Warning, TEXT("PickedUpItem!"));
 		}
-	}	
+	}
 }
 
 void AYellPointAndPrayCharacter::Interact() {
 	UE_LOG(LogTemp, Warning, TEXT("YOU CALLED INTERACT"));
-
+	
 	//Get vector to do the ray
 	FVector start;
 	FRotator dir;
@@ -352,9 +384,8 @@ void AYellPointAndPrayCharacter::Interact() {
 	//ray
 	if (GetWorld()->LineTraceSingleByChannel( hit, start, end, ECC_Visibility, params)) {
 		//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.0f, 0, 1.0f);
-		if (AActor* hitObject = hit.GetActor()) {
+		if (AActor* hitObject = hit.GetActor())
 			this->ServerInteract(hitObject, this);
-		}
 	}
 }
 

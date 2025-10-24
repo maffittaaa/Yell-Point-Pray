@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "WhiteBoard.h"
 #include "GameFramework/Character.h"
 #include "UI/Inventory/Inventory.h"
 #include "Interfaces/Caughtable.h"
@@ -18,9 +19,12 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
-/**
- *  A basic first person character
- */
+UENUM(BlueprintType)
+enum EGameStates {
+	InWhiteboard,
+	InGame,
+};
+
 UCLASS(abstract)
 class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 {
@@ -80,15 +84,19 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 
 		UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf<UUserWidget> widgetClass;
+
+		UPROPERTY(EditAnywhere, Category = "Components")
+		AWhiteBoard* whiteboard;
+
+		UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Camera")
+		TSoftObjectPtr<ACameraActor> whiteboardCamera;
 	
 		FHitResult RV_Hit;
 		bool bHit;
 		void AddTraceAndWidget();
 
-		bool isDrawing;
-
-		void Draw();
-		void StopDrawing();
+		UPROPERTY(ReplicatedUsing=OnRepState)
+		TEnumAsByte<EGameStates> enumVariable;
 
 	protected:
 
@@ -147,6 +155,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 		UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
 		virtual void Caught_Implementation() override;
+	
+		UFUNCTION()
+		void OnRepState();
 
 	private:
 		ACharacter* ItemOwner;
