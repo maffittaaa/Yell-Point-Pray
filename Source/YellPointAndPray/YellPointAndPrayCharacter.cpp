@@ -83,23 +83,21 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 			
 	}
 	else
-	{
 		UE_LOG(LogYellPointAndPray, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
-	}
 }
 
 void AYellPointAndPrayCharacter::BeginPlay() {
 	Super::BeginPlay();
 
-	if (widgetClass)
-		HUDWidget = CreateWidget<UUserWidget>(GetWorld(), widgetClass, FName("HUD"));
+	if (interactWidgetClass)
+		interactWidget = CreateWidget<UUserWidget>(GetWorld(), interactWidgetClass, FName("Interact"));
 
 	enumVariable = InGame;
 }
 
 void AYellPointAndPrayCharacter::AddTraceAndWidget() 
 {
-	float distance = 150.0f;
+	float distance = 300.0f;
 
 	FVector start;
 	FRotator direction;
@@ -130,13 +128,13 @@ void AYellPointAndPrayCharacter::AddTraceAndWidget()
 	);
 
 	AActor* hitComponent = RV_Hit.GetActor();
-	if (bHit && hitComponent->GetClass()->ImplementsInterface(UInteractable::StaticClass()) && !HUDWidget->IsInViewport() && TimesWidgetCreated == 0) {
-		HUDWidget->AddToViewport();
+	if (bHit && hitComponent->GetClass()->ImplementsInterface(UInteractable::StaticClass()) && !interactWidget->IsInViewport() && TimesWidgetCreated == 0) {
+		interactWidget->AddToViewport();
 		TimesWidgetCreated = 1;
 	}
 	else if (!bHit || !hitComponent->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 	{
-		HUDWidget->RemoveFromParent();
+		interactWidget->RemoveFromParent();
 		TimesWidgetCreated = 0;
 	}
 }
@@ -328,6 +326,10 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		FInputModeUIOnly inputMode;
 		inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 		playerController->SetInputMode(inputMode);
+
+		paintBrushWidget = CreateWidget<UUserWidget>(GetWorld(), paintBrushWidgetClass, FName("PaintBrush"));
+		if (!paintBrushWidget->IsInViewport())
+			paintBrushWidget->AddToViewport();
 	}
 }
 
@@ -395,6 +397,6 @@ void AYellPointAndPrayCharacter::Caught_Implementation() {
 
 void AYellPointAndPrayCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
-	if (widgetClass)
+	if (interactWidgetClass)
 		AddTraceAndWidget();
 }

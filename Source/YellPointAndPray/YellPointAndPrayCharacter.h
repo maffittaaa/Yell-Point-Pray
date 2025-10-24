@@ -77,13 +77,19 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 		void StopDuck();
 
 		UPROPERTY()
-		UUserWidget* HUDWidget;
+		UUserWidget* interactWidget;
 
 		UPROPERTY()
 		int TimesWidgetCreated = 0;
 
 		UPROPERTY(EditAnywhere, Category = "Components")
-		TSubclassOf<UUserWidget> widgetClass;
+		TSubclassOf<UUserWidget> interactWidgetClass;
+
+		UPROPERTY()
+		UUserWidget* paintBrushWidget;
+
+		UPROPERTY(EditAnywhere, Category = "Components")
+		TSubclassOf<UUserWidget> paintBrushWidgetClass;
 
 		UPROPERTY(EditAnywhere, Category = "Components")
 		AWhiteBoard* whiteboard;
