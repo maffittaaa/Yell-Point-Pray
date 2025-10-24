@@ -18,8 +18,11 @@ public class YellPointAndPray : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
-			"Slate",  "Niagara" 
-		});
+			"Slate",  
+			"Niagara",
+            "Sockets",          
+            "Networking",
+        });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {});
 
