@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include <Server/EOSVoiceSubsystem.h>
 #include "GameFramework/PlayerController.h"
+#include <Server/MatchmakingSubsystem.h>
 #include "YellPointAndPrayPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -23,6 +25,12 @@ public:
 
 	/** Constructor */
 	AYellPointAndPrayPlayerController();
+
+	UFUNCTION(BlueprintCallable)
+	void OnSuccessfullyJoinedGameServer();
+
+	UFUNCTION(BlueprintCallable)
+	void OnPlayerJoinedGame(const FString& PlayerId, const FVector& Position);
 
 protected:
 
@@ -47,4 +55,5 @@ protected:
 	/** Input mapping context setup */
 	virtual void SetupInputComponent() override;
 
+	virtual void Tick(float DeltaTime) override;
 };

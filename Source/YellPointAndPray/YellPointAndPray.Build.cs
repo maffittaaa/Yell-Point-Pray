@@ -24,9 +24,16 @@ public class YellPointAndPray : ModuleRules
             "Networking",
         });
 
-		PrivateDependencyModuleNames.AddRange(new string[] {});
+        PrivateDependencyModuleNames.AddRange(new string[] {
+			"EOSSDK",
+			"OnlineSubsystemEOS",
+			"OnlineSubsystemEOSPlus",
+			"Voice"
+		});
 
-		PublicIncludePaths.AddRange(new string[] {
+
+
+        PublicIncludePaths.AddRange(new string[] {
 			"YellPointAndPray",
 			"YellPointAndPray/Variant_Horror",
 			"YellPointAndPray/Variant_Horror/UI",
