@@ -1,5 +1,6 @@
 #include "WhiteBoard.h"
 #include "YellPointAndPrayCharacter.h"
+#include "Engine/Canvas.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetRenderingLibrary.h"
 
@@ -21,7 +22,7 @@ void AWhiteBoard::BeginPlay() {
 	int width = 1024;
 	int height = 1024;
 
-	renderTarget2D = UKismetRenderingLibrary::CreateRenderTarget2D(this, 1024, 1024, RTF_RGBA8);
+	renderTarget2D = UKismetRenderingLibrary::CreateRenderTarget2D(this, 1024, 1024, RTF_RGBA16f);
 	renderTarget2D->ClearColor = FColor::White;
 
 	dynamicMaterialInstanceCanvas = UMaterialInstanceDynamic::Create(materialCanvas, this);
@@ -42,11 +43,41 @@ void AWhiteBoard::Interact_Implementation(AActor* Interactor) {
 	if (!playerController) return;
 }
 
-void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D* drawLocation) {
+void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D drawLocation) {
 	if (dynamicMaterialInstanceBrush)
 		dynamicMaterialInstanceBrush->SetTextureParameterValue(FName("BrushTexture"), brushTexture);
+	
+	UCanvas* canvas = nullptr;
+	FVector2D size;
+	FDrawToRenderTargetContext context;
+	UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(
+		this,
+		renderTarget2D,
+		canvas,
+		size,
+		context
+		);
 
-	// renderTarget2D->BeginDrawCanvasToRenderTarget();
+	FVector2D screenPosition = (size * drawLocation) - (brushSize / 2.0f); //so it gets in the center
+	FVector2D screenSize = FVector2D(brushSize, brushSize);
+	FVector2D coordinatePositon = FVector2D(0.0f, 0.0f);
+	FVector2D coordinateSize = FVector2D(1.0f, 1.0f);
+	float rotation = 0.0f;
+	FVector2D pivotPoint = FVector2D(0.5f, 0.5f);
+	
+	if (canvas && dynamicMaterialInstanceBrush) {
+		canvas->K2_DrawMaterial(
+		materialBrush,
+		screenPosition,
+		screenSize,
+		coordinatePositon,
+		coordinateSize,
+		rotation,
+		pivotPoint
+		);
+	}
+
+	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, context);
 }
 
 

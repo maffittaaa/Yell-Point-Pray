@@ -43,7 +43,7 @@ class YELLPOINTANDPRAY_API AWhiteBoard : public AActor, public IInteractable
 
 		virtual void Interact_Implementation(AActor* interactor) override;
 
-		void Draw(UTexture2D* brushTexture, float brushSize, FVector2D* drawLocation);
+		void Draw(UTexture2D* brushTexture, float brushSize, FVector2D drawLocation);
 
 		UFUNCTION(BlueprintCallable)
 		void CloseBoard();

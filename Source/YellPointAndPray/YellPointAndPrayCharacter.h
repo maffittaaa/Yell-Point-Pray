@@ -66,6 +66,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 		//Use Input
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 		class UInputAction* UseAction;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		UInputAction* DrawAction;
 		
 	public:
 		AYellPointAndPrayCharacter();
@@ -75,6 +78,12 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 
 		void Duck();
 		void StopDuck();
+
+		void characterDrawing();
+		bool isDrawing = false;
+
+		UPROPERTY()
+		UTexture2D* brushTexture;
 
 		UPROPERTY()
 		UUserWidget* interactWidget;
@@ -91,8 +100,11 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable
 		UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf<UUserWidget> paintBrushWidgetClass;
 
-		UPROPERTY(EditAnywhere, Category = "Components")
-		AWhiteBoard* whiteboard;
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+		TSoftObjectPtr<AWhiteBoard> whiteboard;
+
+		UPROPERTY(EditAnywhere, Category = "Whiteboard")
+		UTexture2D* whiteboardBrushTexture;
 
 		UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Camera")
 		TSoftObjectPtr<ACameraActor> whiteboardCamera;

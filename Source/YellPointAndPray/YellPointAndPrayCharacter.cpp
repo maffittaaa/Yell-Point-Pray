@@ -1,14 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "YellPointAndPrayCharacter.h"
-#include <string>
+#include "InputActionValue.h"
+#include "InputAction.h"
 #include "Animation/AnimInstance.h"
 #include "Items/PickableItemsParent/PickableItem.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "EnhancedInputComponent.h"
-#include "InputActionValue.h"
 #include "Interfaces/Interactable.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "YellPointAndPray.h"
@@ -80,6 +80,9 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		//Use
 		EnhancedInputComponent->BindAction(UseAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::Use);
+
+		//Drawing
+		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::characterDrawing);
 			
 	}
 	else
@@ -333,8 +336,6 @@ void AYellPointAndPrayCharacter::OnRepState() {
 	}
 }
 
-
-
 void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -394,6 +395,66 @@ void AYellPointAndPrayCharacter::Interact() {
 void AYellPointAndPrayCharacter::Caught_Implementation() {
 	UE_LOG(LogTemp, Warning, TEXT("YOU GOT CAUGTH NOOB L"));
 }
+
+void AYellPointAndPrayCharacter::characterDrawing() {	
+
+	UE_LOG(LogTemp, Warning, TEXT("HELLOOO"));
+	isDrawing = true;
+	float distance = 300.0f;
+
+	FVector start;
+	FRotator direction;
+	AController* controller = GetController();
+	
+	if (!controller) return;
+
+	controller->GetPlayerViewPoint(start, direction);
+	GetController()->GetPlayerViewPoint(start, direction);
+	
+	FVector end = start + (direction.Vector() * distance);
+	
+	ECollisionChannel traceChannel = ECC_Visibility;
+	FCollisionQueryParams RV_TraceParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), false, this);
+	RV_TraceParams.bTraceComplex = true;
+	RV_TraceParams.bReturnPhysicalMaterial = false;
+	RV_TraceParams.AddIgnoredActor(this);
+
+	// DrawDebugLine(GetWorld(), startTrace, endTrace, FColor::Red, false, -1.0f, 0, 1.0f);
+
+	bool bHit2 = GetWorld()->LineTraceSingleByChannel(
+		RV_Hit,
+		start,
+		end,
+		traceChannel,
+		RV_TraceParams
+	);
+
+	AActor* hitActor = RV_Hit.GetActor();
+	if (bHit2) {
+		whiteboard = Cast<AWhiteBoard>(hitActor);
+		
+		if (whiteboard) {
+			float whiteboardBrushSize = 50.0f;
+			FVector2D UVCoordinates;
+			FVector LocalImpact = RV_Hit.GetComponent()->GetComponentTransform().InverseTransformPosition(RV_Hit.ImpactPoint);
+			FBoxSphereBounds Bounds = RV_Hit.GetComponent()->CalcBounds(FTransform());
+			
+			UVCoordinates.X = FMath::GetMappedRangeValueUnclamped(
+				FVector2D(-Bounds.BoxExtent.X, Bounds.BoxExtent.X), 
+				FVector2D(0, 1), 
+				LocalImpact.X
+			);
+			UVCoordinates.Y = FMath::GetMappedRangeValueUnclamped(
+				FVector2D(-Bounds.BoxExtent.Y, Bounds.BoxExtent.Y), 
+				FVector2D(0, 1), 
+				LocalImpact.Y
+			);
+			
+			whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, UVCoordinates);
+		}
+	}
+}
+
 
 void AYellPointAndPrayCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
