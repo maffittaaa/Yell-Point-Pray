@@ -82,7 +82,7 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(UseAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::Use);
 
 		//Drawing
-		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::characterDrawing);
+		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::CharacterDrawing);
 			
 	}
 	else
@@ -206,6 +206,10 @@ void AYellPointAndPrayCharacter::StopDuck() {
 
 void AYellPointAndPrayCharacter::Use() 
 {
+	UE_LOG(LogTemp, Warning, TEXT("ISDRAWING: %d"), isDrawing);
+	if (isDrawing)
+		CharacterDrawing();
+	
 	if (InventoryComponent->GetSlotID(InventoryComponent->CurrentItemSelected) != -1)
 	{
 		FString name = InventoryComponent->GetSlotName(InventoryComponent->CurrentItemSelected);
@@ -313,9 +317,10 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		if (!playerController) return;
 		
 		float blendTime = 0.0f;
-		ACameraActor* camera = whiteboardCamera.LoadSynchronous(); //to get the actual camera object
+		ACameraActor* camera = whiteboardCamera.LoadSynchronous();//to get the actual camera object
 		
 		playerController->SetViewTargetWithBlend(camera, blendTime, VTBlend_EaseIn);
+		
 		UE_LOG(LogTemp, Warning, TEXT("Camera and movement locked"));
 		
 		SetActorHiddenInGame(true);
@@ -331,8 +336,11 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		playerController->SetInputMode(inputMode);
 
 		paintBrushWidget = CreateWidget<UUserWidget>(GetWorld(), paintBrushWidgetClass, FName("PaintBrush"));
-		if (!paintBrushWidget->IsInViewport())
-			paintBrushWidget->AddToViewport();
+		playerController->SetMouseCursorWidget(EMouseCursor::Type::Default ,paintBrushWidget);
+		isDrawing = true;
+		// if (!paintBrushWidget->IsInViewport()) {
+		// 	paintBrushWidget->AddToViewport();
+		// }
 	}
 }
 
@@ -393,64 +401,70 @@ void AYellPointAndPrayCharacter::Interact() {
 }
 
 void AYellPointAndPrayCharacter::Caught_Implementation() {
-	UE_LOG(LogTemp, Warning, TEXT("YOU GOT CAUGTH NOOB L"));
+	UE_LOG(LogTemp, Warning, TEXT("YOU GOT CAUGHT NOOB L"));
 }
 
-void AYellPointAndPrayCharacter::characterDrawing() {	
+void AYellPointAndPrayCharacter::CharacterDrawing() {	
 
+	if (!isDrawing)
+		return;
+	
 	UE_LOG(LogTemp, Warning, TEXT("HELLOOO"));
-	isDrawing = true;
-	float distance = 300.0f;
-
-	FVector start;
-	FRotator direction;
-	AController* controller = GetController();
 	
-	if (!controller) return;
-
-	controller->GetPlayerViewPoint(start, direction);
-	GetController()->GetPlayerViewPoint(start, direction);
+	APlayerController* playerController = Cast<APlayerController>(GetController());
+	if (!playerController) return;
 	
-	FVector end = start + (direction.Vector() * distance);
+	if (playerController->bShowMouseCursor) {
+		float distance = 300.0f;
+
+		FVector start;
+		FRotator direction;
+		AController* controller = GetController();
 	
-	ECollisionChannel traceChannel = ECC_Visibility;
-	FCollisionQueryParams RV_TraceParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), false, this);
-	RV_TraceParams.bTraceComplex = true;
-	RV_TraceParams.bReturnPhysicalMaterial = false;
-	RV_TraceParams.AddIgnoredActor(this);
+		if (!controller) return;
 
-	// DrawDebugLine(GetWorld(), startTrace, endTrace, FColor::Red, false, -1.0f, 0, 1.0f);
+		controller->GetPlayerViewPoint(start, direction);
+		FVector end = start + (direction.Vector() * distance);
+	
+		ECollisionChannel traceChannel = ECC_Visibility;
+		FCollisionQueryParams RV_TraceParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), false, this);
+		RV_TraceParams.bTraceComplex = true;
+		RV_TraceParams.bReturnPhysicalMaterial = false;
+		RV_TraceParams.AddIgnoredActor(this);
 
-	bool bHit2 = GetWorld()->LineTraceSingleByChannel(
-		RV_Hit,
-		start,
-		end,
-		traceChannel,
-		RV_TraceParams
-	);
+		// DrawDebugLine(GetWorld(), startTrace, endTrace, FColor::Red, false, -1.0f, 0, 1.0f);
 
-	AActor* hitActor = RV_Hit.GetActor();
-	if (bHit2) {
-		whiteboard = Cast<AWhiteBoard>(hitActor);
+		bool bHit2 = GetWorld()->LineTraceSingleByChannel(
+			RV_Hit,
+			start,
+			end,
+			traceChannel,
+			RV_TraceParams
+		);
+
+		AActor* hitActor = RV_Hit.GetActor();
+		if (bHit2) {
+			whiteboard = Cast<AWhiteBoard>(hitActor);
 		
-		if (whiteboard) {
-			float whiteboardBrushSize = 50.0f;
-			FVector2D UVCoordinates;
-			FVector LocalImpact = RV_Hit.GetComponent()->GetComponentTransform().InverseTransformPosition(RV_Hit.ImpactPoint);
-			FBoxSphereBounds Bounds = RV_Hit.GetComponent()->CalcBounds(FTransform());
+			if (whiteboard) {
+				float whiteboardBrushSize = 50.0f;
+				FVector2D UVCoordinates;
+				FVector LocalImpact = RV_Hit.GetComponent()->GetComponentTransform().InverseTransformPosition(RV_Hit.ImpactPoint);
+				FBoxSphereBounds Bounds = RV_Hit.GetComponent()->CalcBounds(FTransform());
 			
-			UVCoordinates.X = FMath::GetMappedRangeValueUnclamped(
-				FVector2D(-Bounds.BoxExtent.X, Bounds.BoxExtent.X), 
-				FVector2D(0, 1), 
-				LocalImpact.X
-			);
-			UVCoordinates.Y = FMath::GetMappedRangeValueUnclamped(
-				FVector2D(-Bounds.BoxExtent.Y, Bounds.BoxExtent.Y), 
-				FVector2D(0, 1), 
-				LocalImpact.Y
-			);
-			
-			whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, UVCoordinates);
+				UVCoordinates.X = FMath::GetMappedRangeValueUnclamped(
+					FVector2D(-Bounds.BoxExtent.X, Bounds.BoxExtent.X), 
+					FVector2D(0, 1), 
+					LocalImpact.X
+				);
+				UVCoordinates.Y = FMath::GetMappedRangeValueUnclamped(
+					FVector2D(-Bounds.BoxExtent.Y, Bounds.BoxExtent.Y), 
+					FVector2D(0, 1), 
+					LocalImpact.Y
+				);
+				
+				whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, UVCoordinates);
+			}
 		}
 	}
 }

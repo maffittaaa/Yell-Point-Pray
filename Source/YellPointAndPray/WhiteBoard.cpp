@@ -22,7 +22,7 @@ void AWhiteBoard::BeginPlay() {
 	int width = 1024;
 	int height = 1024;
 
-	renderTarget2D = UKismetRenderingLibrary::CreateRenderTarget2D(this, 1024, 1024, RTF_RGBA16f);
+	renderTarget2D = UKismetRenderingLibrary::CreateRenderTarget2D(this, width, height, RTF_RGBA16f);
 	renderTarget2D->ClearColor = FColor::White;
 
 	dynamicMaterialInstanceCanvas = UMaterialInstanceDynamic::Create(materialCanvas, this);
@@ -58,6 +58,8 @@ void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D draw
 		context
 		);
 
+	UE_LOG(LogTemp, Warning, TEXT("Canvas: %p"), canvas);
+
 	FVector2D screenPosition = (size * drawLocation) - (brushSize / 2.0f); //so it gets in the center
 	FVector2D screenSize = FVector2D(brushSize, brushSize);
 	FVector2D coordinatePositon = FVector2D(0.0f, 0.0f);
@@ -76,7 +78,6 @@ void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D draw
 		pivotPoint
 		);
 	}
-
 	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, context);
 }
 
