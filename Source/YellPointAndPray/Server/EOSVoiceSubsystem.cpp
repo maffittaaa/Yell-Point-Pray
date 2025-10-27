@@ -30,22 +30,86 @@ void UEOSVoiceSubsystem::InitializeEOS()
 {
     EOS_InitializeOptions InitializeOptions = {};
     InitializeOptions.ApiVersion = EOS_INITIALIZE_API_LATEST;
-    InitializeOptions.ProductName = "CellPointAndPray";
+    InitializeOptions.ProductName = "YellPointAndPray";
     InitializeOptions.ProductVersion = "1.0";
 
     EOS_Initialize(&InitializeOptions);
 
     EOS_Platform_Options PlatformOptions = {};
     PlatformOptions.ApiVersion = EOS_PLATFORM_OPTIONS_API_LATEST;
-    PlatformOptions.ProductId = "ea0509ec50fa4f8eaf1064";
-    PlatformOptions.SandboxId = "31d30a127fe743af8dd5f";
-    PlatformOptions.ClientCredentials.ClientId = "xyzaf789192gHmv69ChJ";
-    PlatformOptions.ClientCredentials.ClientSecret = "dtaxHHjDEsoPBWq3BTt4";
+    PlatformOptions.ProductId = "ea0509ec50fa4f8eaff0641cb81249ed";
+    PlatformOptions.SandboxId = "31d30a127fe743af8dd5f77c1a744cbf";
+    PlatformOptions.DeploymentId = "603571ba03f549d2848a263521449da0";
+    PlatformOptions.ClientCredentials.ClientId = "xyza789192gHmvG9ChJmc1pnTD2aV6xr";
+    PlatformOptions.ClientCredentials.ClientSecret = "otaxHftjDEsoP6Wq3BTr+vUCPabpbUjGY8lMPlxDwCs";
     PlatformOptions.bIsServer = false;
 
+    //EOSPlatformHandle = EOS_Platform_Create(&PlatformOptions);
+    //EOSRTCHandle = EOS_Platform_GetRTCInterface(EOSPlatformHandle);
+    //EOSAudioHandle = EOS_RTC_GetAudioInterface(EOSRTCHandle);
+
     EOSPlatformHandle = EOS_Platform_Create(&PlatformOptions);
+    if (!EOSPlatformHandle)
+    {
+        UE_LOG(LogTemp, Error, TEXT("EOS_Platform_Create failed"));
+        return;
+    }
+
+    // Get RTC interface from platform
     EOSRTCHandle = EOS_Platform_GetRTCInterface(EOSPlatformHandle);
+    if (!EOSRTCHandle)
+    {
+        UE_LOG(LogTemp, Error, TEXT("EOS_Platform_GetRTCInterface failed"));
+        return;
+    }
+
+    // CORRECT: Get audio interface from RTC handle, not platform handle
     EOSAudioHandle = EOS_RTC_GetAudioInterface(EOSRTCHandle);
+    if (!EOSAudioHandle)
+    {
+        UE_LOG(LogTemp, Error, TEXT("EOS_RTC_GetAudioInterface failed"));
+        return;
+    }
+
+    UE_LOG(LogTemp, Warning, TEXT("EOS initialized successfully - Platform: %p, RTC: %p, Audio: %p"),
+        EOSPlatformHandle, EOSRTCHandle, EOSAudioHandle);
+
+    TestEOS();
+}
+
+void UEOSVoiceSubsystem::TestEOS()
+{
+    UE_LOG(LogTemp, Warning, TEXT("=== EOS Voice Subsystem Test ==="));
+
+    if (EOSPlatformHandle)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("EOS Platform Handle: VALID"));
+
+        if (EOSRTCHandle)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("EOS RTC Handle: VALID"));
+
+            if (EOSAudioHandle)
+            {
+                UE_LOG(LogTemp, Warning, TEXT("EOS Audio Handle: VALID"));
+                UE_LOG(LogTemp, Warning, TEXT("EOS Voice System is READY"));
+            }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT("EOS Audio Handle: INVALID"));
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("EOS RTC Handle: INVALID"));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("EOS Platform Handle: INVALID"));
+    }
+
+    UE_LOG(LogTemp, Warning, TEXT("=== End EOS Test ==="));
 }
 
 void UEOSVoiceSubsystem::JoinVoiceRoom(const FString& RoomName)

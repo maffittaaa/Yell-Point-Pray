@@ -33,6 +33,9 @@ public:
     UFUNCTION(BlueprintCallable)
     void LoginToEOS();
 
+    UFUNCTION(BlueprintCallable)
+    void TestEOS();
+
     // Proximity management
     void UpdatePlayerPosition(const FString& PlayerId, const FVector& Position);
     void SetLocalPlayerPosition(const FVector& Position);
