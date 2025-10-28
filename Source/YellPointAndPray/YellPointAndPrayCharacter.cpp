@@ -16,6 +16,7 @@
 #include <Net/UnrealNetwork.h>
 
 #include "WhiteBoard.h"
+#include <Kismet/GameplayStatics.h>
 
 using namespace std;
 
@@ -53,6 +54,19 @@ AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 	GetCharacterMovement()->AirControl = 0.5f;
 
 	InventoryComponent = CreateDefaultSubobject<UInventory>(TEXT("Inventory"));
+
+
+	//Cesar Stuff -------------------------------------------------------
+
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APickableItem::StaticClass(), FoundActors);
+	for (auto& FoundActor : FoundActors)
+	{
+		if (FoundActor->GetClass()->ImplementsInterface(UInventorySubject::StaticClass()))
+		{
+			IInventorySubject::Execute_AddObserver(FoundActor, this);
+		}
+	}
 }
 
 void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -474,4 +488,10 @@ void AYellPointAndPrayCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 	if (interactWidgetClass)
 		AddTraceAndWidget();
+}
+
+//Cesar Stuff -----------------------------------------------------------------------
+
+void AYellPointAndPrayCharacter::OnItemAdded_Implementation(const FString& Name) {
+	UE_LOG(LogTemp, Warning, TEXT("Code Works im the best :D!"));
 }

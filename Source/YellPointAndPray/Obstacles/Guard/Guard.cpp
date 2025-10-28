@@ -84,7 +84,7 @@ void AGuard::Tick(float DeltaTime)
 	}
 	if (Suspicious == true) {
 		UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %d"), CurrentSuspicion)
-		CurrentSuspicion -= 10 * DeltaTime;
+		CurrentSuspicion -= DeltaTime;
 		float Distance = FVector::Dist(GetActorLocation(), LastSeenLocation);
 		if (Distance < 100.f) {
 			LookAround(DeltaTime);

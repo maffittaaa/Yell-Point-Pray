@@ -36,8 +36,8 @@ void APickableItem::Tick(float DeltaTime)
 
 void APickableItem::Interact_Implementation(AActor* Interactor) {
 	UE_LOG(LogTemp, Warning, TEXT("Item interacted with! :D"));
-	IInventorySubject::Execute_NotifyObservers(this, "FDS");
 	Destroy();
+	IInventorySubject::Execute_NotifyObservers(this, "FDS");
 }
 
 

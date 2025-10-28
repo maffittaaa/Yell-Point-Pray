@@ -199,7 +199,6 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		void DeleteItem();
 
 		public:
-
 			//Cesar Stuff -----------------------------------------
 			virtual  void OnItemAdded_Implementation(const FString& Name) override;
 };
