@@ -220,10 +220,6 @@ void AYellPointAndPrayCharacter::StopDuck() {
 
 void AYellPointAndPrayCharacter::Use() 
 {
-	UE_LOG(LogTemp, Warning, TEXT("ISDRAWING: %d"), isDrawing);
-	if (isDrawing)
-		CharacterDrawing();
-	
 	if (InventoryComponent->GetSlotID(InventoryComponent->CurrentItemSelected) != -1)
 	{
 		FString name = InventoryComponent->GetSlotName(InventoryComponent->CurrentItemSelected);
@@ -352,9 +348,6 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		paintBrushWidget = CreateWidget<UUserWidget>(GetWorld(), paintBrushWidgetClass, FName("PaintBrush"));
 		playerController->SetMouseCursorWidget(EMouseCursor::Type::Default ,paintBrushWidget);
 		isDrawing = true;
-		// if (!paintBrushWidget->IsInViewport()) {
-		// 	paintBrushWidget->AddToViewport();
-		// }
 	}
 }
 
