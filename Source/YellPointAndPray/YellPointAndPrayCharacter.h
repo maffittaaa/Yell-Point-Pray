@@ -69,6 +69,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		class UInputAction* UseAction;
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		class UInputAction* DropAction;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 		UInputAction* DrawAction;
 		
 	public:
@@ -186,6 +189,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		
 		UFUNCTION()
 		void Use();
+
+		UFUNCTION()
+		void Drop();
 
 		UFUNCTION(Server, Reliable)
 		void ServerInteract(AActor* hitObject, AYellPointAndPrayCharacter* character);

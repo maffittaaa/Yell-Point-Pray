@@ -22,6 +22,28 @@ void UInventory::BeginPlay()
 
 }
 
+void UInventory::DeleteInventorySlot_Implementation(int SlotID)
+{
+	if (InventorySlots[SlotID].Item == nullptr) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No item to Delete")); 
+		return;
+	}
+
+	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
+	InventorySlots[SlotID].Item->DetachFromActor(DetachRules);
+	InventorySlots[SlotID].Item->Destroy();
+	ResetSlotToDefaultValue(SlotID);
+}
+
+void UInventory::ResetSlotToDefaultValue(int SlotID)
+{
+	InventorySlots[SlotID].Item = nullptr;
+	InventorySlots[SlotID].ID = -1;
+	InventorySlots[SlotID].Name = "DefaultName";
+	InventorySlots[SlotID].PreviewImage = nullptr;
+}
+
 int UInventory::GetInventorySize() 
 {
 	return InventorySize;

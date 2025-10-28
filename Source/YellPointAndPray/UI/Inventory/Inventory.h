@@ -44,6 +44,8 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	void ResetSlotToDefaultValue(int SlotID);
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -64,6 +66,9 @@ public:
 	UFUNCTION()
 	void SetInventory(APickableItem* Item);
 	
+	UFUNCTION(Server, Reliable)
+	void DeleteInventorySlot(int SlotID);
+
 	UFUNCTION(BlueprintCallable)
 	UTexture2D* GetSlotItem(int SlotID);
 

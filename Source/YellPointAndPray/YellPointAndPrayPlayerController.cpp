@@ -19,7 +19,6 @@ AYellPointAndPrayPlayerController::AYellPointAndPrayPlayerController()
 void AYellPointAndPrayPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
 	
 	// only spawn touch controls on local player controllers
 	if (SVirtualJoystick::ShouldDisplayTouchInterface() && IsLocalPlayerController())
