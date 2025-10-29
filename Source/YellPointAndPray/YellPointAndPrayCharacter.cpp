@@ -297,6 +297,8 @@ void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 					// Don't attach here - let OnRep_HoldingItem handle attachment based on ownership
 					ItemCreated = true;
 				}
+
+				OnRep_HoldingItem();
 			}
 		}
 	}
