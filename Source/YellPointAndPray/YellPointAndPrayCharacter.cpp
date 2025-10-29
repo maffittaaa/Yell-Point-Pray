@@ -362,10 +362,12 @@ void AYellPointAndPrayCharacter::OnRep_HoldingItem()
 
 void AYellPointAndPrayCharacter::OnRepState() {
 	UE_LOG(LogTemp, Warning, TEXT("STATE: %d"), static_cast<int>(enumVariable));
+	
+	APlayerController* playerController = Cast<APlayerController>(GetController());
+	if (!playerController) return;
+	
 	if (enumVariable == InWhiteboard)
 	{
-		APlayerController* playerController = Cast<APlayerController>(GetController());
-		if (!playerController) return;
 		
 		float blendTime = 0.0f;
 		ACameraActor* camera = whiteboardCamera.LoadSynchronous();//to get the actual camera object
@@ -398,8 +400,7 @@ void AYellPointAndPrayCharacter::OnRepState() {
 					if (DefaultContexts) {
 						subsystem->RemoveMappingContext(DefaultContexts);
 
-						for (UInputMappingContext* drawingContexts : yellPlayerController->DrawingContexts)
-						{
+						for (UInputMappingContext* drawingContexts : yellPlayerController->DrawingContexts) {
 							if (drawingContexts) {
 								FString ContextName = drawingContexts->GetName();
 								UE_LOG(LogTemp, Warning, TEXT("Adding Drawing Mapping Context: %s"), *ContextName);
@@ -409,23 +410,28 @@ void AYellPointAndPrayCharacter::OnRepState() {
 					}
 				}
 			}
-		} else {
-			if (UEnhancedInputLocalPlayerSubsystem* subsystem2 = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))  {
-				AYellPointAndPrayPlayerController* YePlayerController = Cast<AYellPointAndPrayPlayerController>(playerController);
-				if (YePlayerController) {
-					for (UInputMappingContext* drawingContext : YePlayerController->DrawingContexts) {
-						if (drawingContext)
-							subsystem2->RemoveMappingContext(drawingContext);
+		}
+	} else {
+		if (UEnhancedInputLocalPlayerSubsystem* subsystem2 = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))  {
+			AYellPointAndPrayPlayerController* yellPlayerController = Cast<AYellPointAndPrayPlayerController>(playerController);
+			if (yellPlayerController) {
+				for (UInputMappingContext* drawingContext : yellPlayerController->DrawingContexts) {
+					if (drawingContext) {
+						subsystem2->RemoveMappingContext(drawingContext);
+						for (UInputMappingContext* DefaultContexts : yellPlayerController->DefaultMappingContexts){
+							if (DefaultContexts)
+								subsystem2->AddMappingContext(DefaultContexts, 1);
+						}
 					}
 				}
-				
-				SetActorHiddenInGame(false);
-				GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-				SetActorEnableCollision(true);
-				playerController->bShowMouseCursor = false;
-				playerController->SetShowMouseCursor(false);
-				isDrawing = false;
 			}
+				
+			SetActorHiddenInGame(false);
+			GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+			SetActorEnableCollision(true);
+			playerController->bShowMouseCursor = false;
+			playerController->SetShowMouseCursor(false);
+			isDrawing = false;
 		}
 	}
 }
