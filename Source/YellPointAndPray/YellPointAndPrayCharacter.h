@@ -194,6 +194,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		void Drop();
 
 		UFUNCTION(Server, Reliable)
+		void ServerOnItemDroped(int SlotID, FVector start, FRotator dir);
+
+		UFUNCTION(Server, Reliable)
 		void ServerInteract(AActor* hitObject, AYellPointAndPrayCharacter* character);
 
 		UFUNCTION(Server, Reliable)
@@ -206,6 +209,6 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		public:
 
-			//Cesar Stuff -----------------------------------------
-			virtual  void OnItemAdded_Implementation(const FString& Name) override;
+		//Cesar Stuff -----------------------------------------
+		virtual  void OnItemAdded_Implementation(const FString& Name) override;
 };

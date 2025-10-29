@@ -19,7 +19,6 @@ UInventory::UInventory()
 void UInventory::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void UInventory::DeleteInventorySlot_Implementation(int SlotID)

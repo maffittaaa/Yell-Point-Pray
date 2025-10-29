@@ -24,6 +24,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PreviewImage")
 	UTexture2D* PreviewImage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ObjectToSpawn")
+	UClass* Obj;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

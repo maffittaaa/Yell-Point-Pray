@@ -223,8 +223,35 @@ void AYellPointAndPrayCharacter::StopDuck() {
 
 void AYellPointAndPrayCharacter::Drop() 
 {
+	FVector start;
+	FRotator dir;
+	GetController()->GetPlayerViewPoint(start, dir);
+
+	ServerOnItemDroped(InventoryComponent->CurrentItemSelected, start, dir);
 	InventoryComponent->DeleteInventorySlot(InventoryComponent->CurrentItemSelected);
 	this->ServerDeleteItem();
+}
+
+void AYellPointAndPrayCharacter::ServerOnItemDroped_Implementation(int SlotID, FVector start, FRotator dir)
+{
+	if (!HasAuthority()) return;
+
+	if (InventoryComponent->GetSlotID(SlotID) != -1)
+	{
+		if (InventoryComponent->GetSlotObj(SlotID)->Obj->IsChildOf(APickableItem::StaticClass())) 
+		{
+			APickableItem* PickableItem = Cast<APickableItem>(InventoryComponent->GetSlotObj(SlotID)->Obj->GetDefaultObject());
+
+			TSubclassOf<AActor> NewHoldingItemClass = PickableItem->GetClass();
+
+			if (NewHoldingItemClass)
+			{
+				FVector NewPosition = start + (dir.Vector() * 150);
+				FActorSpawnParameters SpawnParams;
+				GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, NewPosition, FRotator::ZeroRotator, SpawnParams);
+			}
+		}
+	}
 }
 
 void AYellPointAndPrayCharacter::Use()
