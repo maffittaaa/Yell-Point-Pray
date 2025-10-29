@@ -121,6 +121,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UPROPERTY(ReplicatedUsing=OnRepState)
 		TEnumAsByte<EGameStates> enumVariable;
 
+		UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Player Controller")
+		APlayerController* playerController;
+
 	protected:
 
 		/** Called from Input Actions for movement input */

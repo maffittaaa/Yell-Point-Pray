@@ -51,6 +51,10 @@
 		{
 			"Name": "OnlineServicesEOS",
 			"Enabled": true
+		},
+		{
+			"Name": "GeometryScripting",
+			"Enabled": true
 		}
 	]
 }

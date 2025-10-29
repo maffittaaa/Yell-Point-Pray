@@ -365,7 +365,7 @@ void AYellPointAndPrayCharacter::OnRep_HoldingItem()
 void AYellPointAndPrayCharacter::OnRepState() {
 	UE_LOG(LogTemp, Warning, TEXT("STATE: %d"), static_cast<int>(enumVariable));
 	
-	APlayerController* playerController = Cast<APlayerController>(GetController());
+	playerController = Cast<APlayerController>(GetController());
 	if (!playerController) return;
 	
 	if (enumVariable == InWhiteboard)
@@ -389,7 +389,7 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		FInputModeGameOnly inputMode;
 		//inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 		playerController->SetInputMode(inputMode);
-
+		
 		paintBrushWidget = CreateWidget<UUserWidget>(GetWorld(), paintBrushWidgetClass, FName("PaintBrush"));
 		playerController->SetMouseCursorWidget(EMouseCursor::Type::Default ,paintBrushWidget);
 		isDrawing = true;
@@ -498,24 +498,25 @@ void AYellPointAndPrayCharacter::Caught_Implementation() {
 }
 
 void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value) {
-	FVector2D actionValue = value.Get<FVector2D>();
-
-	UE_LOG(LogTemp, Warning, TEXT("CharacterDrawing() CALLED - isDrawing: %d"), isDrawing);
-	
 	if (isDrawing) {
-		UE_LOG(LogTemp, Warning, TEXT("HELLOOO"));
-		float distance = 0.0f;
-
+		float distance = 1000.0f;
+		
 		FVector start;
-		FRotator direction;
-		AController* controller = GetController();
-		if (!controller) {
-			UE_LOG(LogTemp, Error, TEXT("No player controller found"));
-			return;
-		}
+		FVector direction;
+		
+		FVector2D viewportSize;
+		
+		if (GEngine && GEngine->GameViewport)
+			GEngine->GameViewport->GetViewportSize(viewportSize);
 
-		controller->GetPlayerViewPoint(start, direction);
-		FVector end = start + (direction.Vector() * distance);
+		FVector2D mousePosition;
+		playerController->GetMousePosition(mousePosition.X, mousePosition.Y);
+
+		float normalizedX = mousePosition.X / viewportSize.X;
+		float normalizedY = mousePosition.Y / viewportSize.Y;
+		
+		playerController->DeprojectScreenPositionToWorld(normalizedX * viewportSize.X, normalizedY * viewportSize.Y, start, direction);
+		FVector end = start + (direction * distance);
 	
 		ECollisionChannel traceChannel = ECC_Visibility;
 		FCollisionQueryParams RV_TraceParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), false, this);
@@ -523,8 +524,8 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 		RV_TraceParams.bReturnPhysicalMaterial = false;
 		RV_TraceParams.AddIgnoredActor(this);
 
-		// DrawDebugLine(GetWorld(), startTrace, endTrace, FColor::Red, false, -1.0f, 0, 1.0f);
-
+		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.0f, 0, 1.0f);
+	
 		bool bHit2 = GetWorld()->LineTraceSingleByChannel(
 			RV_Hit,
 			start,
