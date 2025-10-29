@@ -15,6 +15,8 @@ APickableItem::APickableItem()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	Mesh->SetupAttachment(RootComponent);
+    Mesh->SetSimulatePhysics(false);
+    Mesh->SetMassOverrideInKg(NAME_None, 30.f, true);
 
 	bReplicates = true;
 	bAlwaysRelevant = true;
@@ -25,6 +27,14 @@ void APickableItem::BeginPlay()
 {
 	Super::BeginPlay();
 
+    if (HasAuthority()) {
+        Mesh->SetSimulatePhysics(true);
+        Mesh->SetMassOverrideInKg(NAME_None, 30.f, true);
+    }
+    else {
+        Mesh->SetMassOverrideInKg(NAME_None, 30.f, true);
+        Mesh->SetSimulatePhysics(false);
+    }
 }
 
 // Called every frame
