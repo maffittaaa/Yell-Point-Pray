@@ -82,9 +82,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		void Duck();
 		void StopDuck();
-
-		UFUNCTION()
+	
 		void CharacterDrawing(const FInputActionValue& value);
+	
 		bool isDrawing = false;
 
 		UPROPERTY()

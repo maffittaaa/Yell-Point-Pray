@@ -103,7 +103,7 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(DropAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::Drop);
 
 		//Drawing
-		auto& teste = EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Ongoing, this, &AYellPointAndPrayCharacter::CharacterDrawing);
+		auto& teste = EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::CharacterDrawing);
 		GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, teste.IsBoundToObject(this) && teste.GetAction() != nullptr ? "yay bound properly!" : "oh noes failed to bind the draw :(");
 			
 	}
@@ -384,8 +384,8 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		playerController->SetShowMouseCursor(true);
 		UE_LOG(LogTemp, Warning, TEXT("Cursor visibility after set: %d"), playerController->bShowMouseCursor);
 	
-		FInputModeGameAndUI inputMode;
-		inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		FInputModeGameOnly inputMode;
+		//inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 		playerController->SetInputMode(inputMode);
 
 		paintBrushWidget = CreateWidget<UUserWidget>(GetWorld(), paintBrushWidgetClass, FName("PaintBrush"));
@@ -404,7 +404,7 @@ void AYellPointAndPrayCharacter::OnRepState() {
 							if (drawingContexts) {
 								FString ContextName = drawingContexts->GetName();
 								UE_LOG(LogTemp, Warning, TEXT("Adding Drawing Mapping Context: %s"), *ContextName);
-								subsystem->AddMappingContext(drawingContexts, 1);
+								subsystem->AddMappingContext(drawingContexts, 2);
 							}
 						}
 					}
@@ -458,8 +458,7 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 			if (PickableItem) 
 				InventoryComponent->SetInventory(PickableItem);
 
-			if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard"))
-			{
+			if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard")) {
 				enumVariable = InWhiteboard;
 				OnRepState();
 			}
@@ -496,13 +495,14 @@ void AYellPointAndPrayCharacter::Caught_Implementation() {
 	UE_LOG(LogTemp, Warning, TEXT("YOU GOT CAUGHT NOOB L"));
 }
 
-void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value) {	
+void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value) {
+	FVector2D actionValue = value.Get<FVector2D>();
 
 	UE_LOG(LogTemp, Warning, TEXT("CharacterDrawing() CALLED - isDrawing: %d"), isDrawing);
 	
 	if (isDrawing) {
 		UE_LOG(LogTemp, Warning, TEXT("HELLOOO"));
-		float distance = 300.0f;
+		float distance = 0.0f;
 
 		FVector start;
 		FRotator direction;
