@@ -18,6 +18,10 @@
 #include "WhiteBoard.h"
 #include <Kismet/GameplayStatics.h>
 
+#include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
+#include "YellPointAndPrayPlayerController.h"
+
 using namespace std;
 
 AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
@@ -99,7 +103,8 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(DropAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::Drop);
 
 		//Drawing
-		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::CharacterDrawing);
+		auto& teste = EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Ongoing, this, &AYellPointAndPrayCharacter::CharacterDrawing);
+		GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, teste.IsBoundToObject(this) && teste.GetAction() != nullptr ? "yay bound properly!" : "oh noes failed to bind the draw :(");
 			
 	}
 	else
@@ -377,13 +382,51 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		playerController->SetShowMouseCursor(true);
 		UE_LOG(LogTemp, Warning, TEXT("Cursor visibility after set: %d"), playerController->bShowMouseCursor);
 	
-		FInputModeUIOnly inputMode;
+		FInputModeGameAndUI inputMode;
 		inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 		playerController->SetInputMode(inputMode);
 
 		paintBrushWidget = CreateWidget<UUserWidget>(GetWorld(), paintBrushWidgetClass, FName("PaintBrush"));
 		playerController->SetMouseCursorWidget(EMouseCursor::Type::Default ,paintBrushWidget);
 		isDrawing = true;
+		UE_LOG(LogTemp, Warning, TEXT("Drawing %d"), isDrawing);
+		
+		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer())) { //adding the map context for drawing
+			AYellPointAndPrayPlayerController* yellPlayerController = Cast<AYellPointAndPrayPlayerController>(playerController);
+			if (yellPlayerController){
+				for (UInputMappingContext* DefaultContexts : yellPlayerController->DefaultMappingContexts) {
+					if (DefaultContexts) {
+						subsystem->RemoveMappingContext(DefaultContexts);
+
+						for (UInputMappingContext* drawingContexts : yellPlayerController->DrawingContexts)
+						{
+							if (drawingContexts) {
+								FString ContextName = drawingContexts->GetName();
+								UE_LOG(LogTemp, Warning, TEXT("Adding Drawing Mapping Context: %s"), *ContextName);
+								subsystem->AddMappingContext(drawingContexts, 1);
+							}
+						}
+					}
+				}
+			}
+		} else {
+			if (UEnhancedInputLocalPlayerSubsystem* subsystem2 = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))  {
+				AYellPointAndPrayPlayerController* YePlayerController = Cast<AYellPointAndPrayPlayerController>(playerController);
+				if (YePlayerController) {
+					for (UInputMappingContext* drawingContext : YePlayerController->DrawingContexts) {
+						if (drawingContext)
+							subsystem2->RemoveMappingContext(drawingContext);
+					}
+				}
+				
+				SetActorHiddenInGame(false);
+				GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+				SetActorEnableCollision(true);
+				playerController->bShowMouseCursor = false;
+				playerController->SetShowMouseCursor(false);
+				isDrawing = false;
+			}
+		}
 	}
 }
 
@@ -447,24 +490,21 @@ void AYellPointAndPrayCharacter::Caught_Implementation() {
 	UE_LOG(LogTemp, Warning, TEXT("YOU GOT CAUGHT NOOB L"));
 }
 
-void AYellPointAndPrayCharacter::CharacterDrawing() {	
+void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value) {	
 
-	if (!isDrawing)
-		return;
+	UE_LOG(LogTemp, Warning, TEXT("CharacterDrawing() CALLED - isDrawing: %d"), isDrawing);
 	
-	UE_LOG(LogTemp, Warning, TEXT("HELLOOO"));
-	
-	APlayerController* playerController = Cast<APlayerController>(GetController());
-	if (!playerController) return;
-	
-	if (playerController->bShowMouseCursor) {
+	if (isDrawing) {
+		UE_LOG(LogTemp, Warning, TEXT("HELLOOO"));
 		float distance = 300.0f;
 
 		FVector start;
 		FRotator direction;
 		AController* controller = GetController();
-	
-		if (!controller) return;
+		if (!controller) {
+			UE_LOG(LogTemp, Error, TEXT("No player controller found"));
+			return;
+		}
 
 		controller->GetPlayerViewPoint(start, direction);
 		FVector end = start + (direction.Vector() * distance);
@@ -490,6 +530,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing() {
 			whiteboard = Cast<AWhiteBoard>(hitActor);
 		
 			if (whiteboard) {
+				UE_LOG(LogTemp, Warning, TEXT("Successfully cast to whiteboard - calling Draw()"));
 				float whiteboardBrushSize = 50.0f;
 				FVector2D UVCoordinates;
 				FVector LocalImpact = RV_Hit.GetComponent()->GetComponentTransform().InverseTransformPosition(RV_Hit.ImpactPoint);

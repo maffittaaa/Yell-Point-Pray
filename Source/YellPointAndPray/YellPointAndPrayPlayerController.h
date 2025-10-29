@@ -32,12 +32,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnPlayerJoinedGame(const FString& PlayerId, const FVector& Position);
 
-protected:
+	/** Input Mapping Contexts */
+	UPROPERTY(EditAnywhere, Category="Input|Input Mappings")
+	TArray<UInputMappingContext*> DrawingContexts;
 
 	/** Input Mapping Contexts */
 	UPROPERTY(EditAnywhere, Category="Input|Input Mappings")
 	TArray<UInputMappingContext*> DefaultMappingContexts;
 
+protected:
 	/** Input Mapping Contexts */
 	UPROPERTY(EditAnywhere, Category="Input|Input Mappings")
 	TArray<UInputMappingContext*> MobileExcludedMappingContexts;
