@@ -3,8 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "UDynamicMesh.h"
+#include "Components/DynamicMeshComponent.h"
 #include "Containers/Map.h"
+#include "GameFramework/Actor.h"
+#include "GeometryScript/MeshAssetFunctions.h"
+#include "GeometryScript/MeshBasicEditFunctions.h"
+#include "GeometryScript/MeshPrimitiveFunctions.h"
 #include "Camera.generated.h"
 
 UCLASS()
@@ -12,37 +17,56 @@ class YELLPOINTANDPRAY_API ACamera : public AActor
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this actor's properties
-	ACamera();
+	public:
+		// Sets default values for this actor's properties
+		ACamera();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	class UBoxComponent* BoxCollider;
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* MeshComp;
+		// UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		// class UBoxComponent* BoxCollider;
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+		// UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		// UStaticMeshComponent* meshComp;
+		
+		UPROPERTY(VisibleAnywhere)
+		UDynamicMeshComponent* dynamicMeshComponent;
 
-	int SuspicionMax;
-	int32 AmountOfPlayers;
-	TMap<AActor*, float>PlayersSeenList;
-	TMap<AActor*, float>PlayersNotSeenList;
+		UPROPERTY(VisibleAnywhere)
+		UDynamicMesh* dynamicMesh;
 
-	UFUNCTION()
-	void PlayerInVision(float DeltaTime);
+		UPROPERTY(VisibleAnywhere)
+		float visionArc = 70.0f;
 
-	UFUNCTION()
-	void NoPlayerInVision(float DeltaTime);
+		UPROPERTY(VisibleAnywhere)
+		float testVisionArc = 6.0f;
 
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+		UPROPERTY(VisibleAnywhere)
+		float visionLength = 500.0f;
 
-	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+		UFUNCTION()
+		void DoLineTraces();
 
-	UFUNCTION()
-	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	protected:
+		// Called when the game starts or when spawned
+		virtual void BeginPlay() override;
+
+		int SuspicionMax;
+		int32 AmountOfPlayers;
+		TMap<AActor*, float>PlayersSeenList;
+		TMap<AActor*, float>PlayersNotSeenList;
+
+		UFUNCTION()
+		void PlayerInVision(float DeltaTime);
+
+		UFUNCTION()
+		void NoPlayerInVision(float DeltaTime);
+
+	public:
+		// Called every frame
+		virtual void Tick(float DeltaTime) override;
+
+		UFUNCTION()
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+		UFUNCTION()
+		void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 };
