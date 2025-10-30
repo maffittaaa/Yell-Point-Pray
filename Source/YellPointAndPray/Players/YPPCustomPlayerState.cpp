@@ -28,4 +28,5 @@ void AYPPCustomPlayerState::SetPlayerType(EPlayerType NewType)
 void AYPPCustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AYPPCustomPlayerState, PlayerType);
 }

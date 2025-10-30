@@ -3,6 +3,9 @@
 
 #include "YPPCustomGameMode.h"
 #include "YPPCustomPlayerState.h"
+#include "YPPBlindCharacter.h"
+#include "YPPMuteCharacter.h"
+#include "YPPDeafCharacter.h"
 #include "GameFramework/GameStateBase.h"
 
 AYPPCustomGameMode::AYPPCustomGameMode()
@@ -18,57 +21,84 @@ void AYPPCustomGameMode::PostLogin(APlayerController* NewPlayer)
 
     if (!HasAuthority() || !NewPlayer) return;
 
-    // Determine role based on current players on GameState (server authoritative)
-    int32 NumPlayers = 0;
-
-    if (GetWorld() && GetWorld()->GetGameState()) 
-    {
-        NumPlayers = GetWorld()->GetGameState()->PlayerArray.Num(); // includes the newly added PlayerState
-    }
-
     AYPPCustomPlayerState* PlayerState = NewPlayer->GetPlayerState<AYPPCustomPlayerState>();
     if (!PlayerState) return;
 
+    bool bHasBlind = false;
+    bool bHasDeaf = false;
+    bool bHasMute = false;
+
+    for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState()->PlayerArray)
+    {
+        if (CurrentPlayerState == PlayerState) continue;
+
+        if (AYPPCustomPlayerState* YPPPlayerState = Cast<AYPPCustomPlayerState>(CurrentPlayerState))
+        {
+            switch (YPPPlayerState->PlayerType)
+            {
+            case EPlayerType::Blind:
+                bHasBlind = true;
+                break;
+            case EPlayerType::Deaf:
+                bHasDeaf = true;
+                break; 
+            case EPlayerType::Mute:
+                bHasMute = true;
+                break;
+
+            }
+        }
+    }
+
     EPlayerType AssignedRole = EPlayerType::None;
 
-    if (NumPlayers == 1)
+    if (!bHasBlind)
     {
         AssignedRole = EPlayerType::Blind;
     }
-    else if (NumPlayers == 2)
-    {
-        AssignedRole = EPlayerType::Mute;
-    }
-    else if (NumPlayers == 3)
+    else if (!bHasDeaf)
     {
         AssignedRole = EPlayerType::Deaf;
     }
+    else if (!bHasMute)
+    {
+        AssignedRole = EPlayerType::Mute;
+    }
 
     PlayerState->SetPlayerType(AssignedRole);
-    // Choose Pawn class
     TSubclassOf<APawn> PawnClassToSpawn = nullptr;
 
-    if (AssignedRole == EPlayerType::Blind) PawnClassToSpawn = BlindClass;
-    else if (AssignedRole == EPlayerType::Mute) PawnClassToSpawn = MuteClass;
-    else if (AssignedRole == EPlayerType::Deaf) PawnClassToSpawn = DeafClass;
+    if (AssignedRole == EPlayerType::Blind)
+        PawnClassToSpawn = BlindClass;
+    else if (AssignedRole == EPlayerType::Deaf)
+        PawnClassToSpawn = DeafClass;
+    else if (AssignedRole == EPlayerType::Mute)
+        PawnClassToSpawn = MuteClass;
 
-    // If we have a pawn class, spawn and possess it
+
     if (PawnClassToSpawn)
     {
-        AActor* Start = ChoosePlayerStart(NewPlayer); // you can override ChoosePlayerStart if you want role-specific starts
-        FTransform SpawnTransform = Start ? Start->GetActorTransform() : FTransform::Identity;
+        FTimerHandle TimerHandle;
+        GetWorldTimerManager().SetTimer(TimerHandle, [this, NewPlayer, PawnClassToSpawn, AssignedRole]()
+            {
+                if (NewPlayer && NewPlayer->GetPawn() == nullptr)
+                {
+                    AActor* Start = ChoosePlayerStart(NewPlayer);
+                    FTransform SpawnTransform = Start ? Start->GetActorTransform() : FTransform::Identity;
 
-        FActorSpawnParameters SpawnParams;
-        SpawnParams.Owner = NewPlayer;
-        APawn* NewPawn = GetWorld()->SpawnActor<APawn>(PawnClassToSpawn, SpawnTransform, SpawnParams);
-        if (NewPawn)
-        {
-            NewPlayer->Possess(NewPawn);
-        }
+                    FActorSpawnParameters SpawnParams;
+                    SpawnParams.Owner = NewPlayer;
+
+                    APawn* NewPawn = GetWorld()->SpawnActor<APawn>(PawnClassToSpawn, SpawnTransform, SpawnParams);
+                    if (NewPawn)
+                    {
+                        NewPlayer->Possess(NewPawn);
+                    }
+                }
+            }, 0.5f, false);
     }
     else
     {
-        // Fallback: call default restart behavior
         RestartPlayer(NewPlayer);
     }
 }
