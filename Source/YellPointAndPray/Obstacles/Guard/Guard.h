@@ -5,11 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Perception/PawnSensingComponent.h"
+#include "Interfaces/Knockable.h"
 #include "AIController.h"
 #include "Guard.generated.h"
 
 UCLASS()
-class YELLPOINTANDPRAY_API AGuard : public ACharacter
+class YELLPOINTANDPRAY_API AGuard : public ACharacter, public IKnockable
 {
 	GENERATED_BODY()
 

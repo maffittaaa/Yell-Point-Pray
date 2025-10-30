@@ -98,10 +98,19 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UUserWidget* interactWidget;
 
 		UPROPERTY()
+		UUserWidget* KnockGuardWidget;
+
+		UPROPERTY()
 		int TimesWidgetCreated = 0;
+
+		UPROPERTY()
+		int TimesKnockWidgetCreated = 0;
 
 		UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf<UUserWidget> interactWidgetClass;
+
+		UPROPERTY(EditAnywhere, Category = "Components")
+		TSubclassOf<UUserWidget> KnockGuardWidgetClass;
 
 		UPROPERTY()
 		UUserWidget* paintBrushWidget;
@@ -121,6 +130,7 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		FHitResult RV_Hit;
 		bool bHit;
 		void AddTraceAndWidget();
+		void AddKnockGuardWidget();
 
 		UPROPERTY(ReplicatedUsing=OnRepState)
 		TEnumAsByte<EGameStates> enumVariable;

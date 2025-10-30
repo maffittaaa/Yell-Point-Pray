@@ -10,6 +10,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "EnhancedInputComponent.h"
 #include "Interfaces/Interactable.h"
+#include "Interfaces/Knockable.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "YellPointAndPray.h"
 #include "Blueprint/UserWidget.h"
@@ -120,6 +121,9 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 	if (interactWidgetClass)
 		interactWidget = CreateWidget<UUserWidget>(GetWorld(), interactWidgetClass, FName("Interact"));
 
+	if (KnockGuardWidgetClass)
+		KnockGuardWidget = CreateWidget<UUserWidget>(GetWorld(), KnockGuardWidgetClass, FName("Knock"));
+
 	enumVariable = InGame;
 }
 
@@ -164,6 +168,55 @@ void AYellPointAndPrayCharacter::AddTraceAndWidget()
 	{
 		interactWidget->RemoveFromParent();
 		TimesWidgetCreated = 0;
+	}
+}
+
+void AYellPointAndPrayCharacter::AddKnockGuardWidget()
+{
+	float distance = 150.0f;
+
+	FVector start;
+	FRotator direction;
+
+	AController* controller = GetController();
+
+	if (!controller) return;
+
+	controller->GetPlayerViewPoint(start, direction);
+	GetController()->GetPlayerViewPoint(start, direction);
+
+	FVector end = start + (direction.Vector() * distance);
+
+	ECollisionChannel traceChannel = ECC_Visibility;
+	FCollisionQueryParams RV_TraceParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), false, this);
+	RV_TraceParams.bTraceComplex = false;
+	RV_TraceParams.bReturnPhysicalMaterial = false;
+	RV_TraceParams.AddIgnoredActor(this);
+
+	bool hitted = GetWorld()->LineTraceSingleByChannel(
+		RV_Hit,
+		start,
+		end,
+		traceChannel,
+		RV_TraceParams
+	);
+
+	AActor* hitComponent = RV_Hit.GetActor();
+
+	if (hitComponent) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Name: %d"), hitComponent->GetClass());
+		UE_LOG(LogTemp, Warning, TEXT("Name: %s"), *hitComponent->GetClass()->GetName());
+	}
+
+	if (hitted && hitComponent->GetClass()->ImplementsInterface(UKnockable::StaticClass()) && !KnockGuardWidget->IsInViewport() && TimesKnockWidgetCreated == 0) {
+		KnockGuardWidget->AddToViewport();
+		TimesKnockWidgetCreated = 1;
+	}
+	else if (!hitted || !hitComponent->GetClass()->ImplementsInterface(UKnockable::StaticClass()))
+	{
+		KnockGuardWidget->RemoveFromParent();
+		TimesKnockWidgetCreated = 0;
 	}
 }
 
@@ -606,6 +659,15 @@ void AYellPointAndPrayCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 	if (interactWidgetClass)
 		AddTraceAndWidget();
+
+	if (KnockGuardWidgetClass && InventoryComponent->GetSlotName(InventoryComponent->CurrentItemSelected) == "Toy Hammer Usable")
+	{
+		AddKnockGuardWidget();
+	}
+	else
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Slot Item Name: %s"), *InventoryComponent->GetSlotName(InventoryComponent->CurrentItemSelected))
+	}
 }
 
 //Cesar Stuff -----------------------------------------------------------------------
