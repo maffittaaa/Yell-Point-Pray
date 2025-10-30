@@ -102,6 +102,9 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		//Drop
 		EnhancedInputComponent->BindAction(DropAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::Drop);
 
+		//Release
+		EnhancedInputComponent->BindAction(MouseRelease, ETriggerEvent::Completed, this, &AYellPointAndPrayCharacter::CallDuck);
+
 		//Drawing
 		auto& teste = EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::CharacterDrawing);
 		GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, teste.IsBoundToObject(this) && teste.GetAction() != nullptr ? "yay bound properly!" : "oh noes failed to bind the draw :(");
@@ -226,11 +229,47 @@ void AYellPointAndPrayCharacter::StopDuck() {
 	ACharacter::UnCrouch(false);
 }
 
-void AYellPointAndPrayCharacter::Drop() 
+void AYellPointAndPrayCharacter::ThrowDuck(ARubberDuckUsable* Ducksent)
 {
 	FVector start;
 	FRotator dir;
 	GetController()->GetPlayerViewPoint(start, dir);
+	if (InventoryComponent->GetSlotID(InventoryComponent->CurrentItemSelected) != -1)
+	{
+		if (InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->Obj->IsChildOf(APickableItem::StaticClass()))
+		{
+			APickableItem* PickableItem = Cast<APickableItem>(InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->Obj->GetDefaultObject());
+
+			TSubclassOf<AActor> NewHoldingItemClass = PickableItem->GetClass();
+
+			if (NewHoldingItemClass)
+			{
+				FVector NewPosition = start + (dir.Vector() * 150);
+				DuckUsing->Throw(this, GetWorld(), NewHoldingItemClass, NewPosition, dir);
+			}
+		}
+	}
+	//InventoryComponent->DeleteInventorySlot(InventoryComponent->CurrentItemSelected);
+	//this->ServerDeleteItem();
+}
+
+void AYellPointAndPrayCharacter::GetDuck(ARubberDuckUsable* Duck)
+{
+	DuckUsing = Duck;
+}
+
+void AYellPointAndPrayCharacter::CallDuck()
+{
+	if (DuckUsing) {
+		DuckUsing->ChangeAdd();
+	}
+}
+
+void AYellPointAndPrayCharacter::Drop() 
+{	FVector start;
+	FRotator dir;
+	GetController()->GetPlayerViewPoint(start, dir);
+
 
 	ServerOnItemDroped(InventoryComponent->CurrentItemSelected, start, dir);
 	InventoryComponent->DeleteInventorySlot(InventoryComponent->CurrentItemSelected);

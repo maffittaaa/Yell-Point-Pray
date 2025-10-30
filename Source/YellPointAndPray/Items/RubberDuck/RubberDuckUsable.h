@@ -16,6 +16,21 @@ class YELLPOINTANDPRAY_API ARubberDuckUsable : public AUsableItem
 	
 private:
 	ARubberDuckUsable();
+
+	UPROPERTY(Replicated)
+	bool AddForce = false;
+
+	int ThrowForce = 0;
+
+protected:
+	virtual void BeginPlay() override;
+
 public:
 	virtual void Use_Implementation(AActor* User) override;
+
+	void Throw(AActor* User, UWorld* World, TSubclassOf<AActor> NewHoldingItemClass, FVector NewPosition, FRotator dir);
+
+	void ChangeAdd();
+
+	virtual void Tick(float DeltaTime) override;
 };

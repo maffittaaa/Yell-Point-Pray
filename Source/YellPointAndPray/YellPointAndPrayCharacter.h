@@ -10,6 +10,7 @@
 #include "Interfaces/Usable.h"
 #include "Logging/LogMacros.h"
 #include "CesarClass/InventoryObserver.h"
+#include "Items/RubberDuck/RubberDuckUsable.h"
 #include "YellPointAndPrayCharacter.generated.h"
 
 class UInputComponent;
@@ -73,6 +74,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 		UInputAction* DrawAction;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		UInputAction* MouseRelease;
 		
 	public:
 		AYellPointAndPrayCharacter();
@@ -156,6 +160,7 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		
 		UClass* HoldingItemClass = nullptr;
 
+
 		UPROPERTY(ReplicatedUsing = OnRep_HoldingItem)
 		AActor* HoldingItem;
 
@@ -166,6 +171,8 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		bool ItemCreated = false;
 
 		int OldItemSelected = 0;
+
+		ARubberDuckUsable* DuckUsing;
 
 		virtual void Tick(float DeltaTime) override;
 
@@ -184,6 +191,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 	
 		UFUNCTION()
 		void OnRepState();
+
+		UFUNCTION()
+		void ThrowDuck(ARubberDuckUsable* Duck);
 
 	private:
 		ACharacter* ItemOwner;
@@ -211,7 +221,11 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		void DeleteItem();
 
+		void CallDuck();
+
 		public:
+
+		void GetDuck(ARubberDuckUsable* Duck);
 
 		//Cesar Stuff -----------------------------------------
 		virtual  void OnItemAdded_Implementation(const FString& Name) override;

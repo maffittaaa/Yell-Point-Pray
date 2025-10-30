@@ -20,6 +20,9 @@ APickableItem::APickableItem()
 
 	bReplicates = true;
 	bAlwaysRelevant = true;
+    Mesh->SetIsReplicated(true);
+    Mesh->bReplicatePhysicsToAutonomousProxy = true;
+    SetReplicateMovement(true);
 }
 
 // Called when the game starts or when spawned
@@ -30,10 +33,6 @@ void APickableItem::BeginPlay()
     if (HasAuthority()) {
         Mesh->SetSimulatePhysics(true);
         Mesh->SetMassOverrideInKg(NAME_None, 30.f, true);
-    }
-    else {
-        Mesh->SetMassOverrideInKg(NAME_None, 30.f, true);
-        Mesh->SetSimulatePhysics(false);
     }
 }
 
