@@ -187,7 +187,7 @@ void AYellPointAndPrayCharacter::AddKnockGuardWidget()
 
 	FVector end = start + (direction.Vector() * distance);
 
-	ECollisionChannel traceChannel = ECC_Visibility;
+	ECollisionChannel traceChannel = ECC_Pawn;
 	FCollisionQueryParams RV_TraceParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), false, this);
 	RV_TraceParams.bTraceComplex = false;
 	RV_TraceParams.bReturnPhysicalMaterial = false;
