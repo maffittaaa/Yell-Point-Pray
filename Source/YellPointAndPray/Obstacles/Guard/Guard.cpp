@@ -83,7 +83,7 @@ void AGuard::Tick(float DeltaTime)
 		}
 	}
 	if (Suspicious == true) {
-		UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %d"), CurrentSuspicion)
+		//UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %d"), CurrentSuspicion)
 		CurrentSuspicion -= DeltaTime;
 		float Distance = FVector::Dist(GetActorLocation(), LastSeenLocation);
 		if (Distance < 100.f) {
@@ -101,7 +101,7 @@ void AGuard::Tick(float DeltaTime)
 	}
 
 	if (Seen == true) {
-		UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %d"), CurrentSuspicion)
+		//UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %d"), CurrentSuspicion)
 		FVector Direction = TargetPlayer->GetActorLocation() - GetActorLocation();
 		FRotator NewRotation = FRotationMatrix::MakeFromX(Direction).Rotator();
 		SetActorRotation(NewRotation);
