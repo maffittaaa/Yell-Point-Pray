@@ -28,8 +28,16 @@ public class YellPointAndPray : ModuleRules
 			"EOSSDK",
 			"OnlineSubsystemEOS",
 			"OnlineSubsystemEOSPlus",
-			"Voice"
-		});
+			"Voice", 
+			"GeometryScriptingCore",
+			"GeometryFramework",
+			"DynamicMesh",
+			"MeshDescription",
+			"StaticMeshDescription",
+			"GeometryCore",
+			"ModelingComponents",
+			"MeshModelingToolsExp"
+        });
 
 
 

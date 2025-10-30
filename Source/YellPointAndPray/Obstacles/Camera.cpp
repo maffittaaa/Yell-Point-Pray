@@ -2,54 +2,102 @@
 
 #include "Camera.h"
 #include "Interfaces/Caughtable.h"
-#include "Components/BoxComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
-// Sets default values
-ACamera::ACamera()
-{
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ACamera::ACamera() {
 	PrimaryActorTick.bCanEverTick = true;
+	
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-	BoxCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollider"));
-	BoxCollider->SetupAttachment(RootComponent);
+	
+	// BoxCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollider"));
+	// BoxCollider->SetupAttachment(RootComponent);
+	//
+	// BoxCollider->OnComponentBeginOverlap.AddDynamic(this, &ACamera::OnOverlapBegin);
+	// BoxCollider->OnComponentEndOverlap.AddDynamic(this, &ACamera::OnOverlapEnd);
 
-	BoxCollider->OnComponentBeginOverlap.AddDynamic(this, &ACamera::OnOverlapBegin);
-	BoxCollider->OnComponentEndOverlap.AddDynamic(this, &ACamera::OnOverlapEnd);
+	// meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+	// meshComp->SetupAttachment(RootComponent);
 
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp->SetupAttachment(RootComponent);
+	dynamicMeshComponent = CreateDefaultSubobject<UDynamicMeshComponent>(TEXT("MeshComp"));
+	dynamicMeshComponent->SetupAttachment(RootComponent);
+
+	dynamicMesh = dynamicMeshComponent->GetDynamicMesh();
+
+	TArray<FVector2D> vertices;
+	vertices.Add(FVector2D(0.0f, 0.0f));
+	vertices.Add(FVector2D(100.0f, 50.0f));
+	vertices.Add(FVector2D(100.0f, -50.0f));;
+
+	FTransform transform = FTransform::Identity;
+	bool bAllowSelfIntersections = true;
+	UGeometryScriptDebug* debugScript = nullptr;
+
+	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon(
+		dynamicMesh,
+		FGeometryScriptPrimitiveOptions(),
+		transform,
+		vertices,
+		bAllowSelfIntersections,
+		debugScript
+		);
 
 	SuspicionMax = 100;
 }
 
-// Called when the game starts or when spawned
-void ACamera::BeginPlay()
-{
+void ACamera::BeginPlay() {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
-void ACamera::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	PlayerInVision(DeltaTime);
-	NoPlayerInVision(DeltaTime);
+void ACamera::DoLineTraces() {
+	FVector start = GetActorLocation();
+	FVector forwardVector = GetActorForwardVector();
+	
+	int numberOfTimes = FMath::CeilToInt(visionArc / testVisionArc);
 
+	for (int i = 0; i < numberOfTimes; i++) {
+
+		
+		float angleDeg = UKismetMathLibrary::Clamp(
+			(i * testVisionArc * 2.0f) - visionArc,
+			-visionArc,
+			visionArc
+			);
+		
+		FVector rotatedVector = forwardVector.RotateAngleAxis(angleDeg, FVector(0.0f, 0.0f, 1.0f));
+		FVector end = start + (rotatedVector * visionLength);
+
+		ECollisionChannel traceChannel = ECC_Visibility;
+		FCollisionQueryParams RV_TraceParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), false, this);
+		RV_TraceParams.bTraceComplex = false;
+		RV_TraceParams.bReturnPhysicalMaterial = false;
+		RV_TraceParams.AddIgnoredActor(this);
+
+		FHitResult RV_Hit;
+		
+		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.0f, 0, 1.0f);
+
+		bool bHit = GetWorld()->LineTraceSingleByChannel(
+			RV_Hit,
+			start,
+			end,
+			traceChannel,
+			RV_TraceParams
+		);
+	}
 }
+
 
 void ACamera::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
 
-	if (OtherActor->GetClass()->ImplementsInterface(UCaughtable::StaticClass()))
-	{
+	if (OtherActor->GetClass()->ImplementsInterface(UCaughtable::StaticClass())) {
 		UE_LOG(LogTemp, Warning, TEXT("CAMERA SEEN"));
 		if (PlayersNotSeenList.Contains(OtherActor)) {
 			PlayersSeenList.Add(OtherActor, *(PlayersNotSeenList.Find(OtherActor)));
 			PlayersNotSeenList.Remove(OtherActor);
 			AmountOfPlayers++;
 			if (AmountOfPlayers > 3) AmountOfPlayers = 3;
-		}
-		else {
+		} else {
 			PlayersSeenList.Add(OtherActor, 0);
 			AmountOfPlayers++;
 			if (AmountOfPlayers > 3) AmountOfPlayers = 3;
@@ -58,8 +106,7 @@ void ACamera::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 }
 
 void ACamera::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
-	if (OtherActor->GetClass()->ImplementsInterface(UCaughtable::StaticClass()))
-	{
+	if (OtherActor->GetClass()->ImplementsInterface(UCaughtable::StaticClass())) {
 		UE_LOG(LogTemp, Warning, TEXT("I LEFT"));
 		PlayersNotSeenList.Add(OtherActor, *(PlayersSeenList.Find(OtherActor)));
 		PlayersSeenList.Remove(OtherActor);
@@ -70,8 +117,7 @@ void ACamera::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 
 void ACamera::PlayerInVision(float DeltaTime) {
 	if (AmountOfPlayers > 0) {
-		for (auto& Elem : PlayersSeenList)
-		{
+		for (auto& Elem : PlayersSeenList) {
 			float SuspiciousAmount = Elem.Value + (70 * DeltaTime * AmountOfPlayers);
 			Elem.Value = SuspiciousAmount;
 			UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %d"), (int)Elem.Value);
@@ -85,8 +131,8 @@ void ACamera::PlayerInVision(float DeltaTime) {
 
 void ACamera::NoPlayerInVision(float DeltaTime) {
 	TArray<AActor*> ToDelete;
-	for (auto& Elem : PlayersNotSeenList)
-	{
+	
+	for (auto& Elem : PlayersNotSeenList) {
 		float SuspiciousAmount = Elem.Value - (50 * DeltaTime);
 		Elem.Value = SuspiciousAmount;
 		UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %d"), (int)Elem.Value);
@@ -95,8 +141,17 @@ void ACamera::NoPlayerInVision(float DeltaTime) {
 			continue;
 		}
 	}
+	
 	for (int i = 0; i < ToDelete.Num(); i++) {
 		PlayersNotSeenList.Remove(ToDelete[i]);
 	}
+}
+
+// Called every frame
+void ACamera::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+	PlayerInVision(DeltaTime);
+	NoPlayerInVision(DeltaTime);
+	DoLineTraces();
 }
 
