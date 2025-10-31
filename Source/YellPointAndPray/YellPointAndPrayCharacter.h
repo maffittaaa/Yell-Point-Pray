@@ -192,6 +192,7 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		int OldItemSelected = 0;
 
+		UPROPERTY(Replicated)
 		ARubberDuckUsable* DuckUsing;
 
 		virtual void Tick(float DeltaTime) override;
@@ -212,7 +213,7 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UFUNCTION()
 		void OnRepState();
 
-		UFUNCTION()
+		UFUNCTION(Server, Reliable)
 		void ThrowDuck(ARubberDuckUsable* Duck);
 
 	private:
@@ -250,7 +251,10 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		public:
 
+
+		UFUNCTION(Server, Reliable)
 		void GetDuck(ARubberDuckUsable* Duck);
+
 
 		//Cesar Stuff -----------------------------------------
 		virtual  void OnItemAdded_Implementation(const FString& Name) override;

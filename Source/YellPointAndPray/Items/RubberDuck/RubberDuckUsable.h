@@ -28,6 +28,8 @@ protected:
 public:
 	virtual void Use_Implementation(AActor* User) override;
 
+
+	UFUNCTION(Server, Reliable)
 	void Throw(AActor* User, UWorld* World, TSubclassOf<AActor> NewHoldingItemClass, FVector NewPosition, FRotator dir);
 
 	void ChangeAdd();

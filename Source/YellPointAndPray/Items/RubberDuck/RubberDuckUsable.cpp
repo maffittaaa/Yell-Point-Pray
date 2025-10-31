@@ -27,7 +27,7 @@ void ARubberDuckUsable::Use_Implementation(AActor* User) {
 	player->GetDuck(this);
 }
 
-void ARubberDuckUsable::Throw(AActor* User, UWorld* World, TSubclassOf<AActor> NewHoldingItemClass, FVector NewPosition, FRotator dir) {
+void ARubberDuckUsable::Throw_Implementation(AActor* User, UWorld* World, TSubclassOf<AActor> NewHoldingItemClass, FVector NewPosition, FRotator dir) {
 
 	if (!HasAuthority()) return;
 
@@ -35,9 +35,14 @@ void ARubberDuckUsable::Throw(AActor* User, UWorld* World, TSubclassOf<AActor> N
 	AActor* SpawnedDuck = World->SpawnActor<AActor>(NewHoldingItemClass, NewPosition, FRotator::ZeroRotator, SpawnParams);
 	if (!SpawnedDuck) return;
 
+	SpawnedDuck->SetReplicates(true);
+	SpawnedDuck->SetReplicateMovement(true);
+	SpawnedDuck->bAlwaysRelevant = true;
+
 	UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(SpawnedDuck->GetComponentByClass(UPrimitiveComponent::StaticClass()));
 	if (PrimComp && PrimComp->IsSimulatingPhysics())
 	{
+
 
 		float ThrowStrength = 50000.0f;
 		ThrowForce = 0;

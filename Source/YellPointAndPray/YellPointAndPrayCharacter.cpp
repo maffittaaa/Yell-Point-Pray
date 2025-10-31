@@ -300,14 +300,15 @@ void AYellPointAndPrayCharacter::StopDuck() {
 	ACharacter::UnCrouch(false);
 }
 
-void AYellPointAndPrayCharacter::ThrowDuck(ARubberDuckUsable* Ducksent)
+void AYellPointAndPrayCharacter::ThrowDuck_Implementation(ARubberDuckUsable* Ducksent)
 {
+	if (!HasAuthority()) return;
 	FVector start;
 	FRotator dir;
 	GetController()->GetPlayerViewPoint(start, dir);
 	if (InventoryComponent->GetSlotID(InventoryComponent->CurrentItemSelected) != -1)
 	{
-		if (InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->Obj->IsChildOf(APickableItem::StaticClass()))
+			if (InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->Obj->IsChildOf(APickableItem::StaticClass()))
 		{
 			APickableItem* PickableItem = Cast<APickableItem>(InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->Obj->GetDefaultObject());
 
@@ -320,11 +321,11 @@ void AYellPointAndPrayCharacter::ThrowDuck(ARubberDuckUsable* Ducksent)
 			}
 		}
 	}
-	//InventoryComponent->DeleteInventorySlot(InventoryComponent->CurrentItemSelected);
-	//this->ServerDeleteItem();
+	InventoryComponent->DeleteInventorySlot(InventoryComponent->CurrentItemSelected);
+	this->ServerDeleteItem();
 }
 
-void AYellPointAndPrayCharacter::GetDuck(ARubberDuckUsable* Duck)
+void AYellPointAndPrayCharacter::GetDuck_Implementation(ARubberDuckUsable* Duck)
 {
 	DuckUsing = Duck;
 }
@@ -581,6 +582,7 @@ void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME(AYellPointAndPrayCharacter, HoldingItem);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, ItemCreated);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, enumVariable);
+	DOREPLIFETIME(AYellPointAndPrayCharacter, DuckUsing);
 }
 
 void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject, AYellPointAndPrayCharacter* character)
