@@ -16,6 +16,6 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Knocktion")
 	void Knock();
 
-	UFUNCTION(Server, Reliable, Category = "Knockable")
+	UFUNCTION(Server, Reliable, Category = "Knocktion")
 	virtual void ServerKnock();
 };

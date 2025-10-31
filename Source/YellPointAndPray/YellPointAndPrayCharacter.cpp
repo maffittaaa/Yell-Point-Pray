@@ -374,12 +374,41 @@ void AYellPointAndPrayCharacter::Use()
 	{
 		FString name = InventoryComponent->GetSlotName(InventoryComponent->CurrentItemSelected);
 
-		if (InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->GetClass()->ImplementsInterface(UUsable::StaticClass()))
+		UClass* ItemClass = InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->GetClass();
+
+		if (ItemClass && ItemClass->ImplementsInterface(UUsable::StaticClass()))
 		{
-			IUsable::Execute_Use(InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected), this);
+			// If we're a client, call a server RPC to handle the usage
+			if (GetLocalRole() == ROLE_AutonomousProxy)
+			{
+				Server_UseItem(InventoryComponent->CurrentItemSelected);
+			}
+			else if (HasAuthority())
+			{
+				// Server can use directly
+				IUsable::Execute_Use(ItemClass->GetDefaultObject(), this);
+			}
+		}
+
+		//if (InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->GetClass()->ImplementsInterface(UUsable::StaticClass()))
+		//{
+		//	IUsable::Execute_Use(InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected), this);
+		//}
+	}
+}
+
+void AYellPointAndPrayCharacter::Server_UseItem_Implementation(int SlotID)
+{
+	if (InventoryComponent->GetSlotID(SlotID) != -1)
+	{
+		UClass* ItemClass = InventoryComponent->GetSlotObj(SlotID)->GetClass();
+		if (ItemClass && ItemClass->ImplementsInterface(UUsable::StaticClass()))
+		{
+			IUsable::Execute_Use(ItemClass->GetDefaultObject(), this);
 		}
 	}
 }
+
 
 void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 {
@@ -680,10 +709,6 @@ void AYellPointAndPrayCharacter::Tick(float DeltaTime) {
 	if (KnockGuardWidgetClass && InventoryComponent->GetSlotName(InventoryComponent->CurrentItemSelected) == "Toy Hammer Usable")
 	{
 		AddKnockGuardWidget();
-	}
-	else
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("Slot Item Name: %s"), *InventoryComponent->GetSlotName(InventoryComponent->CurrentItemSelected))
 	}
 }
 

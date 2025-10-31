@@ -21,7 +21,7 @@ public:
 	APickableItem();
 	
 	UPROPERTY()
-	int ID = 0;
+	int ID = -1;
 
 	FString Name = "DefaultItemName";
 	

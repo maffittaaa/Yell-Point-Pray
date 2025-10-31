@@ -241,6 +241,11 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		void DeleteItem();
 
+		UFUNCTION(Server, Reliable)
+		void Server_UseItem(int SlotID);
+
+		virtual void Server_UseItem_Implementation(int SlotID);
+
 		void CallDuck();
 
 		public:

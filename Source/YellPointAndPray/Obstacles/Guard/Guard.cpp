@@ -189,7 +189,8 @@ void AGuard::KnockMySelf()
 	}
 }
 
-void AGuard::LookAround(float DeltaTime) {
+void AGuard::LookAround(float DeltaTime) 
+{
 	FRotator CurrentRotation = GetActorRotation();
 
 	if (ExtraRotation >= 90) {
