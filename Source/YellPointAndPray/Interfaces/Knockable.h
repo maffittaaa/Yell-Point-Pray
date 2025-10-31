@@ -14,5 +14,8 @@ class IKnockable {
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Knocktion")
-	void Knock(AActor* Interactor);
+	void Knock();
+
+	UFUNCTION(Server, Reliable, Category = "Knockable")
+	virtual void ServerKnock();
 };

@@ -30,6 +30,7 @@ void AGuard::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	DOREPLIFETIME(AGuard, CurrentWaypoint);
 	DOREPLIFETIME(AGuard, TargetPlayer);
 	DOREPLIFETIME(AGuard, CurrentSuspicion);
+	DOREPLIFETIME(AGuard, Knocked);
 }
 
 // Called when the game starts or when spawned
@@ -52,6 +53,9 @@ void AGuard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if (!HasAuthority()) return;
+
+	if (Knocked) return;
+
 	if (TargetPlayer) {
 		float Distance = FVector::Dist(GetActorLocation(), TargetPlayer->GetActorLocation());
 
@@ -118,7 +122,7 @@ void AGuard::Tick(float DeltaTime)
 
 void AGuard::SeenPlayer(APawn* Pawn) {
 	if (!HasAuthority()) return;
- 	UE_LOG(LogTemp, Warning, TEXT("Saw Player!"));
+ 	//UE_LOG(LogTemp, Warning, TEXT("Saw Player!"));
 	TargetPlayer = Pawn;
 	LastSeenLocation = TargetPlayer->GetActorLocation();
 	Patroling = false;
@@ -141,6 +145,48 @@ void AGuard::Patrol() {
 
 void AGuard::SuspiciousOf() {
 	AIController->MoveToLocation(LastSeenLocation);
+}
+
+void AGuard::Knock_Implementation()
+{
+	KnockMySelf();
+}
+
+void AGuard::ServerKnock_Implementation()
+{
+	if (!HasAuthority()) return;
+
+	Knocked = true;
+
+	if (AIController)
+	{
+		AIController->StopMovement();
+		//Destroy();
+		UE_LOG(LogTemp, Warning, TEXT("Guard was Knocked"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Guard was Knocked, but no AIController found"));
+	}
+}
+
+bool AGuard::ServerKnock_Validate()
+{
+	return true;
+}
+
+void AGuard::KnockMySelf()
+{
+	// Only clients should call server RPCs
+	if (!HasAuthority() && GetNetMode() != NM_Standalone)
+	{
+		ServerKnock();
+	}
+	else
+	{
+		// If we're on server or in standalone, call directly
+		ServerKnock_Implementation();
+	}
 }
 
 void AGuard::LookAround(float DeltaTime) {

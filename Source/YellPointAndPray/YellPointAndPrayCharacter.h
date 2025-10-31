@@ -11,6 +11,7 @@
 #include "Logging/LogMacros.h"
 #include "CesarClass/InventoryObserver.h"
 #include "Items/RubberDuck/RubberDuckUsable.h"
+#include <Obstacles/Guard/Guard.h>
 #include "YellPointAndPrayCharacter.generated.h"
 
 class UInputComponent;
@@ -81,6 +82,12 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 	public:
 		AYellPointAndPrayCharacter();
 
+		UFUNCTION(Client, Reliable)
+		void Client_KnockGuard(AGuard* GuardToKnock);
+
+		UFUNCTION(Server, Reliable, WithValidation)
+		void Server_KnockGuard(AGuard* GuardToKnock);
+
 		UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Inventory")
 		class UInventory* InventoryComponent;
 
@@ -90,6 +97,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		void CharacterDrawing(const FInputActionValue& value);
 	
 		bool isDrawing = false;
+
+		UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "CurrentGuard")
+		AGuard* CurrentGuard = nullptr;
 
 		UPROPERTY()
 		UTexture2D* brushTexture;

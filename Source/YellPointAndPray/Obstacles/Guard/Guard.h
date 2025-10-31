@@ -28,7 +28,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TArray<AActor*> Waypoints;
 
-
 	UPROPERTY(Replicated, VisibleAnywhere)
 	int CurrentWaypoint = 0;
 
@@ -65,4 +64,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere, Category = "Knocked")
+	bool Knocked = false;
+
+
+	virtual void Knock_Implementation() override;
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	virtual void ServerKnock() override;
+
+	UFUNCTION()
+	void KnockMySelf();
 };

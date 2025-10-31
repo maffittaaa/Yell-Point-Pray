@@ -203,21 +203,38 @@ void AYellPointAndPrayCharacter::AddKnockGuardWidget()
 
 	AActor* hitComponent = RV_Hit.GetActor();
 
-	if (hitComponent) 
+	if (hitted && hitComponent->GetClass()->ImplementsInterface(UKnockable::StaticClass()) && !KnockGuardWidget->IsInViewport() && TimesKnockWidgetCreated == 0) 
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Name: %d"), hitComponent->GetClass());
-		UE_LOG(LogTemp, Warning, TEXT("Name: %s"), *hitComponent->GetClass()->GetName());
-	}
-
-	if (hitted && hitComponent->GetClass()->ImplementsInterface(UKnockable::StaticClass()) && !KnockGuardWidget->IsInViewport() && TimesKnockWidgetCreated == 0) {
 		KnockGuardWidget->AddToViewport();
+		CurrentGuard = Cast<AGuard>(hitComponent);
 		TimesKnockWidgetCreated = 1;
 	}
 	else if (!hitted || !hitComponent->GetClass()->ImplementsInterface(UKnockable::StaticClass()))
 	{
 		KnockGuardWidget->RemoveFromParent();
+		CurrentGuard = nullptr;
 		TimesKnockWidgetCreated = 0;
 	}
+}
+
+void AYellPointAndPrayCharacter::Client_KnockGuard_Implementation(AGuard* GuardToKnock)
+{
+	// This runs on the client that owns this character
+	Server_KnockGuard(GuardToKnock);
+}
+
+void AYellPointAndPrayCharacter::Server_KnockGuard_Implementation(AGuard* GuardToKnock)
+{
+	if (GuardToKnock && GuardToKnock->GetClass()->ImplementsInterface(UKnockable::StaticClass()))
+	{
+		IKnockable::Execute_Knock(GuardToKnock);
+		UE_LOG(LogTemp, Warning, TEXT("Server knocking guard via player RPC"));
+	}
+}
+
+bool AYellPointAndPrayCharacter::Server_KnockGuard_Validate(AGuard* GuardToKnock)
+{
+	return true; // Add validation logic if needed
 }
 
 void AYellPointAndPrayCharacter::MoveInput(const FInputActionValue& Value)
@@ -313,7 +330,8 @@ void AYellPointAndPrayCharacter::GetDuck(ARubberDuckUsable* Duck)
 
 void AYellPointAndPrayCharacter::CallDuck()
 {
-	if (DuckUsing) {
+	if (DuckUsing) 
+	{
 		DuckUsing->ChangeAdd();
 	}
 }
@@ -322,7 +340,6 @@ void AYellPointAndPrayCharacter::Drop()
 {	FVector start;
 	FRotator dir;
 	GetController()->GetPlayerViewPoint(start, dir);
-
 
 	ServerOnItemDroped(InventoryComponent->CurrentItemSelected, start, dir);
 	InventoryComponent->DeleteInventorySlot(InventoryComponent->CurrentItemSelected);
