@@ -214,7 +214,7 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		void OnRepState();
 
 		UFUNCTION(Server, Reliable)
-		void ThrowDuck(ARubberDuckUsable* Duck);
+		void ThrowDuck(ARubberDuckUsable* Duck, int ItemSelect);
 
 	private:
 		ACharacter* ItemOwner;

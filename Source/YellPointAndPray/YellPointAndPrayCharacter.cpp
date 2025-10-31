@@ -300,17 +300,17 @@ void AYellPointAndPrayCharacter::StopDuck() {
 	ACharacter::UnCrouch(false);
 }
 
-void AYellPointAndPrayCharacter::ThrowDuck_Implementation(ARubberDuckUsable* Ducksent)
+void AYellPointAndPrayCharacter::ThrowDuck_Implementation(ARubberDuckUsable* Ducksent, int ItemSelect)
 {
 	if (!HasAuthority()) return;
 	FVector start;
 	FRotator dir;
 	GetController()->GetPlayerViewPoint(start, dir);
-	if (InventoryComponent->GetSlotID(InventoryComponent->CurrentItemSelected) != -1)
+	if (InventoryComponent->GetSlotID(ItemSelect) != -1)
 	{
-			if (InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->Obj->IsChildOf(APickableItem::StaticClass()))
+			if (InventoryComponent->GetSlotObj(ItemSelect)->Obj->IsChildOf(APickableItem::StaticClass()))
 		{
-			APickableItem* PickableItem = Cast<APickableItem>(InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->Obj->GetDefaultObject());
+			APickableItem* PickableItem = Cast<APickableItem>(InventoryComponent->GetSlotObj(ItemSelect)->Obj->GetDefaultObject());
 
 			TSubclassOf<AActor> NewHoldingItemClass = PickableItem->GetClass();
 
@@ -321,8 +321,9 @@ void AYellPointAndPrayCharacter::ThrowDuck_Implementation(ARubberDuckUsable* Duc
 			}
 		}
 	}
-	InventoryComponent->DeleteInventorySlot(InventoryComponent->CurrentItemSelected);
+	InventoryComponent->DeleteInventorySlot(ItemSelect);
 	this->ServerDeleteItem();
+	DuckUsing = nullptr;
 }
 
 void AYellPointAndPrayCharacter::GetDuck_Implementation(ARubberDuckUsable* Duck)
@@ -335,7 +336,7 @@ void AYellPointAndPrayCharacter::CallDuck()
 	if (DuckUsing) 
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Duck using exists"));
-		DuckUsing->ChangeAdd();
+		DuckUsing->ChangeAdd(InventoryComponent->CurrentItemSelected);
 	}
 }
 

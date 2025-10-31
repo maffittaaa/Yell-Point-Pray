@@ -144,5 +144,6 @@ void UInventory::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UInventory, InventorySlots);
+	DOREPLIFETIME(UInventory, CurrentItemSelected);
 }
 

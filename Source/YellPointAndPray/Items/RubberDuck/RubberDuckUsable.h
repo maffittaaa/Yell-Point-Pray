@@ -38,7 +38,7 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Throw(AActor* User, UWorld* World, TSubclassOf<AActor> NewHoldingItemClass, FVector NewPosition, FRotator dir);
 
-	void ChangeAdd();
+	void ChangeAdd(int ItemSelect);
 
 	virtual void Tick(float DeltaTime) override;
 };

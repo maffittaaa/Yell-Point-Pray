@@ -56,7 +56,7 @@ void ARubberDuckUsable::Throw_Implementation(AActor* User, UWorld* World, TSubcl
 	}
 }
 
-void ARubberDuckUsable::ChangeAdd() {
+void ARubberDuckUsable::ChangeAdd(int ItemSelect) {
 	AddForce = false;
 
 	if (PlayerActor)
@@ -64,7 +64,7 @@ void ARubberDuckUsable::ChangeAdd() {
 		AYellPointAndPrayCharacter* PlayerChar = Cast<AYellPointAndPrayCharacter>(PlayerActor);
 		if (PlayerChar)
 		{
-			PlayerChar->ThrowDuck(this);
+			PlayerChar->ThrowDuck(this, ItemSelect);
 		}
 	}
 }
@@ -81,14 +81,6 @@ void ARubberDuckUsable::Tick(float DeltaTime) {
 		if (ThrowForce >= 100) {
 			ThrowForce = 100;
 			AddForce = false;
-			if (PlayerActor)
-			{
-				AYellPointAndPrayCharacter* Player = Cast<AYellPointAndPrayCharacter>(PlayerActor);
-				if (Player)
-				{
-					Player->ThrowDuck(this);
-				}
-			}	
 		}
 	}
 }
