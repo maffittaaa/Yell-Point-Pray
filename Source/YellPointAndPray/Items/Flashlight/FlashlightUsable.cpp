@@ -21,8 +21,8 @@ AFlashlightUsable::AFlashlightUsable()
 
 void AFlashlightUsable::Use_Implementation(AActor* User)
 {
-    UE_LOG(LogTemp, Warning, TEXT("Flashlight Use called - Local Role: %d, Owner: %s"),
-        (int)GetLocalRole(), *GetNameSafe(GetOwner()));
+    UE_LOG(LogTemp, Warning, TEXT("Flashlight Use called - Local Role: %d, Owner: %s, NetMode: %d"),
+        (int)GetLocalRole(), *GetNameSafe(GetOwner()), (int)GetNetMode());
 
     // Always toggle locally for immediate feedback
     bIsLightOn = !bIsLightOn;
@@ -44,21 +44,18 @@ void AFlashlightUsable::Use_Implementation(AActor* User)
 // Add this Server RPC function
 void AFlashlightUsable::Server_ToggleLight_Implementation()
 {
-    UE_LOG(LogTemp, Warning, TEXT("Server_ToggleLight_Implementation called"));
+    UE_LOG(LogTemp, Warning, TEXT("Server_ToggleLight_Implementation called on server!"));
 
-    // Only allow toggling if called from a client
-    if (GetLocalRole() == ROLE_Authority && GetRemoteRole() == ROLE_AutonomousProxy)
-    {
-        bIsLightOn = !bIsLightOn;
-        Light->SetVisibility(bIsLightOn);
-        UE_LOG(LogTemp, Warning, TEXT("Server processed toggle - Light: %d"), bIsLightOn);
-    }
+    // Server updates the state
+    bIsLightOn = !bIsLightOn;
+    Light->SetVisibility(bIsLightOn);
+    UE_LOG(LogTemp, Warning, TEXT("Server processed toggle - Light: %d"), bIsLightOn);
 }
 
 void AFlashlightUsable::OnRep_IsLightOn()
 {
+    UE_LOG(LogTemp, Warning, TEXT("OnRep_IsLightOn - Light state replicated: %d"), bIsLightOn);
     Light->SetVisibility(bIsLightOn);
-    UE_LOG(LogTemp, Warning, TEXT("Replication - Light state: %d"), bIsLightOn);
 }
 
 void AFlashlightUsable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

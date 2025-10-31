@@ -60,7 +60,8 @@ AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 
 	InventoryComponent = CreateDefaultSubobject<UInventory>(TEXT("Inventory"));
 
-
+	SetReplicates(true);
+	bReplicates = true;
 	//Cesar Stuff -------------------------------------------------------
 
 	TArray<AActor*> FoundActors;
@@ -373,39 +374,35 @@ void AYellPointAndPrayCharacter::Use()
 	if (InventoryComponent->GetSlotID(InventoryComponent->CurrentItemSelected) != -1)
 	{
 		FString name = InventoryComponent->GetSlotName(InventoryComponent->CurrentItemSelected);
+		UE_LOG(LogTemp, Warning, TEXT("=== USE FUNCTION ==="));
+		UE_LOG(LogTemp, Warning, TEXT("CurrentItemSelected: %d"), InventoryComponent->CurrentItemSelected);
+		UE_LOG(LogTemp, Warning, TEXT("HoldingItem: %s"), *GetNameSafe(HoldingItem));
+		UE_LOG(LogTemp, Warning, TEXT("Character Local Role: %d"), (int)GetLocalRole());
+		UE_LOG(LogTemp, Warning, TEXT("Character NetMode: %d"), (int)GetNetMode());
 
-		UClass* ItemClass = InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->GetClass();
-
-		if (ItemClass && ItemClass->ImplementsInterface(UUsable::StaticClass()))
+		if (HoldingItem)
 		{
-			// If we're a client, call a server RPC to handle the usage
-			if (GetLocalRole() == ROLE_AutonomousProxy)
+			UE_LOG(LogTemp, Warning, TEXT("HoldingItem Owner: %s"), *GetNameSafe(HoldingItem->GetOwner()));
+			UE_LOG(LogTemp, Warning, TEXT("HoldingItem Role: %d"), (int)HoldingItem->GetLocalRole());
+			//UE_LOG(LogTemp, Warning, TEXT("HoldingItem bReplicates: %d"), HoldingItem->bReplicates);
+
+			if (HoldingItem->GetClass()->ImplementsInterface(UUsable::StaticClass()))
 			{
-				Server_UseItem(InventoryComponent->CurrentItemSelected);
-			}
-			else if (HasAuthority())
-			{
-				// Server can use directly
-				IUsable::Execute_Use(ItemClass->GetDefaultObject(), this);
+				IUsable::Execute_Use(HoldingItem, this);
 			}
 		}
-
-		//if (InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected)->GetClass()->ImplementsInterface(UUsable::StaticClass()))
-		//{
-		//	IUsable::Execute_Use(InventoryComponent->GetSlotObj(InventoryComponent->CurrentItemSelected), this);
-		//}
 	}
 }
 
 void AYellPointAndPrayCharacter::Server_UseItem_Implementation(int SlotID)
 {
-	if (InventoryComponent->GetSlotID(SlotID) != -1)
+	UE_LOG(LogTemp, Warning, TEXT("Server_UseItem called for slot: %d"), SlotID);
+
+	// Use the actual spawned HoldingItem
+	if (HoldingItem && HoldingItem->GetClass()->ImplementsInterface(UUsable::StaticClass()))
 	{
-		UClass* ItemClass = InventoryComponent->GetSlotObj(SlotID)->GetClass();
-		if (ItemClass && ItemClass->ImplementsInterface(UUsable::StaticClass()))
-		{
-			IUsable::Execute_Use(ItemClass->GetDefaultObject(), this);
-		}
+		UE_LOG(LogTemp, Warning, TEXT("Server executing Use on HoldingItem"));
+		IUsable::Execute_Use(HoldingItem, this);
 	}
 }
 
@@ -432,6 +429,7 @@ void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 				if (HoldingItem)
 				{
 					HoldingItem->SetActorEnableCollision(false);
+					HoldingItem->SetReplicates(true);
 					// Don't attach here - let OnRep_HoldingItem handle attachment based on ownership
 					ItemCreated = true;
 				}
