@@ -5,12 +5,10 @@
 #include "YellPointAndPrayCharacter.h"
 #include <Net/UnrealNetwork.h>
 
-AYellPointAndPrayCharacter* player;
-
 ARubberDuckUsable::ARubberDuckUsable() {
 	PrimaryActorTick.bCanEverTick = true;
+	PlayerActor = nullptr;
 }
-
 
 void ARubberDuckUsable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -22,18 +20,26 @@ void ARubberDuckUsable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 
 void ARubberDuckUsable::Use_Implementation(AActor* User) {
 	UE_LOG(LogTemp, Warning, TEXT("Rubber Duck Used CARALHOOO!"));
-	player = Cast<AYellPointAndPrayCharacter>(User);
+	PlayerActor = User;
+	AYellPointAndPrayCharacter* Player = Cast<AYellPointAndPrayCharacter>(User);
 	AddForce = true;
-	player->GetDuck(this);
+	if (Player)
+	{
+		Player->GetDuck(this);
+
+	}
 }
 
 void ARubberDuckUsable::Throw_Implementation(AActor* User, UWorld* World, TSubclassOf<AActor> NewHoldingItemClass, FVector NewPosition, FRotator dir) {
 
-	if (!HasAuthority()) return;
+	if (!HasAuthority()) return; 
 
 	FActorSpawnParameters SpawnParams;
 	AActor* SpawnedDuck = World->SpawnActor<AActor>(NewHoldingItemClass, NewPosition, FRotator::ZeroRotator, SpawnParams);
-	if (!SpawnedDuck) return;
+	if (!SpawnedDuck) 
+	{
+		return;
+	} 
 
 	SpawnedDuck->SetReplicates(true);
 	SpawnedDuck->SetReplicateMovement(true);
@@ -42,8 +48,6 @@ void ARubberDuckUsable::Throw_Implementation(AActor* User, UWorld* World, TSubcl
 	UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(SpawnedDuck->GetComponentByClass(UPrimitiveComponent::StaticClass()));
 	if (PrimComp && PrimComp->IsSimulatingPhysics())
 	{
-
-
 		float ThrowStrength = 50000.0f;
 		ThrowForce = 0;
 
@@ -54,7 +58,15 @@ void ARubberDuckUsable::Throw_Implementation(AActor* User, UWorld* World, TSubcl
 
 void ARubberDuckUsable::ChangeAdd() {
 	AddForce = false;
-	player->ThrowDuck(this);
+
+	if (PlayerActor)
+	{
+		AYellPointAndPrayCharacter* PlayerChar = Cast<AYellPointAndPrayCharacter>(PlayerActor);
+		if (PlayerChar)
+		{
+			PlayerChar->ThrowDuck(this);
+		}
+	}
 }
 
 void ARubberDuckUsable::BeginPlay()
@@ -69,7 +81,14 @@ void ARubberDuckUsable::Tick(float DeltaTime) {
 		if (ThrowForce >= 100) {
 			ThrowForce = 100;
 			AddForce = false;
-			player->ThrowDuck(this);
+			if (PlayerActor)
+			{
+				AYellPointAndPrayCharacter* Player = Cast<AYellPointAndPrayCharacter>(PlayerActor);
+				if (Player)
+				{
+					Player->ThrowDuck(this);
+				}
+			}	
 		}
 	}
 }

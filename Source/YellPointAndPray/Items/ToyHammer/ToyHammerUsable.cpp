@@ -19,4 +19,6 @@ void AToyHammerUsable::Use_Implementation(AActor* User)
     if (Guard == nullptr) return;
 
     Player->Client_KnockGuard(Guard);
+
+    UE_LOG(LogTemp, Warning, TEXT("Toy Hammer Used CARALHOOO!"));
 }

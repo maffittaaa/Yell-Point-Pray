@@ -334,6 +334,7 @@ void AYellPointAndPrayCharacter::CallDuck()
 {
 	if (DuckUsing) 
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Duck using exists"));
 		DuckUsing->ChangeAdd();
 	}
 }
@@ -375,21 +376,17 @@ void AYellPointAndPrayCharacter::Use()
 	if (InventoryComponent->GetSlotID(InventoryComponent->CurrentItemSelected) != -1)
 	{
 		FString name = InventoryComponent->GetSlotName(InventoryComponent->CurrentItemSelected);
-		UE_LOG(LogTemp, Warning, TEXT("=== USE FUNCTION ==="));
-		UE_LOG(LogTemp, Warning, TEXT("CurrentItemSelected: %d"), InventoryComponent->CurrentItemSelected);
-		UE_LOG(LogTemp, Warning, TEXT("HoldingItem: %s"), *GetNameSafe(HoldingItem));
-		UE_LOG(LogTemp, Warning, TEXT("Character Local Role: %d"), (int)GetLocalRole());
-		UE_LOG(LogTemp, Warning, TEXT("Character NetMode: %d"), (int)GetNetMode());
 
 		if (HoldingItem)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("HoldingItem Owner: %s"), *GetNameSafe(HoldingItem->GetOwner()));
-			UE_LOG(LogTemp, Warning, TEXT("HoldingItem Role: %d"), (int)HoldingItem->GetLocalRole());
-			//UE_LOG(LogTemp, Warning, TEXT("HoldingItem bReplicates: %d"), HoldingItem->bReplicates);
 
 			if (HoldingItem->GetClass()->ImplementsInterface(UUsable::StaticClass()))
 			{
 				IUsable::Execute_Use(HoldingItem, this);
+				if (GetNetMode() == NM_Client)
+				{
+					Server_UseItem(InventoryComponent->CurrentItemSelected);
+				}
 			}
 		}
 	}
@@ -397,12 +394,8 @@ void AYellPointAndPrayCharacter::Use()
 
 void AYellPointAndPrayCharacter::Server_UseItem_Implementation(int SlotID)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Server_UseItem called for slot: %d"), SlotID);
-
-	// Use the actual spawned HoldingItem
 	if (HoldingItem && HoldingItem->GetClass()->ImplementsInterface(UUsable::StaticClass()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Server executing Use on HoldingItem"));
 		IUsable::Execute_Use(HoldingItem, this);
 	}
 }
@@ -424,14 +417,12 @@ void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 				SpawnParams.Owner = this;
 				SpawnParams.Instigator = Cast<APawn>(this);
 
-				// Only spawn on server - this will replicate to clients
 				HoldingItem = GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 
 				if (HoldingItem)
 				{
 					HoldingItem->SetActorEnableCollision(false);
 					HoldingItem->SetReplicates(true);
-					// Don't attach here - let OnRep_HoldingItem handle attachment based on ownership
 					ItemCreated = true;
 				}
 
@@ -453,7 +444,6 @@ void AYellPointAndPrayCharacter::ServerDeleteItem_Implementation()
 
 void AYellPointAndPrayCharacter::OnItemSelected(int SlotID)
 {
-	// If the slot changed
 	if (OldItemSelected != InventoryComponent->CurrentItemSelected)
 	{
 		OldItemSelected = InventoryComponent->CurrentItemSelected;

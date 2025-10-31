@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Items/UsableItemsParent/UsableItem.h"
+
 #include "RubberDuckUsable.generated.h"
 
+
+class AYellPointAndPrayCharacter;
 /**
  * 
  */
@@ -22,12 +25,15 @@ private:
 
 	int ThrowForce = 0;
 
+	// Store player reference as a UObject to avoid circular dependency
+	UPROPERTY()
+	AActor* PlayerActor;
+
 protected:
 	virtual void BeginPlay() override;
 
 public:
 	virtual void Use_Implementation(AActor* User) override;
-
 
 	UFUNCTION(Server, Reliable)
 	void Throw(AActor* User, UWorld* World, TSubclassOf<AActor> NewHoldingItemClass, FVector NewPosition, FRotator dir);
