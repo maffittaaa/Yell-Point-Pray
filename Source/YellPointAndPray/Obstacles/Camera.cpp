@@ -75,7 +75,7 @@ FHitResult ACamera::DoLineTraces() {
 			RV_TraceParams
 		);
 	}
-	return 
+	return RV_Hit;
 }
 
 

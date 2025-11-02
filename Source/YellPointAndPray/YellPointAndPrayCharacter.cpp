@@ -524,7 +524,7 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		UE_LOG(LogTemp, Warning, TEXT("Drawing %d"), isDrawing);
 		
 		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer())) { //adding the map context for drawing
-			AYellPointAndPrayPlayerController* yellPlayerController = Cast<AYellPointAndPrayPlayerController>(playerController);
+			AYellPointAndPrayPlayerController* yellPlayerController = Cast<AYellPointAndPrayPlayerController>(playerController->GetCharacter());
 			if (yellPlayerController){
 				for (UInputMappingContext* DefaultContexts : yellPlayerController->DefaultMappingContexts) {
 					if (DefaultContexts) {
