@@ -183,6 +183,6 @@ void ACamera::Tick(float DeltaTime) {
 	PlayerInVision(DeltaTime);
 	NoPlayerInVision(DeltaTime);
 
-	LoadVisionMesh();
+	//LoadVisionMesh();
 }
 
