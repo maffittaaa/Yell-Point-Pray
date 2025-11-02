@@ -113,6 +113,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UUserWidget* KnockGuardWidget;
 
 		UPROPERTY()
+		UUserWidget* GameOverWidget;
+
+		UPROPERTY()
 		int TimesWidgetCreated = 0;
 
 		UPROPERTY()
@@ -123,6 +126,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf<UUserWidget> KnockGuardWidgetClass;
+
+		UPROPERTY(EditAnywhere, Category = "Components")
+		TSubclassOf<UUserWidget> GameOverWidgetClass;
 
 		UPROPERTY()
 		UUserWidget* paintBrushWidget;

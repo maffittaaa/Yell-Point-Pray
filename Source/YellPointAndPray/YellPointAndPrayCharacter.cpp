@@ -20,6 +20,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "YellPointAndPrayPlayerController.h"
+#include <Items/Treasure/TreasurePickable.h>
 
 using namespace std;
 
@@ -124,6 +125,9 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 
 	if (KnockGuardWidgetClass)
 		KnockGuardWidget = CreateWidget<UUserWidget>(GetWorld(), KnockGuardWidgetClass, FName("Knock"));
+
+	if (GameOverWidgetClass)
+		GameOverWidget = CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetClass, FName("GameOver"));
 
 	enumVariable = InGame;
 }
@@ -581,7 +585,9 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 	if (hitObject->GetClass()->ImplementsInterface(UInteractable::StaticClass())) {
 		if (InventoryComponent->IsInventoryFull()){
 			UE_LOG(LogTemp, Warning, TEXT("INVENTORY IS FULL"));
-		} else {
+		} 
+		else 
+		{
 			APickableItem* PickableItem = Cast<APickableItem>(hitObject);
 
 			if (PickableItem) 
@@ -616,7 +622,23 @@ void AYellPointAndPrayCharacter::Interact() {
 	if (GetWorld()->LineTraceSingleByChannel( hit, start, end, ECC_Visibility, params)) {
 		//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.0f, 0, 1.0f);
 		if (AActor* hitObject = hit.GetActor())
+		{
+			ATreasurePickable* Treasure = Cast<ATreasurePickable>(hitObject);
+
+			if (Treasure)
+			{
+				if (GameOverWidgetClass)
+				{
+					GameOverWidget->AddToViewport();
+					UE_LOG(LogTemp, Warning, TEXT("Found Treasure and works"));
+				}
+				UE_LOG(LogTemp, Warning, TEXT("Yheaa"));
+
+				return;
+			}
+
 			this->ServerInteract(hitObject, this);
+		}
 	}
 }
 
