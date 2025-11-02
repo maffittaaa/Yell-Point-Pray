@@ -8,15 +8,6 @@ ACamera::ACamera() {
 	PrimaryActorTick.bCanEverTick = true;
 	
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-	
-	// BoxCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollider"));
-	// BoxCollider->SetupAttachment(RootComponent);
-	//
-	// BoxCollider->OnComponentBeginOverlap.AddDynamic(this, &ACamera::OnOverlapBegin);
-	// BoxCollider->OnComponentEndOverlap.AddDynamic(this, &ACamera::OnOverlapEnd);
-
-	// meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	// meshComp->SetupAttachment(RootComponent);
 
 	dynamicMeshComponent = CreateDefaultSubobject<UDynamicMeshComponent>(TEXT("MeshComp"));
 	dynamicMeshComponent->SetupAttachment(RootComponent);
@@ -49,14 +40,15 @@ void ACamera::BeginPlay() {
 	
 }
 
-void ACamera::DoLineTraces() {
-	FVector start = GetActorLocation();
-	FVector forwardVector = GetActorForwardVector();
+FHitResult ACamera::DoLineTraces() {
+	
+	FHitResult RV_Hit;
 	
 	int numberOfTimes = FMath::CeilToInt(visionArc / testVisionArc);
 
 	for (int i = 0; i < numberOfTimes; i++) {
-
+		FVector start = GetActorLocation();
+		FVector forwardVector = GetActorForwardVector();
 		
 		float angleDeg = UKismetMathLibrary::Clamp(
 			(i * testVisionArc * 2.0f) - visionArc,
@@ -72,8 +64,6 @@ void ACamera::DoLineTraces() {
 		RV_TraceParams.bTraceComplex = false;
 		RV_TraceParams.bReturnPhysicalMaterial = false;
 		RV_TraceParams.AddIgnoredActor(this);
-
-		FHitResult RV_Hit;
 		
 		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.0f, 0, 1.0f);
 
@@ -85,6 +75,7 @@ void ACamera::DoLineTraces() {
 			RV_TraceParams
 		);
 	}
+	return 
 }
 
 

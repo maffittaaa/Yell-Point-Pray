@@ -20,12 +20,6 @@ class YELLPOINTANDPRAY_API ACamera : public AActor
 	public:
 		// Sets default values for this actor's properties
 		ACamera();
-
-		// UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		// class UBoxComponent* BoxCollider;
-
-		// UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		// UStaticMeshComponent* meshComp;
 		
 		UPROPERTY(VisibleAnywhere)
 		UDynamicMeshComponent* dynamicMeshComponent;
@@ -43,7 +37,7 @@ class YELLPOINTANDPRAY_API ACamera : public AActor
 		float visionLength = 500.0f;
 
 		UFUNCTION()
-		void DoLineTraces();
+		FHitResult DoLineTraces();
 
 	protected:
 		// Called when the game starts or when spawned
