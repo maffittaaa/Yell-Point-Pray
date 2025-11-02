@@ -520,7 +520,6 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		
 		paintBrushWidget = CreateWidget<UUserWidget>(GetWorld(), paintBrushWidgetClass, FName("PaintBrush"));
 		playerController->SetMouseCursorWidget(EMouseCursor::Type::Default ,paintBrushWidget);
-		isDrawing = true;
 		UE_LOG(LogTemp, Warning, TEXT("Drawing %d"), isDrawing);
 		
 		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer())) { //adding the map context for drawing
@@ -535,6 +534,7 @@ void AYellPointAndPrayCharacter::OnRepState() {
 								FString ContextName = drawingContexts->GetName();
 								UE_LOG(LogTemp, Warning, TEXT("Adding Drawing Mapping Context: %s"), *ContextName);
 								subsystem->AddMappingContext(drawingContexts, 2);
+								isDrawing = true;
 							}
 						}
 					}
@@ -550,7 +550,10 @@ void AYellPointAndPrayCharacter::OnRepState() {
 						subsystem2->RemoveMappingContext(drawingContext);
 						for (UInputMappingContext* DefaultContexts : yellPlayerController->DefaultMappingContexts){
 							if (DefaultContexts)
+							{
 								subsystem2->AddMappingContext(DefaultContexts, 1);
+								isDrawing = false;
+							}
 						}
 					}
 				}
@@ -669,7 +672,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 		
 			if (whiteboard) {
 				UE_LOG(LogTemp, Warning, TEXT("Successfully cast to whiteboard - calling Draw()"));
-				float whiteboardBrushSize = 50.0f;
+				float whiteboardBrushSize = 20.0f;
 				FVector2D UVCoordinates;
 				FVector LocalImpact = RV_Hit.GetComponent()->GetComponentTransform().InverseTransformPosition(RV_Hit.ImpactPoint);
 				FBoxSphereBounds Bounds = RV_Hit.GetComponent()->CalcBounds(FTransform());
