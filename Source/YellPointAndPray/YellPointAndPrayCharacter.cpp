@@ -15,10 +15,8 @@
 #include "YellPointAndPray.h"
 #include "Blueprint/UserWidget.h"
 #include <Net/UnrealNetwork.h>
-
 #include "WhiteBoard.h"
 #include <Kismet/GameplayStatics.h>
-
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "YellPointAndPrayPlayerController.h"
@@ -108,8 +106,10 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(MouseRelease, ETriggerEvent::Completed, this, &AYellPointAndPrayCharacter::CallDuck);
 
 		//Drawing
-		auto& teste = EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::CharacterDrawing);
-		GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, teste.IsBoundToObject(this) && teste.GetAction() != nullptr ? "yay bound properly!" : "oh noes failed to bind the draw :(");
+		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::CharacterStartDrawing);
+		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::CharacterDrawing);
+		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Completed, this, &AYellPointAndPrayCharacter::CharacterStopDrawing);
+		//GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, teste.IsBoundToObject(this) && teste.GetAction() != nullptr ? "yay bound properly!" : "oh noes failed to bind the draw :(");
 			
 	}
 	else
@@ -515,7 +515,6 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		UE_LOG(LogTemp, Warning, TEXT("Cursor visibility after set: %d"), playerController->bShowMouseCursor);
 	
 		FInputModeGameOnly inputMode;
-		//inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 		playerController->SetInputMode(inputMode);
 		
 		paintBrushWidget = CreateWidget<UUserWidget>(GetWorld(), paintBrushWidgetClass, FName("PaintBrush"));
@@ -534,7 +533,6 @@ void AYellPointAndPrayCharacter::OnRepState() {
 								FString ContextName = drawingContexts->GetName();
 								UE_LOG(LogTemp, Warning, TEXT("Adding Drawing Mapping Context: %s"), *ContextName);
 								subsystem->AddMappingContext(drawingContexts, 2);
-								isDrawing = true;
 							}
 						}
 					}
@@ -550,10 +548,7 @@ void AYellPointAndPrayCharacter::OnRepState() {
 						subsystem2->RemoveMappingContext(drawingContext);
 						for (UInputMappingContext* DefaultContexts : yellPlayerController->DefaultMappingContexts){
 							if (DefaultContexts)
-							{
 								subsystem2->AddMappingContext(DefaultContexts, 1);
-								isDrawing = false;
-							}
 						}
 					}
 				}
@@ -629,8 +624,16 @@ void AYellPointAndPrayCharacter::Caught_Implementation() {
 	UE_LOG(LogTemp, Warning, TEXT("YOU GOT CAUGHT NOOB L"));
 }
 
+void AYellPointAndPrayCharacter::CharacterStartDrawing(const FInputActionValue& value)
+{
+	if (enumVariable == InWhiteboard){
+		isDrawing = true;
+		UE_LOG(LogTemp, Warning, TEXT("Started drawing"));
+	}
+}
+
 void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value) {
-	if (isDrawing) {
+	if (isDrawing && enumVariable == InWhiteboard) {
 		float distance = 1000.0f;
 		
 		FVector start;
@@ -693,6 +696,12 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 		}
 	}
 }
+
+void AYellPointAndPrayCharacter::CharacterStopDrawing(const FInputActionValue& value) {
+	isDrawing = false;
+	UE_LOG(LogTemp, Warning, TEXT("Stopped drawing"));
+}
+
 
 
 void AYellPointAndPrayCharacter::Tick(float DeltaTime) {
