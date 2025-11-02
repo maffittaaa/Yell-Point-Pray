@@ -90,6 +90,9 @@ void AYPPCustomGameMode::PostLogin(APlayerController* NewPlayer)
                     SpawnParams.Owner = NewPlayer;
 
                     APawn* NewPawn = GetWorld()->SpawnActor<APawn>(PawnClassToSpawn, SpawnTransform, SpawnParams);
+
+                    PlayersArray.Add(NewPawn);
+                    
                     if (NewPawn)
                     {
                         NewPlayer->Possess(NewPawn);
@@ -100,5 +103,24 @@ void AYPPCustomGameMode::PostLogin(APlayerController* NewPlayer)
     else
     {
         RestartPlayer(NewPlayer);
+    }
+}
+
+void AYPPCustomGameMode::GameOver(bool State)
+{
+    UE_LOG(LogTemp, Warning, TEXT("Game Over"));
+
+    for (APawn* Player : PlayersArray) 
+    {
+        AYellPointAndPrayCharacter* CurrentPlayer = Cast<AYellPointAndPrayCharacter>(Player);
+
+        if (CurrentPlayer) 
+        {
+            if (CurrentPlayer->GameOverWidgetClass)
+            {
+                CurrentPlayer->GameOverWidget;
+                UE_LOG(LogTemp, Warning, TEXT("Found Treasure and works"));
+            }
+        }
     }
 }

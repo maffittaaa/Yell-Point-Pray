@@ -13,11 +13,15 @@ UCLASS()
 class YELLPOINTANDPRAY_API AYPPCustomGameMode : public AGameModeBase
 {
     GENERATED_BODY()
+private:
+    TArray<APawn*> PlayersArray;
 
 public:
     AYPPCustomGameMode();
 
     virtual void PostLogin(APlayerController* NewPlayer) override;
+
+    void GameOver(bool State);
 
     UPROPERTY(EditDefaultsOnly, Category = "Asymmetric")
     TSubclassOf<APawn> BlindClass;

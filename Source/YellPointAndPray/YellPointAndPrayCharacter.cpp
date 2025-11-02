@@ -21,6 +21,7 @@
 #include "InputMappingContext.h"
 #include "YellPointAndPrayPlayerController.h"
 #include <Items/Treasure/TreasurePickable.h>
+#include <Players/YPPCustomGameMode.h>
 
 using namespace std;
 
@@ -588,6 +589,24 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 		} 
 		else 
 		{
+			ATreasurePickable* Treasure = Cast<ATreasurePickable>(hitObject);
+
+			if (Treasure)
+			{
+				AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
+
+				GameMode->GameOver(true);
+
+				/*if (GameOverWidgetClass)
+				{
+					GameOverWidget->AddToViewport();
+					UE_LOG(LogTemp, Warning, TEXT("Found Treasure and works"));
+				}
+				UE_LOG(LogTemp, Warning, TEXT("Yheaa"));*/
+
+				return;
+			}
+
 			APickableItem* PickableItem = Cast<APickableItem>(hitObject);
 
 			if (PickableItem) 
@@ -623,20 +642,6 @@ void AYellPointAndPrayCharacter::Interact() {
 		//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.0f, 0, 1.0f);
 		if (AActor* hitObject = hit.GetActor())
 		{
-			ATreasurePickable* Treasure = Cast<ATreasurePickable>(hitObject);
-
-			if (Treasure)
-			{
-				if (GameOverWidgetClass)
-				{
-					GameOverWidget->AddToViewport();
-					UE_LOG(LogTemp, Warning, TEXT("Found Treasure and works"));
-				}
-				UE_LOG(LogTemp, Warning, TEXT("Yheaa"));
-
-				return;
-			}
-
 			this->ServerInteract(hitObject, this);
 		}
 	}
