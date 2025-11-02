@@ -35,9 +35,15 @@ class YELLPOINTANDPRAY_API ACamera : public AActor
 
 		UPROPERTY(VisibleAnywhere)
 		float visionLength = 500.0f;
+	
+		UFUNCTION()
+		TArray<FHitResult> DoLineTraces();
 
 		UFUNCTION()
-		FHitResult DoLineTraces();
+		TArray<FVector2D> HitResultsTo2DVertices(TArray<FHitResult>& hitResults);
+
+		UFUNCTION()
+		void LoadVisionMesh();
 
 	protected:
 		// Called when the game starts or when spawned

@@ -108,7 +108,7 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(MouseRelease, ETriggerEvent::Completed, this, &AYellPointAndPrayCharacter::CallDuck);
 
 		//Drawing
-		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::CharacterStartDrawing);
+		// EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::CharacterStartDrawing);
 		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::CharacterDrawing);
 		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Completed, this, &AYellPointAndPrayCharacter::CharacterStopDrawing);
 		//GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, teste.IsBoundToObject(this) && teste.GetAction() != nullptr ? "yay bound properly!" : "oh noes failed to bind the draw :(");
@@ -501,9 +501,7 @@ void AYellPointAndPrayCharacter::OnRepState() {
 	playerController = Cast<APlayerController>(GetController());
 	if (!playerController) return;
 	
-	if (enumVariable == InWhiteboard)
-	{
-		
+	if (enumVariable == InWhiteboard) {
 		float blendTime = 0.0f;
 		ACameraActor* camera = whiteboardCamera.LoadSynchronous();//to get the actual camera object
 		
@@ -651,15 +649,16 @@ void AYellPointAndPrayCharacter::Caught_Implementation() {
 	UE_LOG(LogTemp, Warning, TEXT("YOU GOT CAUGHT NOOB L"));
 }
 
-void AYellPointAndPrayCharacter::CharacterStartDrawing(const FInputActionValue& value)
-{
-	if (enumVariable == InWhiteboard){
-		isDrawing = true;
-		UE_LOG(LogTemp, Warning, TEXT("Started drawing"));
-	}
-}
+// void AYellPointAndPrayCharacter::CharacterStartDrawing(const FInputActionValue& value)
+// {
+// 	if (enumVariable == InWhiteboard){
+// 		isDrawing = true;
+// 		UE_LOG(LogTemp, Warning, TEXT("Started drawing"));
+// 	}
+// }
 
 void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value) {
+	isDrawing = true;
 	if (isDrawing && enumVariable == InWhiteboard) {
 		float distance = 1000.0f;
 		

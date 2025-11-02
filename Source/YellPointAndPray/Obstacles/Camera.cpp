@@ -14,35 +14,53 @@ ACamera::ACamera() {
 
 	dynamicMesh = dynamicMeshComponent->GetDynamicMesh();
 
-	TArray<FVector2D> vertices;
-	vertices.Add(FVector2D(0.0f, 0.0f));
-	vertices.Add(FVector2D(100.0f, 50.0f));
-	vertices.Add(FVector2D(100.0f, -50.0f));;
-
-	FTransform transform = FTransform::Identity;
-	bool bAllowSelfIntersections = true;
-	UGeometryScriptDebug* debugScript = nullptr;
-
-	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon(
-		dynamicMesh,
-		FGeometryScriptPrimitiveOptions(),
-		transform,
-		vertices,
-		bAllowSelfIntersections,
-		debugScript
-		);
-
 	SuspicionMax = 100;
 }
 
 void ACamera::BeginPlay() {
 	Super::BeginPlay();
-	
+
+	LoadVisionMesh();
 }
 
-FHitResult ACamera::DoLineTraces() {
+void ACamera::LoadVisionMesh() {
+	TArray<FHitResult> hitResults = DoLineTraces();
+
+	if (hitResults.Num() < 3) {
+		UE_LOG(LogTemp, Warning, TEXT("Not enough hit results for polygon: %d"), hitResults.Num());
+        
+		// Add some default vertices to create a basic triangle
+		TArray<FVector2D> defaultVertices;
+		defaultVertices.Add(FVector2D(0.0f, 0.0f));
+		defaultVertices.Add(FVector2D(100.0f, 50.0f));
+		defaultVertices.Add(FVector2D(100.0f, -50.0f));
+        
+		UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon(
+			dynamicMesh,
+			FGeometryScriptPrimitiveOptions(),
+			FTransform::Identity,
+			defaultVertices,
+			true,
+			nullptr
+		);
+		return;
+	}
+
+	TArray<FVector2D> vertices = HitResultsTo2DVertices(hitResults);
 	
-	FHitResult RV_Hit;
+	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon(
+		dynamicMesh,
+		FGeometryScriptPrimitiveOptions(),
+		FTransform::Identity,
+		vertices,
+		true,
+		nullptr
+		);
+}
+
+TArray<FHitResult> ACamera::DoLineTraces() {
+	
+	TArray<FHitResult> HitResults;
 	
 	int numberOfTimes = FMath::CeilToInt(visionArc / testVisionArc);
 
@@ -64,6 +82,8 @@ FHitResult ACamera::DoLineTraces() {
 		RV_TraceParams.bTraceComplex = false;
 		RV_TraceParams.bReturnPhysicalMaterial = false;
 		RV_TraceParams.AddIgnoredActor(this);
+
+		FHitResult RV_Hit;
 		
 		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.0f, 0, 1.0f);
 
@@ -74,10 +94,29 @@ FHitResult ACamera::DoLineTraces() {
 			traceChannel,
 			RV_TraceParams
 		);
+
+		if (bHit)
+			HitResults.Add(RV_Hit);
 	}
-	return RV_Hit;
+	return HitResults;
 }
 
+TArray<FVector2D> ACamera::HitResultsTo2DVertices(TArray<FHitResult>& hitResults) {
+	TArray<FVector2D> hitVector;
+	
+	for (FHitResult hitResult : hitResults) {
+		FVector location = hitResult.Location;
+		FVector traceEnd = hitResult.TraceEnd;
+		
+		FVector finalPosition = hitResult.bBlockingHit ? location : traceEnd;
+		FVector localLocation = UKismetMathLibrary::InverseTransformLocation(GetActorTransform(), finalPosition);
+		FVector2D localLocation2D = FVector2D(localLocation.X, localLocation.Y);
+		
+		hitVector.Add(localLocation2D);
+	}
+	
+	return hitVector;
+}
 
 void ACamera::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
 
@@ -143,6 +182,7 @@ void ACamera::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 	PlayerInVision(DeltaTime);
 	NoPlayerInVision(DeltaTime);
-	DoLineTraces();
+
+	LoadVisionMesh();
 }
 
