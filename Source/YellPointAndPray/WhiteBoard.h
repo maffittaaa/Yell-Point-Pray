@@ -22,8 +22,11 @@ class YELLPOINTANDPRAY_API AWhiteBoard : public AActor, public IInteractable
 		UPROPERTY(EditAnywhere, Category = "WhiteboardRenderTarget")
 		UTextureRenderTarget2D* renderTarget2D;
 
-		UPROPERTY(EditAnywhere, Category = "WhiteboardMaterial")
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WhiteboardMaterial")
 		UMaterialInstanceDynamic* dynamicMaterialInstanceCanvas;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WhiteboardMaterial")
+		UTexture2D* canvasTexture;
 
 		UPROPERTY(EditAnywhere, Category = "WhiteboardMaterial")
 		UMaterialInstanceDynamic* dynamicMaterialInstanceBrush;
@@ -44,6 +47,8 @@ class YELLPOINTANDPRAY_API AWhiteBoard : public AActor, public IInteractable
 		virtual void Interact_Implementation(AActor* interactor) override;
 
 		void Draw(UTexture2D* brushTexture, float brushSize, FVector2D drawLocation);
+
+		void InitializeBackground();
 
 		UFUNCTION(BlueprintCallable)
 		void CloseBoard();

@@ -31,6 +31,9 @@ void AWhiteBoard::BeginPlay() {
 	meshComp->SetMaterial(0, dynamicMaterialInstanceCanvas);
 	
 	dynamicMaterialInstanceBrush = UMaterialInstanceDynamic::Create(materialBrush, this);
+
+	if (canvasTexture)
+		InitializeBackground();
 }
 
 void AWhiteBoard::Interact_Implementation(AActor* Interactor) {
@@ -41,6 +44,36 @@ void AWhiteBoard::Interact_Implementation(AActor* Interactor) {
 
 	APlayerController* playerController = Cast<APlayerController>(playerCharacter->GetController());
 	if (!playerController) return;
+}
+
+void AWhiteBoard::InitializeBackground() {
+	UCanvas* canvas = nullptr;
+	FVector2D size;
+	FDrawToRenderTargetContext context;
+    
+	UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(
+		this,
+		renderTarget2D,
+		canvas,
+		size,
+		context
+	);
+
+	if (canvas) {
+		canvas->K2_DrawTexture(
+			canvasTexture,
+			FVector2D(0.0f, 0.0f),
+			size,
+			FVector2D(0.0f, 0.0f),
+			FVector2D(1.0f, 1.0f),
+			FLinearColor::White,
+			BLEND_Translucent,
+			1.0f,
+			FVector2D(0.0f, 0.0f)
+		);
+	}
+    
+	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, context);
 }
 
 void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D drawLocation) {
@@ -78,6 +111,7 @@ void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D draw
 		pivotPoint
 		);
 	}
+	
 	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, context);
 }
 
