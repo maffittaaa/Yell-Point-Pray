@@ -12,6 +12,7 @@
 
 void AMatchmakingLevelScript::BeginPlay() {
 	Super::BeginPlay();
+
 	// Enable tick for refresh timer
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -79,7 +80,7 @@ void AMatchmakingLevelScript::OnHostRequested(int32 Port) {
 	// Called when server accepted our host request
 	if (APlayerController* PC = GetWorld()->GetFirstPlayerController()) 
 	{
-		FString Cmd = FString::Printf(TEXT("open Lvl_FirstPerson?listen"));
+		FString Cmd = FString::Printf(TEXT("open Lvl_MainTest?listen"));
 		PC->ConsoleCommand(*Cmd);
 	}
 }

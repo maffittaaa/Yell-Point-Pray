@@ -17,6 +17,3 @@ class AYellPointAndPrayGameMode : public AGameModeBase
 public:
 	AYellPointAndPrayGameMode();
 };
-
-
-
