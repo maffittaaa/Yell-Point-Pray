@@ -148,35 +148,21 @@ void AYPPCustomGameMode::RestartGame()
     {
         return;
     }
-    
-    GetWorld()->GetGameState()->PlayerArray.Empty();
 
-    FString MapPath = "/Game/FirstPerson/Lvl_FirstPerson";
-    GetWorld()->ServerTravel(MapPath + "?listen", true);
-    UE_LOG(LogTemp, Warning, TEXT("Server traveling to: %s"), *MapPath);
+    UE_LOG(LogTemp, Warning, TEXT("Restarstiiing"));
 
-    // Find the host player and only have the server travel
-    //for (APawn* Player : PlayersArray)
-    //{
-    //    AYellPointAndPrayCharacter* CurrentPlayer = Cast<AYellPointAndPrayCharacter>(Player);
-    //    if (CurrentPlayer)
-    //    {
-    //        AYellPointAndPrayPlayerController* PC = Cast<AYellPointAndPrayPlayerController>(CurrentPlayer->GetController());
-    //        if (PC)
-    //        {
-    //            AYPPCustomPlayerState* PlayerState = PC->GetPlayerState<AYPPCustomPlayerState>();
-    //            if (PlayerState && PlayerState->IsHost)
-    //            {
-    //                // Only the server calls ServerTravel once
-    //                // This will automatically bring all connected clients to the new map
-    //                FString MapPath = "/Game/FirstPerson/Lvl_FirstPerson?listen";
-    //                GetWorld()->ServerTravel(MapPath, true); // true = absolute travel
-    //                UE_LOG(LogTemp, Warning, TEXT("Host initiating server travel to: %s"), *MapPath);
-    //                return; // Exit after finding the host
-    //            }
-    //        }
-    //    }
-    //}
-
-    UE_LOG(LogTemp, Warning, TEXT("No host found to restart game"));
+    for (APawn* Player : PlayersArray)
+    {
+        AYellPointAndPrayCharacter* CurrentPlayer = Cast<AYellPointAndPrayCharacter>(Player);
+        if (CurrentPlayer)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Has Player"));
+            AYellPointAndPrayPlayerController* PC = Cast<AYellPointAndPrayPlayerController>(CurrentPlayer->GetController());
+            if (PC)
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Has Player Controller"));
+                CurrentPlayer->Client_HideGameOver();
+            }
+        }
+    }
 }

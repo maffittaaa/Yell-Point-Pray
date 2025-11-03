@@ -604,10 +604,32 @@ void AYellPointAndPrayCharacter::Client_ShowGameOver_Implementation()
 		//Pause game and show cursor
 		if (PC)
 		{
+			PreviousInputMode = FInputModeGameOnly();
 			PC->SetPause(true);
 			FInputModeUIOnly InputMode;
 			PC->SetInputMode(InputMode);
 			PC->bShowMouseCursor = true;
+		}
+	}
+}
+
+void AYellPointAndPrayCharacter::Client_HideGameOver_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Client_HideGameOver called on client"));
+
+	if (GameOverWidget && GameOverWidget->IsInViewport())
+	{
+		GameOverWidget->RemoveFromViewport();
+		UE_LOG(LogTemp, Warning, TEXT("Game Over widget hideen to viewport"));
+
+		APlayerController* PC = Cast<APlayerController>(GetController());
+
+		//Pause game and show cursor
+		if (PC)
+		{
+			PC->SetPause(false);
+			PC->SetInputMode(PreviousInputMode);
+			PC->bShowMouseCursor = false;
 		}
 	}
 }

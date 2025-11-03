@@ -81,6 +81,8 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UInputAction* MouseRelease;
 		
 	public:
+		FInputModeGameOnly PreviousInputMode;
+
 		AYellPointAndPrayCharacter();
 
 		UUserWidget* GetGameOverWidget() const { return GameOverWidget; }
@@ -211,6 +213,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 	public:
 		UFUNCTION(Client, Reliable)
 		void Client_ShowGameOver();
+
+		UFUNCTION(Client, Reliable)
+		void Client_HideGameOver();
 
 		UFUNCTION(BlueprintCallable)
 		void OnItemSelected(int SlotID);
