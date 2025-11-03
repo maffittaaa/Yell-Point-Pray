@@ -2,6 +2,7 @@
 
 
 #include "Items/RubberDuck/RubberDuckPickable.h"
+#include <Net/UnrealNetwork.h>
 
 ARubberDuckPickable::ARubberDuckPickable() {
 	Name = "Rubber Duck";
@@ -12,12 +13,21 @@ ARubberDuckPickable::ARubberDuckPickable() {
 	SphereCollider->SetupAttachment(Mesh);
 }
 
+
+void ARubberDuckPickable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ARubberDuckPickable, HasQuacked);
+
+}
+
 void ARubberDuckPickable::BeginPlay()
 {
 	Super::BeginPlay();
 
 	if (SphereCollider) {
-		SphereCollider->OnComponentBeginOverlap.AddDynamic(this, &ARubberDuckPickable::OnOverlapBegin);
+		Mesh->OnComponentHit.AddDynamic(this, &ARubberDuckPickable::OnHit);
 	}
 }
 
@@ -25,8 +35,7 @@ void ARubberDuckPickable::CallGuard() {
 	UE_LOG(LogTemp, Warning, TEXT("Quack Quack Bitch"));
 }
 
-void ARubberDuckPickable::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
-
+void ARubberDuckPickable::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit){
 	if (!HasQuacked) {
 		HasQuacked = true;
 		CallGuard();

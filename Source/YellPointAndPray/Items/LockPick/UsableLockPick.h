@@ -20,6 +20,6 @@ public:
 		virtual void Use_Implementation(AActor* User) override;
 
 
-		UFUNCTION(Client, Reliable)
-		void UseReal(AActor* User);
+		UFUNCTION(Server, Reliable)
+		void UseReal(AActor* User, UWorld* World);
 };

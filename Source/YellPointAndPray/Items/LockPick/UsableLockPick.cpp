@@ -15,10 +15,10 @@ AUsableLockPick::AUsableLockPick()
 void AUsableLockPick::Use_Implementation(AActor* User)
 {
     if (!HasAuthority()) return;
-    UseReal(User);
+    UseReal(User, GetWorld());
 }
 
-void AUsableLockPick::UseReal_Implementation(AActor* User)
+void AUsableLockPick::UseReal_Implementation(AActor* User, UWorld* World)
 {
     UE_LOG(LogTemp, Warning, TEXT("LockPick Used CLIENTSIDE!"));
 
@@ -45,9 +45,9 @@ void AUsableLockPick::UseReal_Implementation(AActor* User)
 
     // ray
     FColor lineColor = FColor::Red;
-    DrawDebugLine(GetWorld(), start, end, lineColor, true, -1, 0, 1.0f);
+    DrawDebugLine(World, start, end, lineColor, true, -1, 0, 1.0f);
 
-    if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECC_Visibility, params)) {
+    if (World->LineTraceSingleByChannel(hit, start, end, ECC_Visibility, params)) {
         if (AActor* hitObject = hit.GetActor()) {
             if (hitObject->IsA(ADoor::StaticClass()))
             {
