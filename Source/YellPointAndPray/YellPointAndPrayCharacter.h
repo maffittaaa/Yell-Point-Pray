@@ -12,6 +12,7 @@
 #include "CesarClass/InventoryObserver.h"
 #include "Items/RubberDuck/RubberDuckUsable.h"
 #include <Obstacles/Guard/Guard.h>
+#include "Blueprint/UserWidget.h"
 #include "YellPointAndPrayCharacter.generated.h"
 
 class UInputComponent;
@@ -81,6 +82,8 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		
 	public:
 		AYellPointAndPrayCharacter();
+
+		UUserWidget* GetGameOverWidget() const { return GameOverWidget; }
 
 		UFUNCTION(Client, Reliable)
 		void Client_KnockGuard(AGuard* GuardToKnock);
@@ -206,6 +209,8 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		virtual void Tick(float DeltaTime) override;
 
 	public:
+		UFUNCTION(Client, Reliable)
+		void Client_ShowGameOver();
 
 		UFUNCTION(BlueprintCallable)
 		void OnItemSelected(int SlotID);

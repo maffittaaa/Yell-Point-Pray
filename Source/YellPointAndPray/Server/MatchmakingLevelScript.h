@@ -21,13 +21,13 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	UFUNCTION()
-	void OnConnectClicked();
-
-	UFUNCTION()
 	void RefreshSessionList();
 
 	UPROPERTY()
 	UMatchmakingSubsystem* MatchSubsystem;
+
+	UFUNCTION()
+	void OnConnectClicked();
 
 	UFUNCTION()
 	void OnHostClicked();

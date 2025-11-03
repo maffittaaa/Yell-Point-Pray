@@ -6,13 +6,19 @@
 #include "YPPBlindCharacter.h"
 #include "YPPMuteCharacter.h"
 #include "YPPDeafCharacter.h"
+#include <GameFramework/GameMode.h>
 #include "GameFramework/GameStateBase.h"
+#include <UI/Menus/MenusLevelScript.h>
+#include <EnhancedInputSubsystems.h>
+#include <Kismet/GameplayStatics.h>
+#include <YellPointAndPrayPlayerController.h>
 
 AYPPCustomGameMode::AYPPCustomGameMode()
 {
     PlayerStateClass = AYPPCustomPlayerState::StaticClass();
-
+    //GetWorld()->GetNetDriver()->SetNetDriverName(NAME_GameNetDriver);
     DefaultPawnClass = nullptr;
+    bUseSeamlessTravel = true;
 }
 
 void AYPPCustomGameMode::PostLogin(APlayerController* NewPlayer)
@@ -45,7 +51,6 @@ void AYPPCustomGameMode::PostLogin(APlayerController* NewPlayer)
             case EPlayerType::Mute:
                 bHasMute = true;
                 break;
-
             }
         }
     }
@@ -66,6 +71,12 @@ void AYPPCustomGameMode::PostLogin(APlayerController* NewPlayer)
     }
 
     PlayerState->SetPlayerType(AssignedRole);
+
+    if (GetWorld()->GetGameState()->PlayerArray.Num() == 1)
+    {
+        PlayerState->IsHost = true;
+    }
+
     TSubclassOf<APawn> PawnClassToSpawn = nullptr;
 
     if (AssignedRole == EPlayerType::Blind)
@@ -110,17 +121,62 @@ void AYPPCustomGameMode::GameOver(bool State)
 {
     UE_LOG(LogTemp, Warning, TEXT("Game Over"));
 
-    for (APawn* Player : PlayersArray) 
+    for (APawn* Player : PlayersArray)
     {
         AYellPointAndPrayCharacter* CurrentPlayer = Cast<AYellPointAndPrayCharacter>(Player);
-
-        if (CurrentPlayer) 
+        if (CurrentPlayer)
         {
-            if (CurrentPlayer->GameOverWidgetClass)
-            {
-                CurrentPlayer->GameOverWidget;
-                UE_LOG(LogTemp, Warning, TEXT("Found Treasure and works"));
-            }
+            CurrentPlayer->Client_ShowGameOver();
         }
     }
+}
+
+void AYPPCustomGameMode::GameOverScreen(UUserWidget* PlayerWidget)
+{
+    UE_LOG(LogTemp, Warning, TEXT("Game Over Screen"));
+
+    AMenusLevelScript* LevelScript = Cast<AMenusLevelScript>(GetWorld()->GetLevelScriptActor());
+    if (LevelScript)
+    {
+        LevelScript->RegisterPlayerGameOverWidget(PlayerWidget);
+    }
+}
+
+void AYPPCustomGameMode::RestartGame()
+{
+    if (!HasAuthority())
+    {
+        return;
+    }
+    
+    GetWorld()->GetGameState()->PlayerArray.Empty();
+
+    FString MapPath = "/Game/FirstPerson/Lvl_FirstPerson";
+    GetWorld()->ServerTravel(MapPath + "?listen", true);
+    UE_LOG(LogTemp, Warning, TEXT("Server traveling to: %s"), *MapPath);
+
+    // Find the host player and only have the server travel
+    //for (APawn* Player : PlayersArray)
+    //{
+    //    AYellPointAndPrayCharacter* CurrentPlayer = Cast<AYellPointAndPrayCharacter>(Player);
+    //    if (CurrentPlayer)
+    //    {
+    //        AYellPointAndPrayPlayerController* PC = Cast<AYellPointAndPrayPlayerController>(CurrentPlayer->GetController());
+    //        if (PC)
+    //        {
+    //            AYPPCustomPlayerState* PlayerState = PC->GetPlayerState<AYPPCustomPlayerState>();
+    //            if (PlayerState && PlayerState->IsHost)
+    //            {
+    //                // Only the server calls ServerTravel once
+    //                // This will automatically bring all connected clients to the new map
+    //                FString MapPath = "/Game/FirstPerson/Lvl_FirstPerson?listen";
+    //                GetWorld()->ServerTravel(MapPath, true); // true = absolute travel
+    //                UE_LOG(LogTemp, Warning, TEXT("Host initiating server travel to: %s"), *MapPath);
+    //                return; // Exit after finding the host
+    //            }
+    //        }
+    //    }
+    //}
+
+    UE_LOG(LogTemp, Warning, TEXT("No host found to restart game"));
 }

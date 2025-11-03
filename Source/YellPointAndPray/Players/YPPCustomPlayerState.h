@@ -21,6 +21,9 @@ class YELLPOINTANDPRAY_API AYPPCustomPlayerState : public APlayerState
 public:
 	AYPPCustomPlayerState();
 
+	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere)
+	bool IsHost = false;
+
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerType, BlueprintReadOnly, Category = "Role")
 	EPlayerType PlayerType = EPlayerType::None;
 

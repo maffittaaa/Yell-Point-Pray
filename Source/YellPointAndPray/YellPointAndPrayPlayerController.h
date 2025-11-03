@@ -26,6 +26,12 @@ public:
 	/** Constructor */
 	AYellPointAndPrayPlayerController();
 
+	UFUNCTION(Server, Reliable)
+	void Server_OnRestartClicked();
+
+	UFUNCTION(Server, Reliable)
+	void Server_OnBackToMainMenuClicked();
+
 	UFUNCTION(BlueprintCallable)
 	void OnSuccessfullyJoinedGameServer();
 

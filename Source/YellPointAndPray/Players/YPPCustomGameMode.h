@@ -3,7 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "YellPointAndPrayCharacter.h"
 #include "GameFramework/GameModeBase.h"
+#include <GameFramework/GameMode.h>
+#include <GameFramework/GameSession.h>
 #include "YPPCustomGameMode.generated.h"
 
 /**
@@ -22,6 +25,10 @@ public:
     virtual void PostLogin(APlayerController* NewPlayer) override;
 
     void GameOver(bool State);
+
+    void GameOverScreen(UUserWidget* PlayerWidget);
+
+    void RestartGame();
 
     UPROPERTY(EditDefaultsOnly, Category = "Asymmetric")
     TSubclassOf<APawn> BlindClass;

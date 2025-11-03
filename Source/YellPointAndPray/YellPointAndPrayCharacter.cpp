@@ -22,6 +22,7 @@
 #include "YellPointAndPrayPlayerController.h"
 #include <Items/Treasure/TreasurePickable.h>
 #include <Players/YPPCustomGameMode.h>
+#include <UI/Menus/MenusLevelScript.h>
 
 using namespace std;
 
@@ -577,6 +578,40 @@ void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME(AYellPointAndPrayCharacter, DuckUsing);
 }
 
+void AYellPointAndPrayCharacter::Client_ShowGameOver_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Client_ShowGameOver called on client"));
+
+	if (GameOverWidget && !GameOverWidget->IsInViewport())
+	{
+		GameOverWidget->AddToViewport();
+		UE_LOG(LogTemp, Warning, TEXT("Game Over widget added to viewport"));
+
+		APlayerController* PC = Cast<APlayerController>(GetController());
+
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			AMenusLevelScript* LevelScript = Cast<AMenusLevelScript>(World->GetLevelScriptActor());
+
+			if (LevelScript && PC)
+			{
+				LevelScript->SetLocalPlayerController(PC);
+				LevelScript->RegisterPlayerGameOverWidget(GameOverWidget);
+			}
+		}
+
+		//Pause game and show cursor
+		if (PC)
+		{
+			PC->SetPause(true);
+			FInputModeUIOnly InputMode;
+			PC->SetInputMode(InputMode);
+			PC->bShowMouseCursor = true;
+		}
+	}
+}
+
 void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject, AYellPointAndPrayCharacter* character)
 {
 	if (!HasAuthority()) return;
@@ -593,16 +628,12 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 			{
 				AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
 
-				GameMode->GameOver(true);
-
-				/*if (GameOverWidgetClass)
+				if (GameMode)
 				{
-					GameOverWidget->AddToViewport();
-					UE_LOG(LogTemp, Warning, TEXT("Found Treasure and works"));
+					GameMode->GameOver(true);
 				}
-				UE_LOG(LogTemp, Warning, TEXT("Yheaa"));*/
 
-				return;
+				//return;
 			}
 
 			APickableItem* PickableItem = Cast<APickableItem>(hitObject);
@@ -730,7 +761,8 @@ void AYellPointAndPrayCharacter::CharacterStopDrawing(const FInputActionValue& v
 
 
 
-void AYellPointAndPrayCharacter::Tick(float DeltaTime) {
+void AYellPointAndPrayCharacter::Tick(float DeltaTime) 
+{
 	Super::Tick(DeltaTime);
 	if (interactWidgetClass)
 		AddTraceAndWidget();

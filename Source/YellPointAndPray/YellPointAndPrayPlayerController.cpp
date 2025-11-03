@@ -9,6 +9,7 @@
 #include "Blueprint/UserWidget.h"
 #include "YellPointAndPray.h"
 #include "Widgets/Input/SVirtualJoystick.h"
+#include <Players/YPPCustomGameMode.h>
 
 AYellPointAndPrayPlayerController::AYellPointAndPrayPlayerController()
 {
@@ -36,7 +37,6 @@ void AYellPointAndPrayPlayerController::BeginPlay()
 			UE_LOG(LogYellPointAndPray, Error, TEXT("Could not spawn mobile controls widget."));
 
 		}
-
 	}
 }
 
@@ -65,7 +65,6 @@ void AYellPointAndPrayPlayerController::SetupInputComponent()
 			}
 		}
 	}
-	
 }
 
 void AYellPointAndPrayPlayerController::OnSuccessfullyJoinedGameServer()
@@ -109,5 +108,27 @@ void AYellPointAndPrayPlayerController::OnPlayerJoinedGame(const FString& Player
 	if (VoiceSubsystem)
 	{
 		VoiceSubsystem->UpdatePlayerPosition(PlayerId, Position);
+	}
+}
+
+void AYellPointAndPrayPlayerController::Server_OnBackToMainMenuClicked_Implementation()
+{
+	UE_LOG(LogTemp, Log, TEXT("Back to Main Menu in the Server"));
+
+}
+
+void AYellPointAndPrayPlayerController::Server_OnRestartClicked_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Restarting Level in the Server..."));
+
+	AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
+
+	if (GameMode)
+	{
+		GameMode->RestartGame();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("No GameMode Found"));
 	}
 }

@@ -29,4 +29,5 @@ void AYPPCustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AYPPCustomPlayerState, PlayerType);
+	DOREPLIFETIME(AYPPCustomPlayerState, IsHost);
 }
