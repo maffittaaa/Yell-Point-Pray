@@ -9,10 +9,10 @@ ACamera::ACamera() {
 	
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 
-	dynamicMeshComponent = CreateDefaultSubobject<UDynamicMeshComponent>(TEXT("MeshComp"));
-	dynamicMeshComponent->SetupAttachment(RootComponent);
+	staticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+	staticMeshComponent->SetupAttachment(RootComponent);
 
-	dynamicMesh = dynamicMeshComponent->GetDynamicMesh();
+	// dynamicMesh = dynamicMeshComponent->GetDynamicMesh();
 
 	SuspicionMax = 100;
 }
@@ -25,37 +25,7 @@ void ACamera::BeginPlay() {
 
 void ACamera::LoadVisionMesh() {
 	TArray<FHitResult> hitResults = DoLineTraces();
-
-	if (hitResults.Num() < 3) {
-		UE_LOG(LogTemp, Warning, TEXT("Not enough hit results for polygon: %d"), hitResults.Num());
-        
-		// Add some default vertices to create a basic triangle
-		TArray<FVector2D> defaultVertices;
-		defaultVertices.Add(FVector2D(0.0f, 0.0f));
-		defaultVertices.Add(FVector2D(100.0f, 50.0f));
-		defaultVertices.Add(FVector2D(100.0f, -50.0f));
-        
-		UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon(
-			dynamicMesh,
-			FGeometryScriptPrimitiveOptions(),
-			FTransform::Identity,
-			defaultVertices,
-			true,
-			nullptr
-		);
-		return;
-	}
-
-	TArray<FVector2D> vertices = HitResultsTo2DVertices(hitResults);
-	
-	UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon(
-		dynamicMesh,
-		FGeometryScriptPrimitiveOptions(),
-		FTransform::Identity,
-		vertices,
-		true,
-		nullptr
-		);
+	// TArray<FVector2D> vertices = HitResultsTo2DVertices(hitResults);
 }
 
 TArray<FHitResult> ACamera::DoLineTraces() {
@@ -77,18 +47,20 @@ TArray<FHitResult> ACamera::DoLineTraces() {
 		FVector rotatedVector = forwardVector.RotateAngleAxis(angleDeg, FVector(0.0f, 0.0f, 1.0f));
 		FVector end = start + (rotatedVector * visionLength);
 
+		UKismetMathLibrary::Dot_VectorVector(start, end);
+
 		ECollisionChannel traceChannel = ECC_Visibility;
 		FCollisionQueryParams RV_TraceParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), false, this);
-		RV_TraceParams.bTraceComplex = false;
+		RV_TraceParams.bTraceComplex = true;
 		RV_TraceParams.bReturnPhysicalMaterial = false;
 		RV_TraceParams.AddIgnoredActor(this);
 
-		FHitResult RV_Hit;
+		TArray<FHitResult> MultiHit;
 		
 		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.0f, 0, 1.0f);
 
-		bool bHit = GetWorld()->LineTraceSingleByChannel(
-			RV_Hit,
+		bool bHit = GetWorld()->LineTraceMultiByChannel(
+			MultiHit,
 			start,
 			end,
 			traceChannel,
@@ -96,27 +68,27 @@ TArray<FHitResult> ACamera::DoLineTraces() {
 		);
 
 		if (bHit)
-			HitResults.Add(RV_Hit);
+			HitResults.Append(MultiHit);
 	}
 	return HitResults;
 }
 
-TArray<FVector2D> ACamera::HitResultsTo2DVertices(TArray<FHitResult>& hitResults) {
-	TArray<FVector2D> hitVector;
-	
-	for (FHitResult hitResult : hitResults) {
-		FVector location = hitResult.Location;
-		FVector traceEnd = hitResult.TraceEnd;
-		
-		FVector finalPosition = hitResult.bBlockingHit ? location : traceEnd;
-		FVector localLocation = UKismetMathLibrary::InverseTransformLocation(GetActorTransform(), finalPosition);
-		FVector2D localLocation2D = FVector2D(localLocation.X, localLocation.Y);
-		
-		hitVector.Add(localLocation2D);
-	}
-	
-	return hitVector;
-}
+// TArray<FVector2D> ACamera::HitResultsTo2DVertices(TArray<FHitResult>& hitResults) {
+// 	TArray<FVector2D> hitVector;
+// 	
+// 	for (FHitResult hitResult : hitResults) {
+// 		FVector location = hitResult.Location;
+// 		FVector traceEnd = hitResult.TraceEnd;
+// 		
+// 		FVector finalPosition = hitResult.bBlockingHit ? location : traceEnd;
+// 		FVector localLocation = UKismetMathLibrary::InverseTransformLocation(GetActorTransform(), finalPosition);
+// 		FVector2D localLocation2D = FVector2D(localLocation.X, localLocation.Y);
+// 		
+// 		hitVector.Add(localLocation2D);
+// 	}
+// 	
+// 	return hitVector;
+// }
 
 void ACamera::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
 
@@ -183,6 +155,6 @@ void ACamera::Tick(float DeltaTime) {
 	PlayerInVision(DeltaTime);
 	NoPlayerInVision(DeltaTime);
 
-	//LoadVisionMesh();
+	LoadVisionMesh();
 }
 

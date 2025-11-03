@@ -22,10 +22,10 @@ class YELLPOINTANDPRAY_API ACamera : public AActor
 		ACamera();
 		
 		UPROPERTY(VisibleAnywhere)
-		UDynamicMeshComponent* dynamicMeshComponent;
+		UStaticMeshComponent* staticMeshComponent;
 
-		UPROPERTY(VisibleAnywhere)
-		UDynamicMesh* dynamicMesh;
+		// UPROPERTY(VisibleAnywhere)
+		// UDynamicMesh* dynamicMesh;
 
 		UPROPERTY(VisibleAnywhere)
 		float visionArc = 70.0f;
@@ -39,8 +39,8 @@ class YELLPOINTANDPRAY_API ACamera : public AActor
 		UFUNCTION()
 		TArray<FHitResult> DoLineTraces();
 
-		UFUNCTION()
-		TArray<FVector2D> HitResultsTo2DVertices(TArray<FHitResult>& hitResults);
+		// UFUNCTION()
+		// TArray<FVector2D> HitResultsTo2DVertices(TArray<FHitResult>& hitResults);
 
 		UFUNCTION()
 		void LoadVisionMesh();
