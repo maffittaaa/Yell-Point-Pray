@@ -12,7 +12,11 @@ ACamera::ACamera() {
 	staticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	staticMeshComponent->SetupAttachment(RootComponent);
 
-	// dynamicMesh = dynamicMeshComponent->GetDynamicMesh();
+	collisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision Box"));
+	collisionBox->SetupAttachment(RootComponent);
+	collisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	collisionBox->OnComponentBeginOverlap.AddDynamic(this, &ACamera::OnOverlapBegin);
+	collisionBox->OnComponentEndOverlap.AddDynamic(this, &ACamera::OnOverlapEnd);
 
 	SuspicionMax = 100;
 }
@@ -25,7 +29,7 @@ void ACamera::BeginPlay() {
 
 void ACamera::LoadVisionMesh() {
 	TArray<FHitResult> hitResults = DoLineTraces();
-	// TArray<FVector2D> vertices = HitResultsTo2DVertices(hitResults);
+	TArray<FVector2D> vertices = HitResultsTo2DVertices(hitResults);
 }
 
 TArray<FHitResult> ACamera::DoLineTraces() {
@@ -73,22 +77,22 @@ TArray<FHitResult> ACamera::DoLineTraces() {
 	return HitResults;
 }
 
-// TArray<FVector2D> ACamera::HitResultsTo2DVertices(TArray<FHitResult>& hitResults) {
-// 	TArray<FVector2D> hitVector;
-// 	
-// 	for (FHitResult hitResult : hitResults) {
-// 		FVector location = hitResult.Location;
-// 		FVector traceEnd = hitResult.TraceEnd;
-// 		
-// 		FVector finalPosition = hitResult.bBlockingHit ? location : traceEnd;
-// 		FVector localLocation = UKismetMathLibrary::InverseTransformLocation(GetActorTransform(), finalPosition);
-// 		FVector2D localLocation2D = FVector2D(localLocation.X, localLocation.Y);
-// 		
-// 		hitVector.Add(localLocation2D);
-// 	}
-// 	
-// 	return hitVector;
-// }
+TArray<FVector2D> ACamera::HitResultsTo2DVertices(TArray<FHitResult>& hitResults) {
+	TArray<FVector2D> hitVector;
+	
+	for (FHitResult hitResult : hitResults) {
+		FVector location = hitResult.Location;
+		FVector traceEnd = hitResult.TraceEnd;
+		
+		FVector finalPosition = hitResult.bBlockingHit ? location : traceEnd;
+		FVector localLocation = UKismetMathLibrary::InverseTransformLocation(GetActorTransform(), finalPosition);
+		FVector2D localLocation2D = FVector2D(localLocation.X, localLocation.Y);
+		
+		hitVector.Add(localLocation2D);
+	}
+	
+	return hitVector;
+}
 
 void ACamera::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
 

@@ -3,13 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UDynamicMesh.h"
-#include "Components/DynamicMeshComponent.h"
+#include "Builders/ConeBuilder.h"
+#include "Components/BoxComponent.h"
 #include "Containers/Map.h"
 #include "GameFramework/Actor.h"
-#include "GeometryScript/MeshAssetFunctions.h"
-#include "GeometryScript/MeshBasicEditFunctions.h"
-#include "GeometryScript/MeshPrimitiveFunctions.h"
 #include "Camera.generated.h"
 
 UCLASS()
@@ -24,8 +21,8 @@ class YELLPOINTANDPRAY_API ACamera : public AActor
 		UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* staticMeshComponent;
 
-		// UPROPERTY(VisibleAnywhere)
-		// UDynamicMesh* dynamicMesh;
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
+		UBoxComponent* collisionBox;
 
 		UPROPERTY(VisibleAnywhere)
 		float visionArc = 70.0f;
@@ -39,8 +36,8 @@ class YELLPOINTANDPRAY_API ACamera : public AActor
 		UFUNCTION()
 		TArray<FHitResult> DoLineTraces();
 
-		// UFUNCTION()
-		// TArray<FVector2D> HitResultsTo2DVertices(TArray<FHitResult>& hitResults);
+		UFUNCTION()
+		TArray<FVector2D> HitResultsTo2DVertices(TArray<FHitResult>& hitResults);
 
 		UFUNCTION()
 		void LoadVisionMesh();
