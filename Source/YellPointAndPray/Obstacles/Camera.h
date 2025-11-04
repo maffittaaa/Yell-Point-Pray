@@ -21,8 +21,8 @@ class YELLPOINTANDPRAY_API ACamera : public AActor
 		UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* staticMeshComponent;
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
-		UBoxComponent* collisionBox;
+		// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision Cone")
+		// UConeBuilder* collisionCone;
 
 		UPROPERTY(VisibleAnywhere)
 		float visionArc = 70.0f;

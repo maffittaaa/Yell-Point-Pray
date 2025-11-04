@@ -11,12 +11,9 @@ ACamera::ACamera() {
 
 	staticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	staticMeshComponent->SetupAttachment(RootComponent);
-
-	collisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision Box"));
-	collisionBox->SetupAttachment(RootComponent);
-	collisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	collisionBox->OnComponentBeginOverlap.AddDynamic(this, &ACamera::OnOverlapBegin);
-	collisionBox->OnComponentEndOverlap.AddDynamic(this, &ACamera::OnOverlapEnd);
+	
+	// collisionCone->OnComponentBeginOverlap.AddDynamic(this, &ACamera::OnOverlapBegin);
+	// collisionCone->OnComponentEndOverlap.AddDynamic(this, &ACamera::OnOverlapEnd);
 
 	SuspicionMax = 100;
 }
