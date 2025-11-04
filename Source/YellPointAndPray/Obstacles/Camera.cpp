@@ -69,8 +69,8 @@ void ACamera::PlayerInVision(float DeltaTime) {
 	if (AmountOfPlayers > 0) {
 		for (auto& Elem : PlayersSeenList) {
 			suspiciousMark->SetHiddenInGame(false);
-			float SuspiciousAmount = Elem.Value + (70 * DeltaTime * AmountOfPlayers);
-			Elem.Value = SuspiciousAmount;
+			suspiciousAmount = Elem.Value + (70 * DeltaTime * AmountOfPlayers);
+			Elem.Value = suspiciousAmount;
 			UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %d"), (int)Elem.Value);
 			if (Elem.Value >= SuspicionMax) {
 				suspiciousMark->SetHiddenInGame(true);
@@ -86,8 +86,8 @@ void ACamera::NoPlayerInVision(float DeltaTime) {
 	TArray<AActor*> ToDelete;
 	
 	for (auto& Elem : PlayersNotSeenList) {
-		float SuspiciousAmount = Elem.Value - (50 * DeltaTime);
-		Elem.Value = SuspiciousAmount;
+		suspiciousAmount = Elem.Value - (50 * DeltaTime);
+		Elem.Value = suspiciousAmount;
 		UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %d"), (int)Elem.Value);
 		if (Elem.Value <= 0) {
 			suspiciousMark->SetHiddenInGame(true);
@@ -105,6 +105,7 @@ void ACamera::NoPlayerInVision(float DeltaTime) {
 void ACamera::ResetCameraObstacle() {
 	suspiciousMark->SetHiddenInGame(true);
 	alertedMark->SetHiddenInGame(true);
+	suspiciousAmount = 0.0f;
 }
 
 void ACamera::Tick(float DeltaTime) {

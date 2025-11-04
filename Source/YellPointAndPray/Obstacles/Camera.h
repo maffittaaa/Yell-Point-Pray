@@ -30,6 +30,8 @@ class YELLPOINTANDPRAY_API ACamera : public AActor
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Alerted Mark")
 		UStaticMeshComponent* alertedMark;
 
+		float suspiciousAmount = 0.0f;
+
 	protected:
 		// Called when the game starts or when spawned
 		virtual void BeginPlay() override;
