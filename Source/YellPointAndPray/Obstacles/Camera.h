@@ -25,7 +25,10 @@ class YELLPOINTANDPRAY_API ACamera : public AActor
 		UStaticMeshComponent* collisionCone;
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Suspicious Mark")
-		UStaticMeshComponent* suspiciousMark;		
+		UStaticMeshComponent* suspiciousMark;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Alerted Mark")
+		UStaticMeshComponent* alertedMark;
 
 	protected:
 		// Called when the game starts or when spawned

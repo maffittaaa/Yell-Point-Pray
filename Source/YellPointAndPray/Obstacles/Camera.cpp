@@ -21,6 +21,13 @@ ACamera::ACamera() {
 
 	suspiciousMark = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Suspicious Mark"));
 	suspiciousMark->SetupAttachment(RootComponent);
+	suspiciousMark->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	suspiciousMark->SetHiddenInGame(true);
+	
+	alertedMark = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Alerted Mark"));
+	alertedMark->SetupAttachment(RootComponent);
+	alertedMark->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	alertedMark->SetHiddenInGame(true);
 
 	SuspicionMax = 100;
 }
@@ -61,12 +68,13 @@ void ACamera::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 void ACamera::PlayerInVision(float DeltaTime) {
 	if (AmountOfPlayers > 0) {
 		for (auto& Elem : PlayersSeenList) {
-
-			
+			suspiciousMark->SetHiddenInGame(false);
 			float SuspiciousAmount = Elem.Value + (70 * DeltaTime * AmountOfPlayers);
 			Elem.Value = SuspiciousAmount;
 			UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %d"), (int)Elem.Value);
 			if (Elem.Value >= SuspicionMax) {
+				suspiciousMark->SetHiddenInGame(true);
+				alertedMark->SetHiddenInGame(false);
 				ICaughtable::Execute_Caught(Elem.Key);
 				AmountOfPlayers = 0;
 			}
@@ -82,6 +90,7 @@ void ACamera::NoPlayerInVision(float DeltaTime) {
 		Elem.Value = SuspiciousAmount;
 		UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %d"), (int)Elem.Value);
 		if (Elem.Value <= 0) {
+			suspiciousMark->SetHiddenInGame(true);
 			ToDelete.Add(Elem.Key);
 			continue;
 		}
