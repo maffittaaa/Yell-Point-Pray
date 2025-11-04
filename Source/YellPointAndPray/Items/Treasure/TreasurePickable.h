@@ -14,4 +14,6 @@ class YELLPOINTANDPRAY_API ATreasurePickable : public APickableItem
 {
 	GENERATED_BODY()
 	
+private:
+	ATreasurePickable();
 };

@@ -7,10 +7,11 @@
 #include "Components/BoxComponent.h"
 #include "Containers/Map.h"
 #include "GameFramework/Actor.h"
+#include "Interfaces/Reset.h"
 #include "Camera.generated.h"
 
 UCLASS()
-class YELLPOINTANDPRAY_API ACamera : public AActor
+class YELLPOINTANDPRAY_API ACamera : public AActor, public IReset
 {
 	GENERATED_BODY()
 
@@ -50,6 +51,8 @@ class YELLPOINTANDPRAY_API ACamera : public AActor
 	public:
 		// Called every frame
 		virtual void Tick(float DeltaTime) override;
+
+		virtual void Reset_Implementation() override;
 
 		UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

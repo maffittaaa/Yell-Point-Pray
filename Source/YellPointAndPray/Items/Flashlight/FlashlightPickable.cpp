@@ -5,6 +5,6 @@
 
 AFlashlightPickable::AFlashlightPickable()
 {
-	Name = "Flashlight";
+	Name = "Flashlight Pickable";
 	ID = 5;
 }

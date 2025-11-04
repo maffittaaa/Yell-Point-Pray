@@ -17,7 +17,9 @@ AGuard::AGuard()
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
 	PawnSensingComp->SightRadius = 2000.f;
 	PawnSensingComp->HearingThreshold = 1000.f;
-	PawnSensingComp->SetPeripheralVisionAngle(45.f);	
+	PawnSensingComp->SetPeripheralVisionAngle(45.f);
+	
+	UE_LOG(LogTemp, Warning, TEXT("GUARD"));
 }
 
 void AGuard::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

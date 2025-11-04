@@ -5,7 +5,7 @@
 
 AToyHammerPickable::AToyHammerPickable()
 {
-	Name = "Toy Hammer";
+	Name = "Toy Hammer Pickable";
 	ID = 1;
 }
 

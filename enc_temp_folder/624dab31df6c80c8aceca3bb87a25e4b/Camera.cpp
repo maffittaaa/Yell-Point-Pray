@@ -30,6 +30,7 @@ ACamera::ACamera() {
 	alertedMark->SetHiddenInGame(true);
 
 	SuspicionMax = 100;
+	UE_LOG(LogTemp, Warning, TEXT("CAMERA"));
 }
 
 void ACamera::BeginPlay() {

@@ -15,10 +15,10 @@ void AToyHammerUsable::Use_Implementation(AActor* User)
     AYellPointAndPrayCharacter* Player = Cast<AYellPointAndPrayCharacter>(User);
     if (!Player) return;
 
-    AGuard* Guard = Player->CurrentGuard;
-    if (Guard == nullptr) return;
+    AActor* KnockableActor = Player->KnockableActor;
+    if (KnockableActor == nullptr) return;
 
-    Player->Client_KnockGuard(Guard);
+    Player->Client_KnockGuard(KnockableActor);
 
     UE_LOG(LogTemp, Warning, TEXT("Toy Hammer Used CARALHOOO!"));
 }

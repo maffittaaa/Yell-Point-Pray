@@ -6,6 +6,9 @@
 #include <Net/UnrealNetwork.h>
 
 ARubberDuckUsable::ARubberDuckUsable() {
+	Name = "Rubber Duck Usable";
+	ID = 4;
+
 	PrimaryActorTick.bCanEverTick = true;
 	PlayerActor = nullptr;
 }

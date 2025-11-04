@@ -13,5 +13,7 @@ UCLASS()
 class YELLPOINTANDPRAY_API ATreasureUsable : public AUsableItem
 {
 	GENERATED_BODY()
-	
+
+private:
+	ATreasureUsable();
 };

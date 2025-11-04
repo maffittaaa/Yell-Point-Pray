@@ -147,6 +147,24 @@ void AYPPCustomGameMode::RestartGame()
 
     for (auto& Actor : Resetables)
     {
-        IReset::Execute_Reset(Actor);
+        if (Actor->GetClass()->ImplementsInterface(UInventorySubject::StaticClass()))
+        {
+            IReset::Execute_Reset(Actor);
+        }
+    }
+
+    for (APawn* Player : PlayersArray)
+    {
+        AYellPointAndPrayCharacter* CurrentPlayer = Cast<AYellPointAndPrayCharacter>(Player);
+        if (CurrentPlayer)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Has Player"));
+            AYellPointAndPrayPlayerController* PC = Cast<AYellPointAndPrayPlayerController>(CurrentPlayer->GetController());
+            if (PC)
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Has Player Controller"));
+                CurrentPlayer->Client_HideGameOver();
+            }
+        }
     }
 }

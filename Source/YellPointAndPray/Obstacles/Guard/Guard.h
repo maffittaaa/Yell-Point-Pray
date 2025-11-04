@@ -7,10 +7,11 @@
 #include "Perception/PawnSensingComponent.h"
 #include "Interfaces/Knockable.h"
 #include "AIController.h"
+#include "Interfaces/Reset.h"
 #include "Guard.generated.h"
 
 UCLASS()
-class YELLPOINTANDPRAY_API AGuard : public ACharacter, public IKnockable
+class YELLPOINTANDPRAY_API AGuard : public ACharacter, public IKnockable, public IReset
 {
 	GENERATED_BODY()
 
@@ -67,6 +68,7 @@ public:
 	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere, Category = "Knocked")
 	bool Knocked = false;
 
+	virtual void Reset_Implementation() override;
 
 	virtual void Knock_Implementation() override;
 

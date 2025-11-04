@@ -3,3 +3,7 @@
 
 #include "Items/Treasure/TreasureUsable.h"
 
+ATreasureUsable::ATreasureUsable() {
+	Name = "Treasure Usable";
+	ID = 0;
+}

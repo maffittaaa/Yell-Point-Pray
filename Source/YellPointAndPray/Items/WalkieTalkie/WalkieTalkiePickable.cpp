@@ -5,6 +5,6 @@
 
 AWalkieTalkiePickable::AWalkieTalkiePickable()
 {
-	Name = "WalkieTalkie Usable";
+	Name = "WalkieTalkie Pickable";
 	ID = 2;
 }

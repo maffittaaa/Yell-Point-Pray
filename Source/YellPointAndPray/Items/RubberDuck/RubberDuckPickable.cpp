@@ -5,7 +5,7 @@
 #include <Net/UnrealNetwork.h>
 
 ARubberDuckPickable::ARubberDuckPickable() {
-	Name = "Rubber Duck";
+	Name = "Rubber Duck Pickable";
 	ID = 4;
 
 	SphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollider"));

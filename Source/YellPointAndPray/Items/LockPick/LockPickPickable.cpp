@@ -5,6 +5,6 @@
 
 ALockPickPickable::ALockPickPickable()
 {
-	Name = "LockPick Usable";
+	Name = "LockPick Pickable";
 	ID = 3;
 }

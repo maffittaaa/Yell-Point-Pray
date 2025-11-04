@@ -131,15 +131,11 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 	if (GameOverWidgetClass)
 		GameOverWidget = CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetClass, FName("GameOver"));
 
-	StartLocation = GetActorLocation();
-	StartRotation = GetActorRotation();
 	enumVariable = InGame;
 }
 
 void AYellPointAndPrayCharacter::Reset_Implementation()
 {
-	TeleportTo(StartLocation, StartRotation);
-	Client_HideGameOver();
 	UE_LOG(LogTemp, Warning, TEXT("CHARACTER-specific reset called!"));
 }
 

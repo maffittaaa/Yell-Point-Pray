@@ -7,10 +7,11 @@
 #include "Components/SphereComponent.h"
 #include "YellPointAndPrayCharacter.h"
 #include "NiagaraComponent.h"
+#include "Interfaces/Reset.h"
 #include "Laser.generated.h"
 
 UCLASS()
-class YELLPOINTANDPRAY_API ALaser : public AActor
+class YELLPOINTANDPRAY_API ALaser : public AActor, public IReset
 {
 	GENERATED_BODY()
 	
@@ -45,6 +46,8 @@ class YELLPOINTANDPRAY_API ALaser : public AActor
 
 	public:	
 		// Called every frame
+		virtual void Reset_Implementation() override;
+
 		virtual void Tick(float DeltaTime) override;
 
 };

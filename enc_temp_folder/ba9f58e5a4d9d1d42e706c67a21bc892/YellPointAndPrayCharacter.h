@@ -210,8 +210,7 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		virtual void Tick(float DeltaTime) override;
 
 	public:
-		FVector StartLocation;
-		FRotator StartRotation;
+
 
 		UFUNCTION(Client, Reliable)
 		void Client_ShowGameOver(bool State);

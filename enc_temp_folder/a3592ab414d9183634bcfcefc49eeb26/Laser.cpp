@@ -22,6 +22,8 @@ ALaser::ALaser() {
 
 	niagaraLaserImpact = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NSLaserImpact"));
 	niagaraLaserImpact->SetupAttachment(RootComponent);
+
+	UE_LOG(LogTemp, Warning, TEXT("LAZER"));
 }
 
 void ALaser::BeginPlay() {
