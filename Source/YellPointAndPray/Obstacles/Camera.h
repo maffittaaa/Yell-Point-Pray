@@ -18,29 +18,14 @@ class YELLPOINTANDPRAY_API ACamera : public AActor
 		// Sets default values for this actor's properties
 		ACamera();
 		
-		UPROPERTY(VisibleAnywhere)
-		UStaticMeshComponent* staticMeshComponent;
+		UPROPERTY(VisibleAnywhere, Category = "Camera Mesh")
+		UStaticMeshComponent* cameraMeshComponent;
 
-		// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision Cone")
-		// UConeBuilder* collisionCone;
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision Cone")
+		UStaticMeshComponent* collisionCone;
 
-		UPROPERTY(VisibleAnywhere)
-		float visionArc = 70.0f;
-
-		UPROPERTY(VisibleAnywhere)
-		float testVisionArc = 6.0f;
-
-		UPROPERTY(VisibleAnywhere)
-		float visionLength = 500.0f;
-	
-		UFUNCTION()
-		TArray<FHitResult> DoLineTraces();
-
-		UFUNCTION()
-		TArray<FVector2D> HitResultsTo2DVertices(TArray<FHitResult>& hitResults);
-
-		UFUNCTION()
-		void LoadVisionMesh();
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Suspicious Mark")
+		UStaticMeshComponent* suspiciousMark;		
 
 	protected:
 		// Called when the game starts or when spawned
