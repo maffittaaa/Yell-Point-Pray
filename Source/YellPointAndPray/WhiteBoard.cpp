@@ -16,25 +16,36 @@ AWhiteBoard::AWhiteBoard() {
 	dynamicMaterialInstanceBrush = nullptr;
 }
 
+
+void AWhiteBoard::ServerSetMaterial()
+{
+	meshComp->SetMaterial(0, dynamicMaterialInstanceCanvas);
+}
+
 void AWhiteBoard::BeginPlay() {
 	Super::BeginPlay();
+	
 
 	int width = 1024;
 	int height = 1024;
 
 	renderTarget2D = UKismetRenderingLibrary::CreateRenderTarget2D(this, width, height, RTF_RGBA16f);
 	renderTarget2D->ClearColor = FColor::White;
-
+	
 	dynamicMaterialInstanceCanvas = UMaterialInstanceDynamic::Create(materialCanvas, this);
 	dynamicMaterialInstanceCanvas->SetTextureParameterValue(FName("RenderTarget"), renderTarget2D);
 	
-	meshComp->SetMaterial(0, dynamicMaterialInstanceCanvas);
+	ServerSetMaterial();
 	
 	dynamicMaterialInstanceBrush = UMaterialInstanceDynamic::Create(materialBrush, this);
 
 	if (canvasTexture)
 		InitializeBackground();
+
+
 }
+
+
 
 void AWhiteBoard::Interact_Implementation(AActor* Interactor) {
 	UE_LOG(LogTemp, Warning, TEXT("Show Board"));
@@ -68,7 +79,7 @@ void AWhiteBoard::InitializeBackground() {
 			FVector2D(1.0f, 1.0f),
 			FLinearColor::White,
 			BLEND_Translucent,
-			1.0f,
+			0.0f,
 			FVector2D(0.0f, 0.0f)
 		);
 	}

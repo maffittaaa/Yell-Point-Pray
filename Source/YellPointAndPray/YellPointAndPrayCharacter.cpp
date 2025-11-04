@@ -754,7 +754,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 		
 			if (whiteboard) {
 				UE_LOG(LogTemp, Warning, TEXT("Successfully cast to whiteboard - calling Draw()"));
-				float whiteboardBrushSize = 20.0f;
+				float whiteboardBrushSize = 10.0f;
 				FVector2D UVCoordinates;
 				FVector LocalImpact = RV_Hit.GetComponent()->GetComponentTransform().InverseTransformPosition(RV_Hit.ImpactPoint);
 				FBoxSphereBounds Bounds = RV_Hit.GetComponent()->CalcBounds(FTransform());
