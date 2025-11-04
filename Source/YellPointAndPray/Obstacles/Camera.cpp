@@ -91,6 +91,7 @@ void ACamera::NoPlayerInVision(float DeltaTime) {
 		UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %d"), (int)Elem.Value);
 		if (Elem.Value <= 0) {
 			suspiciousMark->SetHiddenInGame(true);
+			alertedMark->SetHiddenInGame(true);
 			ToDelete.Add(Elem.Key);
 			continue;
 		}
@@ -101,7 +102,11 @@ void ACamera::NoPlayerInVision(float DeltaTime) {
 	}
 }
 
-// Called every frame
+void ACamera::ResetCameraObstacle() {
+	suspiciousMark->SetHiddenInGame(true);
+	alertedMark->SetHiddenInGame(true);
+}
+
 void ACamera::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 	PlayerInVision(DeltaTime);

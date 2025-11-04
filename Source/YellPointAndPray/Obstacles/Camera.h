@@ -54,4 +54,6 @@ class YELLPOINTANDPRAY_API ACamera : public AActor
 
 		UFUNCTION()
 		void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+		void ResetCameraObstacle();
 };
