@@ -126,19 +126,8 @@ void AYPPCustomGameMode::GameOver(bool State)
         AYellPointAndPrayCharacter* CurrentPlayer = Cast<AYellPointAndPrayCharacter>(Player);
         if (CurrentPlayer)
         {
-            CurrentPlayer->Client_ShowGameOver();
+            CurrentPlayer->Client_ShowGameOver(State);
         }
-    }
-}
-
-void AYPPCustomGameMode::GameOverScreen(UUserWidget* PlayerWidget)
-{
-    UE_LOG(LogTemp, Warning, TEXT("Game Over Screen"));
-
-    AMenusLevelScript* LevelScript = Cast<AMenusLevelScript>(GetWorld()->GetLevelScriptActor());
-    if (LevelScript)
-    {
-        LevelScript->RegisterPlayerGameOverWidget(PlayerWidget);
     }
 }
 
@@ -150,6 +139,41 @@ void AYPPCustomGameMode::RestartGame()
     }
 
     UE_LOG(LogTemp, Warning, TEXT("Restarstiiing"));
+
+    TArray<AActor*> Items;
+    TArray<AActor*> Guards;
+    TArray<AActor*> Cameras;
+
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), APickableItem::StaticClass(), Items);
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGuard::StaticClass(), Guards);
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACamera::StaticClass(), Cameras);
+
+    for (auto& Item : Items)
+    {
+        APickableItem* CurrentItem = Cast<APickableItem>(Item);
+        if (CurrentItem)
+        {
+            //CurrentItem->Destroy();
+        }
+    }
+
+    for (auto& Guard : Guards)
+    {
+        AGuard* CurrentGuard = Cast<AGuard>(Guard);
+        if (CurrentGuard)
+        {
+            //CurrentGuard->Destroy();
+        }
+    }
+
+    for (auto& Camera : Cameras)
+    {
+        ACamera* CurrentCamera = Cast<ACamera>(Camera);
+        if (CurrentCamera) 
+        {
+			CurrentCamera->ResetCameraObstacle();
+        }
+    }
 
     for (APawn* Player : PlayersArray)
     {

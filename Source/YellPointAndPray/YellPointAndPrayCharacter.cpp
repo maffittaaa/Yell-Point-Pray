@@ -578,7 +578,7 @@ void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME(AYellPointAndPrayCharacter, DuckUsing);
 }
 
-void AYellPointAndPrayCharacter::Client_ShowGameOver_Implementation()
+void AYellPointAndPrayCharacter::Client_ShowGameOver_Implementation(bool State)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Client_ShowGameOver called on client"));
 
@@ -597,7 +597,7 @@ void AYellPointAndPrayCharacter::Client_ShowGameOver_Implementation()
 			if (LevelScript && PC)
 			{
 				LevelScript->SetLocalPlayerController(PC);
-				LevelScript->RegisterPlayerGameOverWidget(GameOverWidget);
+				LevelScript->RegisterPlayerGameOverWidget(GameOverWidget, State);
 			}
 		}
 
@@ -652,6 +652,7 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 
 				if (GameMode)
 				{
+					UE_LOG(LogTemp, Warning, TEXT("Called Game won"));
 					GameMode->GameOver(true);
 				}
 
@@ -698,7 +699,16 @@ void AYellPointAndPrayCharacter::Interact() {
 	}
 }
 
-void AYellPointAndPrayCharacter::Caught_Implementation() {
+void AYellPointAndPrayCharacter::Caught_Implementation() 
+{
+	AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
+
+	if (GameMode)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Called Caught Game Over"));
+		GameMode->GameOver(false);
+	}
+
 	UE_LOG(LogTemp, Warning, TEXT("YOU GOT CAUGHT NOOB L"));
 }
 

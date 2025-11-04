@@ -212,7 +212,7 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 	public:
 		UFUNCTION(Client, Reliable)
-		void Client_ShowGameOver();
+		void Client_ShowGameOver(bool State);
 
 		UFUNCTION(Client, Reliable)
 		void Client_HideGameOver();

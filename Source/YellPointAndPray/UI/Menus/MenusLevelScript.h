@@ -7,6 +7,7 @@
 #include "Server/ServerButton.h"
 #include <Players/YPPCustomGameMode.h>
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 #include "MenusLevelScript.generated.h"
 
 /**
@@ -44,7 +45,9 @@ public:
 	UUserWidget* GameOverWidget;
 
 	UFUNCTION(BlueprintCallable, Category = "Game")
-	void RegisterPlayerGameOverWidget(UUserWidget* PlayerWidget);
+	void RegisterPlayerGameOverWidget(UUserWidget* PlayerWidget, bool State);
+
+	void ChangeGameOverText(UUserWidget* Widget, bool State);
 
 	// NEW: Track which players have registered their widgets
 	UPROPERTY()

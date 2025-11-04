@@ -48,12 +48,14 @@ void AMenusLevelScript::DisableGameOverButtons()
 	}
 }
 
-void AMenusLevelScript::RegisterPlayerGameOverWidget(UUserWidget* PlayerWidget)
+void AMenusLevelScript::RegisterPlayerGameOverWidget(UUserWidget* PlayerWidget, bool State)
 {
-	if (!PlayerWidget || RegisteredPlayerWidgets.Contains(PlayerWidget))
-	{
-		return;
-	}
+	if (!PlayerWidget) return;
+
+	// Change Text if Game was lost or won
+	ChangeGameOverText(PlayerWidget, State);
+
+	if (RegisteredPlayerWidgets.Contains(PlayerWidget)) return;
 
 	UE_LOG(LogTemp, Warning, TEXT("Player GameOver widget registered: %s"), *PlayerWidget->GetName());
 
@@ -61,6 +63,20 @@ void AMenusLevelScript::RegisterPlayerGameOverWidget(UUserWidget* PlayerWidget)
 
 	// Bind buttons for this specific widget
 	BindWidgetButtons(PlayerWidget);
+}
+
+void AMenusLevelScript::ChangeGameOverText(UUserWidget* Widget, bool State)
+{
+	UTextBlock* GameOverText = Cast<UTextBlock>(Widget->GetWidgetFromName(TEXT("GameOverText")));
+
+	if (GameOverText) 
+	{
+		GameOverText->SetText(State ? FText::FromString("You Win!") : FText::FromString("Game Over"));
+	}
+	else 
+	{
+		UE_LOG(LogTemp, Error, TEXT("Game Over Text was not found"));
+	}
 }
 
 // NEW: Bind buttons to a specific widget
@@ -75,13 +91,11 @@ void AMenusLevelScript::BindWidgetButtons(UUserWidget* Widget)
 	if (PlayerBackToLobbyButton)
 	{
 		PlayerBackToLobbyButton->OnClicked.AddDynamic(this, &AMenusLevelScript::OnBackToMainMenuClicked);
-		UE_LOG(LogTemp, Warning, TEXT("Bound BackToLobbyButton for player widget"));
 	}
 
 	if (PlayerRestartLevelButton)
 	{
 		PlayerRestartLevelButton->OnClicked.AddDynamic(this, &AMenusLevelScript::OnRestartClicked);
-		UE_LOG(LogTemp, Warning, TEXT("Bound RestartLevelButton for player widget"));
 	}
 
 	bHasBoundButtons = true;

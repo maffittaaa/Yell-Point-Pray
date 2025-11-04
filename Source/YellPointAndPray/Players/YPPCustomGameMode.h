@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "YellPointAndPrayCharacter.h"
+#include "Obstacles/Camera.h"
 #include "GameFramework/GameModeBase.h"
 #include <GameFramework/GameMode.h>
 #include <GameFramework/GameSession.h>
@@ -25,8 +26,6 @@ public:
     virtual void PostLogin(APlayerController* NewPlayer) override;
 
     void GameOver(bool State);
-
-    void GameOverScreen(UUserWidget* PlayerWidget);
 
     void RestartGame();
 
