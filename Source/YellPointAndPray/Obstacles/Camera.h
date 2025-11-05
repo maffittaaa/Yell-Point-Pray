@@ -18,9 +18,9 @@ class YELLPOINTANDPRAY_API ACamera : public AActor, public IReset
 	public:
 		// Sets default values for this actor's properties
 		ACamera();
-		
-		UPROPERTY(VisibleAnywhere, Category = "Camera Mesh")
-		UStaticMeshComponent* cameraMeshComponent;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Skeletal Mesh")
+		USkeletalMeshComponent* skeletalMeshComponent;
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision Cone")
 		UStaticMeshComponent* collisionCone;

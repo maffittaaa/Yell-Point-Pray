@@ -9,11 +9,11 @@ ACamera::ACamera() {
 	
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root Component"));
 
-	cameraMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
-	cameraMeshComponent->SetupAttachment(RootComponent);
+	skeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Skeletal Mesh Component"));
+	skeletalMeshComponent->SetupAttachment(RootComponent);
 
 	collisionCone = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Collision Cone"));
-	collisionCone->SetupAttachment(RootComponent);
+	collisionCone->SetupAttachment(skeletalMeshComponent);
 	collisionCone->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	collisionCone->OnComponentBeginOverlap.AddDynamic(this, &ACamera::OnOverlapBegin);
