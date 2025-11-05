@@ -20,6 +20,8 @@ class YELLPOINTANDPRAY_API AYPPCustomPlayerState : public APlayerState
 
 private:
 	float TimePassed = 0;
+
+	UPROPERTY(Replicated)
 	bool LevelLoaded = false;
 	void ChangeToLevel(FName LevelName);
 

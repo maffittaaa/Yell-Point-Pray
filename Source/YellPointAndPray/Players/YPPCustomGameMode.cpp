@@ -17,7 +17,7 @@ AYPPCustomGameMode::AYPPCustomGameMode()
 {
     PlayerStateClass = AYPPCustomPlayerState::StaticClass();
     //GetWorld()->GetNetDriver()->SetNetDriverName(NAME_GameNetDriver);
-    DefaultPawnClass = nullptr;
+    //DefaultPawnClass = AYPPBlindCharacter::StaticClass();
     bUseSeamlessTravel = true;
     bPauseable = false;
 }
@@ -89,27 +89,27 @@ void AYPPCustomGameMode::PostLogin(APlayerController* NewPlayer)
 
     if (PawnClassToSpawn)
     {
-        FTimerHandle TimerHandle;
-        GetWorldTimerManager().SetTimer(TimerHandle, [this, NewPlayer, PawnClassToSpawn, AssignedRole]()
+        UE_LOG(LogTemp, Warning, TEXT("Has pawn class"));
+
+        if (NewPlayer)
+        {
+            AActor* Start = ChoosePlayerStart(NewPlayer);
+            FTransform SpawnTransform = Start ? Start->GetActorTransform() : FTransform::Identity;
+
+            FActorSpawnParameters SpawnParams;
+            SpawnParams.Owner = NewPlayer;
+
+            APawn* NewPawn = GetWorld()->SpawnActor<APawn>(PawnClassToSpawn, SpawnTransform, SpawnParams);
+
+            PlayersArray.Add(NewPawn);
+
+            if (NewPawn)
             {
-                if (NewPlayer && NewPlayer->GetPawn() == nullptr)
-                {
-                    AActor* Start = ChoosePlayerStart(NewPlayer);
-                    FTransform SpawnTransform = Start ? Start->GetActorTransform() : FTransform::Identity;
-
-                    FActorSpawnParameters SpawnParams;
-                    SpawnParams.Owner = NewPlayer;
-
-                    APawn* NewPawn = GetWorld()->SpawnActor<APawn>(PawnClassToSpawn, SpawnTransform, SpawnParams);
-
-                    PlayersArray.Add(NewPawn);
-                    
-                    if (NewPawn)
-                    {
-                        NewPlayer->Possess(NewPawn);
-                    }
-                }
-            }, 0.5f, false);
+                NewPlayer->GetPawn()->Destroy();
+                UE_LOG(LogTemp, Warning, TEXT("Pawn Possessed"));
+                NewPlayer->Possess(NewPawn);
+            }
+        }
     }
     else
     {
@@ -153,6 +153,8 @@ void AYPPCustomGameMode::RestartGame()
 
 void AYPPCustomGameMode::LoadLevel(FName LevelName) 
 {
+
+
     if (GetWorld()->GetNetMode() == NM_ListenServer || GetWorld()->GetNetMode() == NM_DedicatedServer)
     {
         // Server tells all clients to travel
@@ -160,7 +162,7 @@ void AYPPCustomGameMode::LoadLevel(FName LevelName)
         {
             if (APlayerController* PC = It->Get())
             {
-                PC->ClientTravel("/Game/FirstPerson/Lvl_MainTest", TRAVEL_Relative);
+                //PC->ClientTravel("/Game/FirstPerson/Lvl_MainTest", TRAVEL_Relative);
             }
         }
     }

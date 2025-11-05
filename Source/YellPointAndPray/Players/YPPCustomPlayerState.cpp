@@ -34,6 +34,7 @@ void AYPPCustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AYPPCustomPlayerState, PlayerType);
 	DOREPLIFETIME(AYPPCustomPlayerState, IsHost);
+	DOREPLIFETIME(AYPPCustomPlayerState, LevelLoaded);
 }
 
 void AYPPCustomPlayerState::Tick(float DeltaTime)
@@ -42,9 +43,9 @@ void AYPPCustomPlayerState::Tick(float DeltaTime)
 
 	if (!HasAuthority()) return;
 
-	TimePassed += DeltaTime;
+	TimePassed -= DeltaTime;
 	//UE_LOG(LogTemp, Warning, TEXT("Time passed: %f"), TimePassed);
-	if (TimePassed < -1 && !LevelLoaded)
+	if (TimePassed > 1000000 && !LevelLoaded)
 	{
 		LevelLoaded = true;
 		FName LevelName = "Lvl_MainTest";
