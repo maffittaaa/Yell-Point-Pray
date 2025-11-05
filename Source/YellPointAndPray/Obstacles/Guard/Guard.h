@@ -8,6 +8,7 @@
 #include "Interfaces/Knockable.h"
 #include "AIController.h"
 #include "Interfaces/Reset.h"
+#include "Door.h"
 #include "Guard.generated.h"
 
 UCLASS()
@@ -64,6 +65,17 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	AActor* LastOpen;
+	float CloseTimer = 0;
+
+	UFUNCTION()
+	void OpenDoors();
+	UFUNCTION()
+	void CloseDoors(float DeltaTime);
+
+	UPROPERTY(Replicated)
+	UWorld* World;
 
 	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere, Category = "Knocked")
 	bool Knocked = false;

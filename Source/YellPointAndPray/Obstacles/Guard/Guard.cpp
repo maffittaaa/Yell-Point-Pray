@@ -30,6 +30,7 @@ void AGuard::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	DOREPLIFETIME(AGuard, TargetPlayer);
 	DOREPLIFETIME(AGuard, CurrentSuspicion);
 	DOREPLIFETIME(AGuard, Knocked);
+	DOREPLIFETIME(AGuard, World);
 }
 
 // Called when the game starts or when spawned
@@ -54,9 +55,13 @@ void AGuard::Reset_Implementation()
 void AGuard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	World = GetWorld();
 	if (!HasAuthority()) return;
 
 	if (Knocked) return;
+
+	OpenDoors();
+	CloseDoors(DeltaTime);
 
 	if (TargetPlayer) {
 		float Distance = FVector::Dist(GetActorLocation(), TargetPlayer->GetActorLocation());
@@ -117,6 +122,48 @@ void AGuard::Tick(float DeltaTime)
 				ICaughtable::Execute_Caught(TargetPlayer);
 				CurrentSuspicion = 0;
 			}
+		}
+	}
+}
+
+
+void AGuard::OpenDoors()
+{
+	if (!World) return;
+	if (LastOpen != nullptr) return; //FINISH OTHER FUNC TODO!!!!!
+
+	FVector dir = GetActorForwardVector();
+
+	FVector start = GetActorLocation();
+
+	FHitResult hit;
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(this);
+
+	//ray
+	if (World->LineTraceSingleByChannel(hit, start, start + dir * 100, ECC_Visibility, params)) {
+		DrawDebugLine(World, start, start + dir * 100, FColor::Red, false, -1.0f, 0, 1.0f);
+		if (AActor* hitObject = hit.GetActor())
+		{
+			if (hitObject->IsA(ADoor::StaticClass())) {
+				if (hitObject->GetClass()->ImplementsInterface(UInteractable::StaticClass())) {
+					LastOpen = hitObject;
+					IInteractable::Execute_Interact(hitObject, this);
+				}
+			}
+		}
+	}
+}
+
+
+void AGuard::CloseDoors(float DeltaTime)
+{
+	if (LastOpen != nullptr) {
+		CloseTimer += DeltaTime;
+		if (CloseTimer >= 3) {
+			IInteractable::Execute_Interact(LastOpen, this);
+			LastOpen = nullptr;
+			CloseTimer = 0;
 		}
 	}
 }
