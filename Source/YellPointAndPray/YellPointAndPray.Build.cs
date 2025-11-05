@@ -22,6 +22,7 @@ public class YellPointAndPray : ModuleRules
 			"Niagara",
             "Sockets",          
             "Networking",
+            "NavigationSystem",
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] {

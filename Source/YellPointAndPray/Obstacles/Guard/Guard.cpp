@@ -146,6 +146,7 @@ void AGuard::OpenDoors()
 		{
 			if (hitObject->IsA(ADoor::StaticClass())) {
 				if (hitObject->GetClass()->ImplementsInterface(UInteractable::StaticClass())) {
+					if (LastOpen == hitObject) return;
 					if (LastOpen != nullptr) {
 						CloseTimer = 3;
 						CloseDoors(0.f);
