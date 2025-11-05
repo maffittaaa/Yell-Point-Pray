@@ -7,6 +7,9 @@
 #include <ThirdParty/EOSSDK/SDK/Include/eos_rtc.h>
 #include <ThirdParty/EOSSDK/SDK/Include/eos_rtc_audio.h>
 #include "Engine/Engine.h"
+#include "../../../../../Jogos/EpicGames/UE_5.6/Engine/Plugins/Online/VoiceChat/VoiceChat/Source/Public/VoiceChat.h"
+#include "../../../../../Jogos/EpicGames/UE_5.6/Engine/Plugins/Online/VoiceChat/VoiceChat/Source/Public/VoiceChatResult.h"
+#include <OnlineSubsystem.h>
 
 void UEOSVoiceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -28,53 +31,95 @@ void UEOSVoiceSubsystem::Deinitialize()
 
 void UEOSVoiceSubsystem::InitializeEOS()
 {
-    EOS_InitializeOptions InitializeOptions = {};
-    InitializeOptions.ApiVersion = EOS_INITIALIZE_API_LATEST;
-    InitializeOptions.ProductName = "YellPointAndPray";
-    InitializeOptions.ProductVersion = "1.0";
+    IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get("EOS");
+    if (Subsystem)
+    {
+        UE_LOG(LogTemp, Log, TEXT("EOS subsystem initialized in Editor!"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("EOS subsystem NOT initialized in Editor."));
+    }
 
-    EOS_Initialize(&InitializeOptions);
+    // Retrieve the global voice chat interface (EOS, Vivox, or platform-specific)
+    IVoiceChat* VoiceChat = IVoiceChat::Get();
+    if (!VoiceChat)
+    {
+        UE_LOG(LogTemp, Error, TEXT("VoiceChat interface not available"));
+        return;
+    }
 
-    EOS_Platform_Options PlatformOptions = {};
-    PlatformOptions.ApiVersion = EOS_PLATFORM_OPTIONS_API_LATEST;
-    PlatformOptions.ProductId = "ea0509ec50fa4f8eaff0641cb81249ed";
-    PlatformOptions.SandboxId = "31d30a127fe743af8dd5f77c1a744cbf";
-    PlatformOptions.DeploymentId = "603571ba03f549d2848a263521449da0";
-    PlatformOptions.ClientCredentials.ClientId = "xyza789192gHmvG9ChJmc1pnTD2aV6xr";
-    PlatformOptions.ClientCredentials.ClientSecret = "otaxHftjDEsoP6Wq3BTr+vUCPabpbUjGY8lMPlxDwCs";
-    PlatformOptions.bIsServer = false;
+    // Initialize the system
+    bool InitResult = VoiceChat->Initialize();
+    if (!InitResult)
+    {
+        UE_LOG(LogTemp, Error, TEXT("VoiceChat initialization failed: %d"), InitResult);
+        return;
+    }
+
+    // Connect to the service
+    VoiceChat->Connect(
+        FOnVoiceChatConnectCompleteDelegate::CreateLambda(
+            [](const FVoiceChatResult& Result)
+            {
+                if (Result.IsSuccess())
+                {
+                    UE_LOG(LogTemp, Log, TEXT("Voice Chat Connected successfully!"));
+                }
+                else
+                {
+                    UE_LOG(LogTemp, Error, TEXT("Voice Chat Connection failed: "));
+                }
+            })
+    );
+
+    //EOS_InitializeOptions InitializeOptions = {};
+    //InitializeOptions.ApiVersion = EOS_INITIALIZE_API_LATEST;
+    //InitializeOptions.ProductName = "YellPointAndPray";
+    //InitializeOptions.ProductVersion = "1.0";
+
+    //EOS_Initialize(&InitializeOptions);
+
+    //EOS_Platform_Options PlatformOptions = {};
+    //PlatformOptions.ApiVersion = EOS_PLATFORM_OPTIONS_API_LATEST;
+    //PlatformOptions.ProductId = "ea0509ec50fa4f8eaff0641cb81249ed";
+    //PlatformOptions.SandboxId = "31d30a127fe743af8dd5f77c1a744cbf";
+    //PlatformOptions.DeploymentId = "603571ba03f549d2848a263521449da0";
+    //PlatformOptions.ClientCredentials.ClientId = "xyza789192gHmvG9ChJmc1pnTD2aV6xr";
+    //PlatformOptions.ClientCredentials.ClientSecret = "otaxHftjDEsoP6Wq3BTr+vUCPabpbUjGY8lMPlxDwCs";
+    //PlatformOptions.bIsServer = false;
+
+    ////EOSPlatformHandle = EOS_Platform_Create(&PlatformOptions);
+    ////EOSRTCHandle = EOS_Platform_GetRTCInterface(EOSPlatformHandle);
+    ////EOSAudioHandle = EOS_RTC_GetAudioInterface(EOSRTCHandle);
 
     //EOSPlatformHandle = EOS_Platform_Create(&PlatformOptions);
+    //if (!EOSPlatformHandle)
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("EOS_Platform_Create failed"));
+    //    return;
+    //}
+
+    //// Get RTC interface from platform
     //EOSRTCHandle = EOS_Platform_GetRTCInterface(EOSPlatformHandle);
+    //if (!EOSRTCHandle)
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("EOS_Platform_GetRTCInterface failed"));
+    //    return;
+    //}
+
+    //// CORRECT: Get audio interface from RTC handle, not platform handle
     //EOSAudioHandle = EOS_RTC_GetAudioInterface(EOSRTCHandle);
+    //if (!EOSAudioHandle)
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("EOS_RTC_GetAudioInterface failed"));
+    //    return;
+    //}
 
-    EOSPlatformHandle = EOS_Platform_Create(&PlatformOptions);
-    if (!EOSPlatformHandle)
-    {
-        UE_LOG(LogTemp, Error, TEXT("EOS_Platform_Create failed"));
-        return;
-    }
+    //UE_LOG(LogTemp, Warning, TEXT("EOS initialized successfully - Platform: %p, RTC: %p, Audio: %p"),
+    //    EOSPlatformHandle, EOSRTCHandle, EOSAudioHandle);
 
-    // Get RTC interface from platform
-    EOSRTCHandle = EOS_Platform_GetRTCInterface(EOSPlatformHandle);
-    if (!EOSRTCHandle)
-    {
-        UE_LOG(LogTemp, Error, TEXT("EOS_Platform_GetRTCInterface failed"));
-        return;
-    }
-
-    // CORRECT: Get audio interface from RTC handle, not platform handle
-    EOSAudioHandle = EOS_RTC_GetAudioInterface(EOSRTCHandle);
-    if (!EOSAudioHandle)
-    {
-        UE_LOG(LogTemp, Error, TEXT("EOS_RTC_GetAudioInterface failed"));
-        return;
-    }
-
-    UE_LOG(LogTemp, Warning, TEXT("EOS initialized successfully - Platform: %p, RTC: %p, Audio: %p"),
-        EOSPlatformHandle, EOSRTCHandle, EOSAudioHandle);
-
-    TestEOS();
+    //TestEOS();
 }
 
 void UEOSVoiceSubsystem::TestEOS()

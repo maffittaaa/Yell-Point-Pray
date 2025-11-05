@@ -25,10 +25,11 @@ public class YellPointAndPray : ModuleRules
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] {
+			"VoiceChat",
 			"EOSSDK",
 			"OnlineSubsystemEOS",
+            //"OnlineSubsystemEOSVoice",
 			"OnlineSubsystemEOSPlus",
-			"Voice", 
 			"GeometryScriptingCore",
 			"GeometryFramework",
 			"DynamicMesh",
