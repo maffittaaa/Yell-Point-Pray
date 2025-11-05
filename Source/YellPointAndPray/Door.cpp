@@ -20,6 +20,8 @@ ADoor::ADoor()
 	DoorMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMeshComp"));
 	DoorMeshComp->SetupAttachment(Mesh);
 
+	DoorNobMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorNobMesh"));
+	DoorNobMesh->SetupAttachment(DoorMeshComp);
 
 	bReplicates = true;
 }
@@ -41,68 +43,85 @@ void ADoor::BeginPlay()
 
 }
 
+void ADoor::MulticastDoor_Implementation(float FinalYaw)
+{
+	FRotator Rotation = Mesh->GetRelativeRotation();
+	Rotation.Yaw = FinalYaw;
+	Mesh->SetRelativeRotation(Rotation);
+	Play = false;
+}
+
 // Called every frame
 void ADoor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (Play == true) {
-		FRotator Rotation = Mesh->GetRelativeRotation();
-		Rotation.Yaw += 90 * DeltaTime * IsOpen;
-		Mesh->SetRelativeRotation(Rotation);
-		if (Rotation.Yaw > 90 && IsOpen == 1) {
-			Rotation.Yaw = 90;
-			Mesh->SetRelativeRotation(Rotation);
+	if (!Play) return;
+
+	FRotator Rotation = Mesh->GetRelativeRotation();
+	float CurrentYaw = Rotation.Yaw;
+
+	float TargetYaw;
+	if (IsOpen == 1) {
+		TargetYaw = 90.f * Side;
+	}
+	else {
+		TargetYaw = 0;
+	}
+
+	float Speed = 90.f * DeltaTime;
+
+	float Direction;
+	if (TargetYaw > CurrentYaw) {
+		Direction = 1;
+	}
+	else {
+		Direction = -1;
+	}
+
+	Rotation.Yaw += Speed * Direction;
+
+	if ((Direction > 0.f && Rotation.Yaw >= TargetYaw) || (Direction < 0.f && Rotation.Yaw <= TargetYaw))
+	{
+		Rotation.Yaw = TargetYaw;
+		if (HasAuthority())
+		{
+			MulticastDoor(TargetYaw);
 			Play = false;
-			return;
-		}
-		if (Rotation.Yaw < -90 && IsOpen == 1) {
-			Rotation.Yaw = -90;
-			Mesh->SetRelativeRotation(Rotation);
-			Play = false;
-			return;
-		}
-		if (Rotation.Yaw < 0 && IsOpen == -1) {
-			Rotation.Yaw = 0;
-			Mesh->SetRelativeRotation(Rotation);
-			Play = false;
-			return;
 		}
 	}
-	//FRotator Rotation = Mesh->GetRelativeRotation();
-	//UE_LOG(LogTemp, Warning, TEXT("IsOpen: %d"), IsOpen);
-	//Rotation.Yaw += 90 * DeltaTime * IsOpen;
-	//Mesh->SetRelativeRotation(Rotation);
+
+	Mesh->SetRelativeRotation(Rotation);
 
 }
 
 void ADoor::Interact_Implementation(AActor* Interactor) 
 {
-	if (Locked) return;
-	//FVector DoorLoc = GetActorLocation();
-	//FVector PlayerLoc = Interactor->GetActorLocation();
+	this->ServerInteract(Interactor);
+}
 
-	//FVector Dir = PlayerLoc - DoorLoc;
-	//FVector Forward = GetActorForwardVector();
+void ADoor::ServerInteract_Implementation(AActor* Interactor) {
+	if (Locked || !HasAuthority()) return;
 
-	//UE_LOG(LogTemp, Warning, TEXT("DoorLoc: %s"), *DoorLoc.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("PlayerLoc: %s"), *PlayerLoc.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("Dir: %s"), *Dir.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("Forward: %s"), *Forward.ToString());
+	FVector DoorLoc = GetActorLocation();
+	FVector PlayerLoc = Interactor->GetActorLocation();
+	FVector Dir = PlayerLoc - DoorLoc;
+	FVector Forward = GetActorForwardVector();
 
-	//float Dot = FVector::DotProduct(Dir, Forward);
+	float Dot = FVector::DotProduct(Dir, Forward);
 
-	//if (Dot < 0.f) {
-	//	Side = -1;
-	//}
-	//else {
-	//	Side = 1;
-	//}
+	if (IsOpen == -1)
+	{
+		if (Dot < 0.f) {
+			Side = 1;
+		}
+		else {
+			Side = -1;
+		}
+	}
+
 	IsOpen = -IsOpen;
-	//if (IsOpen == -1) {
-	//	Side = 1;
-	//}
-	//UE_LOG(LogTemp, Warning, TEXT("Side: %d"), Side);
-	//UE_LOG(LogTemp, Warning, TEXT("IsOpen: %d"), IsOpen);
+
+
 	Play = true;
 }
 

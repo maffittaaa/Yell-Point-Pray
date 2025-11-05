@@ -23,6 +23,8 @@ public:
 	UStaticMeshComponent* FrameMeshComp;
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* Mesh;
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* DoorNobMesh;
 
 protected:
 	// Called when the game starts or when spawned
@@ -44,6 +46,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Interact_Implementation(AActor* Interactor) override;
+
+	UFUNCTION(Server, Reliable)
+	void ServerInteract(AActor* Interactor);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastDoor(float FinalYaw);
 
 	UFUNCTION(Server, Reliable)
 	void UnlockDoor();

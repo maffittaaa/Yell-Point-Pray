@@ -1,0 +1,117 @@
+{
+	"assetNamespace": "fab",
+	"listing":
+	{
+		"averageRating": 0,
+		"createdAt": "",
+		"description": "<p>This is a custom-made DOOR low-poly 3D model designed for VR, AR, and real-time applications. Its optimized low-poly design ensures smooth performance in any interactive environment, making it ideal for games, virtual reality experiences, augmented reality projects, mobile apps, or any other real-time 3D application.</p>\n<p>Thanks to its versatility, this model can also be used for visualization, prototyping, simulations, or even as part of high-performance scenes where efficiency is key. Whether you need assets for professional projects, educational purposes, or personal creations, this model is ready to be integrated seamlessly into your workflow.</p>\n<p>Made by <strong>TheAppXR</strong> team.</p>",
+		"isAiForbidden": true,
+		"isAiGenerated": false,
+		"lastUpdatedAt": "2025-09-03T15:11:38.226692Z",
+		"listingType": "3d-model",
+		"media": "https://media.fab.com/image_previews/gallery_images/1da4df94-0c47-44fd-b6a4-bdb84340860c/7951258d-be75-4e20-9fac-83da29c6d146.jpeg",
+		"publishedAt": "2025-09-03T15:11:34.708625Z",
+		"reviewCount": 0,
+		"thumbnail": "https://media.fab.com/image_previews/gallery_images/cc1e5ddc-9260-4dbc-86ba-8defd64922ce/b9a5426a-ee43-4dd9-b9db-9ea38c13c0c1.jpeg",
+		"title": "BLACK DOOR LOW POLY",
+		"uid": "73f4350b-1142-45e5-a49d-5a399a8b8335",
+		"updatedAt": "",
+		"user":
+		{
+			"coverImageUrl": "",
+			"profileImageUrl": "https://cdn1.epicgames.com/fab/seller/o-gyh5xk7wjdzfthrssfdluflppehspd/profile/bf73bacd.png",
+			"sellerName": "Oobe-Xr Srl",
+			"uid": "169b2ebf-4e30-4672-acff-1aeb9c17f44c"
+		},
+		"tags": [
+			{
+				"name": "Lowpoly",
+				"slug": "lowpoly",
+				"uid": "451806dc-649e-43b7-9c2e-a54485de14b6"
+			},
+			{
+				"name": "Black",
+				"slug": "black",
+				"uid": "4fd9983d-b792-44b4-9b74-11fca994ec5c"
+			},
+			{
+				"name": "Door",
+				"slug": "door",
+				"uid": "9e43d940-9f18-4db0-aa17-f7ffec109645"
+			},
+			{
+				"name": "Mapped",
+				"slug": "mapped",
+				"uid": "cd6755e9-d286-49f8-85ab-785a12fbce44"
+			},
+			{
+				"name": "Entry",
+				"slug": "entry",
+				"uid": "e707ee41-11b3-40ad-8f53-f31770180676"
+			},
+			{
+				"name": "Shelf",
+				"slug": "shelf",
+				"uid": "f47a2213-07bd-4d71-93fa-b9917f474826"
+			},
+			{
+				"name": "Uv",
+				"slug": "uv",
+				"uid": "fbfe9599-1f4a-4957-bd0d-b72dcf40e82c"
+			}
+		],
+		"category":
+		{
+			"name": "Furniture & Fixtures",
+			"path": "furniture-fixtures",
+			"slug": "furniture-fixtures",
+			"uid": "3da1d2bd-49b4-4bc5-90e5-d31dadec3bd0"
+		},
+		"assetFormats": [
+			{
+				"assetFormatType":
+				{
+					"name": "GLB",
+					"groupName": "3D Exchange Formats",
+					"code": "glb",
+					"icon": "cube",
+					"extensions": [
+						"glb"
+					]
+				}
+			},
+			{
+				"assetFormatType":
+				{
+					"name": "Converted Files",
+					"groupName": "",
+					"code": "converted-files",
+					"icon": "cube",
+					"extensions": [
+						"gltf",
+						"glb",
+						"usdz"
+					]
+				}
+			}
+		],
+		"_PluginMetas":
+		{
+			"apiDataVersion": "0.0.1",
+			"entitlementUid": "6463e409-94fa-4a9d-9be5-41b73522f0e8",
+			"cacheSize": 0,
+			"downloaded": []
+		}
+	},
+	"target": "",
+	"quality": "",
+	"format": "glb",
+	"fileId": "5836954b-7808-491e-add4-dff42c49e65b",
+	"platformIncluded": "",
+	"distributionPointBaseUrls": [],
+	"distributionMethod": "",
+	"entitlementUid": "6463e409-94fa-4a9d-9be5-41b73522f0e8",
+	"invertedNormal": false,
+	"isConverted": true,
+	"isQuixel": false
+}
