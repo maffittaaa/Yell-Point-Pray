@@ -130,7 +130,6 @@ void AGuard::Tick(float DeltaTime)
 void AGuard::OpenDoors()
 {
 	if (!World) return;
-	if (LastOpen != nullptr) return; //FINISH OTHER FUNC TODO!!!!!
 
 	FVector dir = GetActorForwardVector();
 
@@ -147,6 +146,10 @@ void AGuard::OpenDoors()
 		{
 			if (hitObject->IsA(ADoor::StaticClass())) {
 				if (hitObject->GetClass()->ImplementsInterface(UInteractable::StaticClass())) {
+					if (LastOpen != nullptr) {
+						CloseTimer = 3;
+						CloseDoors(0.f);
+					}
 					LastOpen = hitObject;
 					IInteractable::Execute_Interact(hitObject, this);
 				}
