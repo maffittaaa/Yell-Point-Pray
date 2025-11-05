@@ -44,8 +44,8 @@ void AYPPCustomPlayerState::Tick(float DeltaTime)
 	if (!HasAuthority()) return;
 
 	TimePassed -= DeltaTime;
-	//UE_LOG(LogTemp, Warning, TEXT("Time passed: %f"), TimePassed);
-	if (TimePassed > 1000000 && !LevelLoaded)
+	UE_LOG(LogTemp, Warning, TEXT("Time passed: %f"), TimePassed);
+	if (TimePassed > 5 && !LevelLoaded)
 	{
 		LevelLoaded = true;
 		FName LevelName = "Lvl_MainTest";

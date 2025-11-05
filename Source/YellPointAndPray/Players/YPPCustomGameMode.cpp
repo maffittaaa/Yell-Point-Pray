@@ -2,7 +2,6 @@
 
 
 #include "YPPCustomGameMode.h"
-#include "YPPCustomPlayerState.h"
 #include "YPPBlindCharacter.h"
 #include "YPPMuteCharacter.h"
 #include "YPPDeafCharacter.h"
@@ -12,6 +11,7 @@
 #include <EnhancedInputSubsystems.h>
 #include <Kismet/GameplayStatics.h>
 #include <YellPointAndPrayPlayerController.h>
+#include "YPPCustomGameInstance.h"
 
 AYPPCustomGameMode::AYPPCustomGameMode()
 {
@@ -78,6 +78,26 @@ void AYPPCustomGameMode::PostLogin(APlayerController* NewPlayer)
         PlayerState->IsHost = true;
     }
 
+    UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(GetWorld());
+
+    UYPPCustomGameInstance* YPPGameInstance = Cast<UYPPCustomGameInstance>(GameInstance);
+
+    if (YPPGameInstance)
+    {
+        YPPGameInstance->PlayerLoggedIn(PlayerState, AssignedRole);
+    }
+
+    SpawnPlayer(NewPlayer, AssignedRole);
+}
+
+void AYPPCustomGameMode::SpawnPlayer(APlayerController* NewPlayer, EPlayerType AssignedRole)
+{
+    if (!NewPlayer || !GetWorld())
+    {
+        UE_LOG(LogTemp, Error, TEXT("GI: SpawnPlayer: Invalid NewPlayer or World"));
+        return;
+    }
+
     TSubclassOf<APawn> PawnClassToSpawn = nullptr;
 
     if (AssignedRole == EPlayerType::Blind)
@@ -89,7 +109,7 @@ void AYPPCustomGameMode::PostLogin(APlayerController* NewPlayer)
 
     if (PawnClassToSpawn)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Has pawn class"));
+        UE_LOG(LogTemp, Warning, TEXT("GI: Has pawn class"));
 
         if (NewPlayer)
         {
@@ -105,8 +125,12 @@ void AYPPCustomGameMode::PostLogin(APlayerController* NewPlayer)
 
             if (NewPawn)
             {
-                NewPlayer->GetPawn()->Destroy();
-                UE_LOG(LogTemp, Warning, TEXT("Pawn Possessed"));
+                if (NewPlayer->GetPawn())
+                {
+                    NewPlayer->GetPawn()->Destroy();
+                }
+                UE_LOG(LogTemp, Warning, TEXT("GI: Pawn Possessed"));
+
                 NewPlayer->Possess(NewPawn);
             }
         }
@@ -153,8 +177,6 @@ void AYPPCustomGameMode::RestartGame()
 
 void AYPPCustomGameMode::LoadLevel(FName LevelName) 
 {
-
-
     if (GetWorld()->GetNetMode() == NM_ListenServer || GetWorld()->GetNetMode() == NM_DedicatedServer)
     {
         // Server tells all clients to travel
@@ -167,4 +189,71 @@ void AYPPCustomGameMode::LoadLevel(FName LevelName)
         }
     }
     GetWorld()->ServerTravel(TEXT("/Game/FirstPerson/Lvl_MainTest?listen"));
+}
+
+void AYPPCustomGameMode::BeginPlay()
+{
+    Super::BeginPlay();
+
+    // Only process on server
+    if (HasAuthority())
+    {
+        // Small delay to ensure all players have connected after seamless travel
+        FTimerHandle TimerHandle;
+        GetWorldTimerManager().SetTimer(TimerHandle, [this]()
+            {
+                UE_LOG(LogTemp, Warning, TEXT("GM: BeginPlay - Respawning Players in New Level"));
+                PostLoadLevel();
+            }, 1.0f, false); // 1 second delay to ensure all players are ready
+    }
+}
+
+void AYPPCustomGameMode::PostSeamlessTravel()
+{
+    Super::PostSeamlessTravel();
+
+    // Just log - we'll use BeginPlay for spawning in the new level
+    UE_LOG(LogTemp, Warning, TEXT("GM: PostSeamlessTravel called (using BeginPlay for spawning)"));
+}
+
+void AYPPCustomGameMode::PostLoadLevel()
+{
+    if (!HasAuthority() || !GetWorld() || !GameState)
+    {
+        UE_LOG(LogTemp, Error, TEXT("GM: PostLoadLevel - Missing authority, world, or gamestate"));
+        return;
+    }
+
+    UE_LOG(LogTemp, Warning, TEXT("GM: PostLoadLevel - Respawning Players via GameState"));
+
+    PlayersArray.Empty();
+
+    // Use GameState PlayerArray which is more stable than PlayerController iterator
+    UE_LOG(LogTemp, Warning, TEXT("GM: PlayerArray count: %d"), GameState->PlayerArray.Num());
+
+    UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(GetWorld());
+    UYPPCustomGameInstance* YPPGameInstance = Cast<UYPPCustomGameInstance>(GameInstance);
+
+    if (YPPGameInstance)
+    {
+        for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+        {
+            if (APlayerController* PC = It->Get())
+            {
+                AYPPCustomPlayerState* PlayerState = PC->GetPlayerState<AYPPCustomPlayerState>();
+
+                EPlayerType AssignedRole = YPPGameInstance->GetPlayer(PlayerState);
+
+                UE_LOG(LogTemp, Warning, TEXT("GM: Successfully got GameInstance %d"), AssignedRole);
+
+                SpawnPlayer(PC, AssignedRole);
+                // Use your custom game instance
+                UE_LOG(LogTemp, Warning, TEXT("GM: Successfully got GameInstance"));
+            }
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("GM: Failed to get GameInstance or wrong type"));
+    }
 }
