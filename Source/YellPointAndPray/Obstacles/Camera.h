@@ -31,6 +31,27 @@ class YELLPOINTANDPRAY_API ACamera : public AActor, public IReset
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Alerted Mark")
 		UStaticMeshComponent* alertedMark;
 
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Detected Material")
+		UMaterial* detectedMaterial;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Undetected Material")
+		UMaterial* undetectedMaterial;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Detected Material instance")
+		UMaterialInstance* detectedMaterialInstance;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Undetected Material instance")
+		UMaterialInstance* undetectedMaterialInstance;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Animation")
+		bool bIsAnimationStopped = false;
+	    
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Animation")
+		FRotator StoppedRotation;
+	    
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Animation")
+		AActor* DetectedPlayer = nullptr;
+
 		float suspiciousAmount = 0.0f;
 
 	protected:
@@ -60,5 +81,7 @@ class YELLPOINTANDPRAY_API ACamera : public AActor, public IReset
 		UFUNCTION()
 		void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+		void StopAnimation();
 		void ResetCameraObstacle();
+		void ResumeCameraAnimation();
 };

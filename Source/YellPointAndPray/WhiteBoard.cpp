@@ -41,8 +41,6 @@ void AWhiteBoard::BeginPlay() {
 
 	if (canvasTexture)
 		InitializeBackground();
-
-
 }
 
 
