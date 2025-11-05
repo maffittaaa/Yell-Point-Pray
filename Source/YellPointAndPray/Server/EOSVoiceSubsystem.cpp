@@ -7,9 +7,9 @@
 #include <ThirdParty/EOSSDK/SDK/Include/eos_rtc.h>
 #include <ThirdParty/EOSSDK/SDK/Include/eos_rtc_audio.h>
 #include "Engine/Engine.h"
-#include "../../../../../Jogos/EpicGames/UE_5.6/Engine/Plugins/Online/VoiceChat/VoiceChat/Source/Public/VoiceChat.h"
-#include "../../../../../Jogos/EpicGames/UE_5.6/Engine/Plugins/Online/VoiceChat/VoiceChat/Source/Public/VoiceChatResult.h"
-#include <OnlineSubsystem.h>
+//#include "../../../../../Jogos/EpicGames/UE_5.6/Engine/Plugins/Online/VoiceChat/VoiceChat/Source/Public/VoiceChat.h"
+//#include "../../../../../Jogos/EpicGames/UE_5.6/Engine/Plugins/Online/VoiceChat/VoiceChat/Source/Public/VoiceChatResult.h"
+//#include <OnlineSubsystem.h>
 
 void UEOSVoiceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -31,47 +31,47 @@ void UEOSVoiceSubsystem::Deinitialize()
 
 void UEOSVoiceSubsystem::InitializeEOS()
 {
-    IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get("EOS");
-    if (Subsystem)
-    {
-        UE_LOG(LogTemp, Log, TEXT("EOS subsystem initialized in Editor!"));
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("EOS subsystem NOT initialized in Editor."));
-    }
+    //IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get("EOS");
+    //if (Subsystem)
+    //{
+    //    UE_LOG(LogTemp, Log, TEXT("EOS subsystem initialized in Editor!"));
+    //}
+    //else
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("EOS subsystem NOT initialized in Editor."));
+    //}
 
-    // Retrieve the global voice chat interface (EOS, Vivox, or platform-specific)
-    IVoiceChat* VoiceChat = IVoiceChat::Get();
-    if (!VoiceChat)
-    {
-        UE_LOG(LogTemp, Error, TEXT("VoiceChat interface not available"));
-        return;
-    }
+    //// Retrieve the global voice chat interface (EOS, Vivox, or platform-specific)
+    //IVoiceChat* VoiceChat = IVoiceChat::Get();
+    //if (!VoiceChat)
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("VoiceChat interface not available"));
+    //    return;
+    //}
 
-    // Initialize the system
-    bool InitResult = VoiceChat->Initialize();
-    if (!InitResult)
-    {
-        UE_LOG(LogTemp, Error, TEXT("VoiceChat initialization failed: %d"), InitResult);
-        return;
-    }
+    //// Initialize the system
+    //bool InitResult = VoiceChat->Initialize();
+    //if (!InitResult)
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("VoiceChat initialization failed: %d"), InitResult);
+    //    return;
+    //}
 
-    // Connect to the service
-    VoiceChat->Connect(
-        FOnVoiceChatConnectCompleteDelegate::CreateLambda(
-            [](const FVoiceChatResult& Result)
-            {
-                if (Result.IsSuccess())
-                {
-                    UE_LOG(LogTemp, Log, TEXT("Voice Chat Connected successfully!"));
-                }
-                else
-                {
-                    UE_LOG(LogTemp, Error, TEXT("Voice Chat Connection failed: "));
-                }
-            })
-    );
+    //// Connect to the service
+    //VoiceChat->Connect(
+    //    FOnVoiceChatConnectCompleteDelegate::CreateLambda(
+    //        [](const FVoiceChatResult& Result)
+    //        {
+    //            if (Result.IsSuccess())
+    //            {
+    //                UE_LOG(LogTemp, Log, TEXT("Voice Chat Connected successfully!"));
+    //            }
+    //            else
+    //            {
+    //                UE_LOG(LogTemp, Error, TEXT("Voice Chat Connection failed: "));
+    //            }
+    //        })
+    //);
 
     //EOS_InitializeOptions InitializeOptions = {};
     //InitializeOptions.ApiVersion = EOS_INITIALIZE_API_LATEST;
