@@ -35,24 +35,7 @@ void ACamera::BeginPlay() {
 	Super::BeginPlay();
 
 	if (collisionCone && skeletalMeshComponent)
-	{
-		// Check socket exists first
-		if (skeletalMeshComponent->DoesSocketExist(FName("CameraSight")))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Socket exists!"));
-            
-			// Get socket location for debugging
-			FVector SocketLocation = skeletalMeshComponent->GetSocketLocation(FName("CameraSight"));
-			UE_LOG(LogTemp, Warning, TEXT("Socket location: %s"), *SocketLocation.ToString());
-            
-			// Now attach
 			collisionCone->AttachToComponent(skeletalMeshComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("CameraSight"));
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Socket does NOT exist!"));
-		}
-	}
 }
 
 void ACamera::Reset_Implementation()
