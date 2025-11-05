@@ -3,10 +3,14 @@
 
 #include "YPPCustomPlayerState.h"
 #include "Net/UnrealNetwork.h"
+#include <Kismet/GameplayStatics.h>
+#include "YPPCustomGameMode.h"
 
 AYPPCustomPlayerState::AYPPCustomPlayerState()
 {
 	// PlayerState already replicates by default on server
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
 	bReplicates = true;
 }
 
@@ -30,4 +34,32 @@ void AYPPCustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AYPPCustomPlayerState, PlayerType);
 	DOREPLIFETIME(AYPPCustomPlayerState, IsHost);
+}
+
+void AYPPCustomPlayerState::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (!HasAuthority()) return;
+
+	TimePassed += DeltaTime;
+	UE_LOG(LogTemp, Warning, TEXT("Time passed: %f"), TimePassed);
+	if (TimePassed < -1 && !LevelLoaded)
+	{
+		LevelLoaded = true;
+		FName LevelName = "Lvl_MainTest";
+		ChangeToLevel(LevelName);
+	}
+}
+
+
+void AYPPCustomPlayerState::ChangeToLevel(FName LevelName)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Game is Starting"));
+
+	AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode)
+	{
+		GameMode->LoadLevel(LevelName);
+	}
 }

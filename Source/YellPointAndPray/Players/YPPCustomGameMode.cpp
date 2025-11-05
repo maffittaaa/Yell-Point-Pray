@@ -19,6 +19,7 @@ AYPPCustomGameMode::AYPPCustomGameMode()
     //GetWorld()->GetNetDriver()->SetNetDriverName(NAME_GameNetDriver);
     DefaultPawnClass = nullptr;
     bUseSeamlessTravel = true;
+    bPauseable = false;
 }
 
 void AYPPCustomGameMode::PostLogin(APlayerController* NewPlayer)
@@ -86,7 +87,6 @@ void AYPPCustomGameMode::PostLogin(APlayerController* NewPlayer)
     else if (AssignedRole == EPlayerType::Mute)
         PawnClassToSpawn = MuteClass;
 
-
     if (PawnClassToSpawn)
     {
         FTimerHandle TimerHandle;
@@ -149,4 +149,20 @@ void AYPPCustomGameMode::RestartGame()
     {
         IReset::Execute_Reset(Actor);
     }
+}
+
+void AYPPCustomGameMode::LoadLevel(FName LevelName) 
+{
+    if (GetWorld()->GetNetMode() == NM_ListenServer || GetWorld()->GetNetMode() == NM_DedicatedServer)
+    {
+        // Server tells all clients to travel
+        for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+        {
+            if (APlayerController* PC = It->Get())
+            {
+                PC->ClientTravel("/Game/FirstPerson/Lvl_MainTest", TRAVEL_Relative);
+            }
+        }
+    }
+    GetWorld()->ServerTravel(TEXT("/Game/FirstPerson/Lvl_MainTest?listen"));
 }

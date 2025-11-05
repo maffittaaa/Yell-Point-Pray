@@ -18,6 +18,11 @@ class YELLPOINTANDPRAY_API AYPPCustomPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
+private:
+	float TimePassed = 0;
+	bool LevelLoaded = false;
+	void ChangeToLevel(FName LevelName);
+
 public:
 	AYPPCustomPlayerState();
 
@@ -32,6 +37,8 @@ public:
 
 	// Server-side settEPlayerType
 	void SetPlayerType(EPlayerType NewType);
+
+	virtual void Tick(float DeltaTime) override;
 
 	// Replication
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

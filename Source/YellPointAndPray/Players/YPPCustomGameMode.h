@@ -20,14 +20,15 @@ class YELLPOINTANDPRAY_API AYPPCustomGameMode : public AGameModeBase
 private:
     TArray<APawn*> PlayersArray;
 
-public:
     AYPPCustomGameMode();
-
+public:
     virtual void PostLogin(APlayerController* NewPlayer) override;
 
     void GameOver(bool State);
 
     void RestartGame();
+
+    void LoadLevel(FName LevelName);
 
     UPROPERTY(EditDefaultsOnly, Category = "Asymmetric")
     TSubclassOf<APawn> BlindClass;
