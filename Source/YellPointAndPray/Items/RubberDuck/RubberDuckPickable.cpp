@@ -7,6 +7,7 @@
 #include "Obstacles/Guard/Guard.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
+#include "Obstacles/Guard/Guard.h"
 
 ARubberDuckPickable::ARubberDuckPickable() {
 	Name = "Rubber Duck Pickable";
@@ -46,6 +47,8 @@ void ARubberDuckPickable::CallGuard() {
 		UNavigationPath* NavPath = NavSys->FindPathToLocationSynchronously(GetWorld(), Loc, GetActorLocation());
 		if (NavPath->GetPathLength() < 200) {
 			UE_LOG(LogTemp, Warning, TEXT("Close Enough"));
+
+			Cast<AGuard>(FoundActor)->Called(GetActorLocation());
 		}
 	}
 }

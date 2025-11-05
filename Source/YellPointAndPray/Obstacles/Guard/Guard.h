@@ -74,6 +74,9 @@ public:
 	UFUNCTION()
 	void CloseDoors(float DeltaTime);
 
+	UFUNCTION()
+	void Called(FVector Location);
+
 	UPROPERTY(Replicated)
 	UWorld* World;
 

@@ -109,11 +109,13 @@ void AGuard::Tick(float DeltaTime)
 			Suspicious = false;
 		}
 	}
-
+	FVector Dir = this->GetVelocity().GetSafeNormal();
+	FRotator NewRotation = FRotationMatrix::MakeFromX(Dir).Rotator();
+	SetActorRotation(NewRotation);
 	if (Seen == true) {
 		//UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %d"), CurrentSuspicion)
 		FVector Direction = TargetPlayer->GetActorLocation() - GetActorLocation();
-		FRotator NewRotation = FRotationMatrix::MakeFromX(Direction).Rotator();
+		NewRotation = FRotationMatrix::MakeFromX(Direction).Rotator();
 		SetActorRotation(NewRotation);
 		CurrentSuspicion += 90 * DeltaTime;
 		if (CurrentSuspicion >= 100) {
@@ -124,6 +126,17 @@ void AGuard::Tick(float DeltaTime)
 			}
 		}
 	}
+}
+
+void AGuard::Called(FVector Location)
+{
+	LastSeenLocation = Location;
+	CurrentSuspicion = 99;
+	Suspicious = true;
+	Patroling = false;
+	Seen = false;
+
+	SuspiciousOf();
 }
 
 
