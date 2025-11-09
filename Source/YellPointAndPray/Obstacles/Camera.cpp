@@ -50,16 +50,6 @@ void ACamera::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
 	if (OtherActor->GetClass()->ImplementsInterface(UCaughtable::StaticClass())) {
 		UE_LOG(LogTemp, Warning, TEXT("CAMERA SEEN"));
-
-		if (!bIsAnimationStopped) {
-			StopAnimation();
-			collisionCone->SetMaterial(0, detectedMaterialInstance);
-		}
-
-		DetectedPlayer = OtherActor;
-		FVector DirectionToPlayer = (DetectedPlayer->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-		StoppedRotation = DirectionToPlayer.Rotation();
-		//SetActorRotation(StoppedRotation);
 			
 		if (PlayersNotSeenList.Contains(OtherActor)) {
 			PlayersSeenList.Add(OtherActor, *(PlayersNotSeenList.Find(OtherActor)));
@@ -73,6 +63,16 @@ void ACamera::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 			if (AmountOfPlayers > 3)
 				AmountOfPlayers = 3;
 		}
+
+		if (!bIsAnimationStopped) {
+			StopAnimation();
+			collisionCone->SetMaterial(0, detectedMaterialInstance);
+		}
+
+		DetectedPlayer = OtherActor;
+		FVector DirectionToPlayer = (DetectedPlayer->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		StoppedRotation = DirectionToPlayer.Rotation();
+		//SetActorRotation(StoppedRotation);
 	}
 }
 
