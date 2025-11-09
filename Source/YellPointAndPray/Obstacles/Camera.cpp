@@ -66,10 +66,6 @@ void ACamera::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 		
 		StopAnimation();
 		collisionCone->SetMaterial(0, detectedMaterialInstance);
-		DetectedPlayer = OtherActor;
-		FVector DirectionToPlayer = (DetectedPlayer->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-		StoppedRotation = DirectionToPlayer.Rotation();
-		this->SetActorRotation(StoppedRotation);
 	}
 }
 
@@ -130,6 +126,7 @@ void ACamera::StopAnimation() {
 	if (skeletalMeshComponent && skeletalMeshComponent->GetAnimInstance()) {
 		bIsPlayerDetected = true;
 		bIsAnimationStopped = true;
+		skeletalMeshComponent->SetComponentTickEnabled(false);
 		UE_LOG(LogTemp, Warning, TEXT("Camera animation stopped"));
 	}
 }
@@ -140,6 +137,7 @@ void ACamera::ResumeCameraAnimation() {
 	bIsAnimationStopped = false;
 	DetectedPlayer = nullptr;
 	collisionCone->SetMaterial(0, undetectedMaterialInstance);
+	skeletalMeshComponent->SetComponentTickEnabled(true);
 }
 
 void ACamera::ResetCameraObstacle() {
