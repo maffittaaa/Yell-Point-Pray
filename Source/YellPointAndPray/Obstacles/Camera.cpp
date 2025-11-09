@@ -63,16 +63,13 @@ void ACamera::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 			if (AmountOfPlayers > 3)
 				AmountOfPlayers = 3;
 		}
-
-		if (!bIsAnimationStopped) {
-			StopAnimation();
-			collisionCone->SetMaterial(0, detectedMaterialInstance);
-		}
-
+		
+		StopAnimation();
+		collisionCone->SetMaterial(0, detectedMaterialInstance);
 		DetectedPlayer = OtherActor;
 		FVector DirectionToPlayer = (DetectedPlayer->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 		StoppedRotation = DirectionToPlayer.Rotation();
-		//SetActorRotation(StoppedRotation);
+		this->SetActorRotation(StoppedRotation);
 	}
 }
 
