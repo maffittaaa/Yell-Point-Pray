@@ -124,7 +124,6 @@ void ACamera::NoPlayerInVision(float DeltaTime) {
 
 void ACamera::StopAnimation() {
 	if (skeletalMeshComponent && skeletalMeshComponent->GetAnimInstance()) {
-		bIsPlayerDetected = true;
 		bIsAnimationStopped = true;
 		skeletalMeshComponent->SetComponentTickEnabled(false);
 		UE_LOG(LogTemp, Warning, TEXT("Camera animation stopped"));
@@ -133,9 +132,7 @@ void ACamera::StopAnimation() {
 
 
 void ACamera::ResumeCameraAnimation() {
-	bIsPlayerDetected = false;
 	bIsAnimationStopped = false;
-	DetectedPlayer = nullptr;
 	collisionCone->SetMaterial(0, undetectedMaterialInstance);
 	skeletalMeshComponent->SetComponentTickEnabled(true);
 }

@@ -45,25 +45,6 @@ class YELLPOINTANDPRAY_API ACamera : public AActor, public IReset
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Animation")
 		bool bIsAnimationStopped = false;
-	    
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Animation")
-		FRotator StoppedRotation;
-	    
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Animation")
-		AActor* DetectedPlayer = nullptr;
-
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Animation")
-		bool bIsPlayerDetected = false;
-
-		UFUNCTION(BlueprintCallable, Category = "Camera")
-		AActor* GetDetectedPlayer() const {
-			return DetectedPlayer;
-		}
-
-		UFUNCTION(BlueprintCallable, Category = "Camera") 
-		bool GetIsPlayerDetected() const {
-			return bIsPlayerDetected;
-		}
 
 		float suspiciousAmount = 0.0f;
 
