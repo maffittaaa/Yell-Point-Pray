@@ -13,7 +13,9 @@ ACamera::ACamera() {
 	skeletalMeshComponent->SetupAttachment(RootComponent);
 
 	collisionCone = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Collision Cone"));
-	collisionCone->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	collisionCone->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	collisionCone->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	collisionCone->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 	
 	collisionCone->OnComponentBeginOverlap.AddDynamic(this, &ACamera::OnOverlapBegin);
 	collisionCone->OnComponentEndOverlap.AddDynamic(this, &ACamera::OnOverlapEnd);
@@ -52,10 +54,12 @@ void ACamera::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 		if (!bIsAnimationStopped) {
 			StopAnimation();
 			collisionCone->SetMaterial(0, detectedMaterialInstance);
-			FVector DirectionToPlayer = (OtherActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-			StoppedRotation = DirectionToPlayer.Rotation();
-			DetectedPlayer = OtherActor;
 		}
+
+		DetectedPlayer = OtherActor;
+		FVector DirectionToPlayer = (DetectedPlayer->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		StoppedRotation = DirectionToPlayer.Rotation();
+		//SetActorRotation(StoppedRotation);
 			
 		if (PlayersNotSeenList.Contains(OtherActor)) {
 			PlayersSeenList.Add(OtherActor, *(PlayersNotSeenList.Find(OtherActor)));
@@ -78,7 +82,8 @@ void ACamera::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 		PlayersNotSeenList.Add(OtherActor, *(PlayersSeenList.Find(OtherActor)));
 		PlayersSeenList.Remove(OtherActor);
 		AmountOfPlayers--;
-		if (AmountOfPlayers < 0) AmountOfPlayers = 0;
+		if (AmountOfPlayers < 0)
+			AmountOfPlayers = 0;
 	}
 }
 
@@ -90,6 +95,7 @@ void ACamera::PlayerInVision(float DeltaTime) {
 			suspiciousAmount = Elem.Value + (70 * DeltaTime * AmountOfPlayers);
 			Elem.Value = suspiciousAmount;
 			UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %d"), (int)Elem.Value);
+			
 			if (Elem.Value >= SuspicionMax) {
 				suspiciousMark->SetHiddenInGame(true);
 				alertedMark->SetHiddenInGame(false);
@@ -125,8 +131,7 @@ void ACamera::NoPlayerInVision(float DeltaTime) {
 
 void ACamera::StopAnimation() {
 	if (skeletalMeshComponent && skeletalMeshComponent->GetAnimInstance()) {
-		skeletalMeshComponent->SetAnimationMode(EAnimationMode::AnimationSingleNode);
-		skeletalMeshComponent->Stop();
+		bIsPlayerDetected = true;
 		bIsAnimationStopped = true;
 		UE_LOG(LogTemp, Warning, TEXT("Camera animation stopped"));
 	}
@@ -134,11 +139,7 @@ void ACamera::StopAnimation() {
 
 
 void ACamera::ResumeCameraAnimation() {
-	if (skeletalMeshComponent) {
-		skeletalMeshComponent->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-		skeletalMeshComponent->SetAnimInstanceClass(skeletalMeshComponent->GetAnimClass());
-	}
-
+	bIsPlayerDetected = false;
 	bIsAnimationStopped = false;
 	DetectedPlayer = nullptr;
 	collisionCone->SetMaterial(0, undetectedMaterialInstance);
@@ -153,10 +154,9 @@ void ACamera::ResetCameraObstacle() {
 void ACamera::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 	
-	if (bIsAnimationStopped)
-		SetActorRotation(StoppedRotation);
-	
 	PlayerInVision(DeltaTime);
-	NoPlayerInVision(DeltaTime);
+	
+	if (PlayersNotSeenList.Num() > 0)
+		NoPlayerInVision(DeltaTime);
 }
 

@@ -10,7 +10,7 @@
 #include "Interfaces/Reset.h"
 #include "Camera.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable)
 class YELLPOINTANDPRAY_API ACamera : public AActor, public IReset
 {
 	GENERATED_BODY()
@@ -51,6 +51,19 @@ class YELLPOINTANDPRAY_API ACamera : public AActor, public IReset
 	    
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Animation")
 		AActor* DetectedPlayer = nullptr;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Animation")
+		bool bIsPlayerDetected = false;
+
+		UFUNCTION(BlueprintCallable, Category = "Camera")
+		AActor* GetDetectedPlayer() const {
+			return DetectedPlayer;
+		}
+
+		UFUNCTION(BlueprintCallable, Category = "Camera") 
+		bool GetIsPlayerDetected() const {
+			return bIsPlayerDetected;
+		}
 
 		float suspiciousAmount = 0.0f;
 
