@@ -19,6 +19,9 @@ void AEletricBox::BeginPlay() {
 }
 
 void AEletricBox::Interact_Implementation(AActor* Interactor) {
+	if (!HasAuthority())
+		return;
+	
 	for (AActor* laserActor : laserActors) {
 		ALaser* laser = Cast<ALaser>(laserActor);
 
@@ -28,8 +31,6 @@ void AEletricBox::Interact_Implementation(AActor* Interactor) {
 			UE_LOG(LogTemp, Error, TEXT("Failed to cast to ALaser: %s"), *laserActor->GetName());
 	}
 }
-
-
 
 void AEletricBox::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);

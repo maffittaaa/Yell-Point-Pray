@@ -52,9 +52,24 @@ class YELLPOINTANDPRAY_API ALaser : public AActor, public IReset
 		UFUNCTION()
 		void ReactivateLasers();
 
-	private:
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Laser", meta = (AllowPrivateAccess = "true"))
+		UPROPERTY(ReplicatedUsing = OnRep_IsLaserActive, BlueprintReadOnly, Category = "Laser")
 		bool bIsLaserActive = true;
+
+		UFUNCTION()
+		void OnRep_IsLaserActive();
+
+		// Server RPC for deactivation
+		UFUNCTION(Server, Reliable)
+		void Server_DeactivateLaserTemporarily(float duration);
+
+		UFUNCTION(NetMulticast, Reliable)
+		void Multicast_DeactivateLaserTemporarily(float duration);
+
+		UFUNCTION(NetMulticast, Reliable)
+		void Multicast_ReactivateLaser();
+
+		UFUNCTION()
+		void UpdateLaserVisuals();
 
 	protected: 
 		virtual void BeginPlay() override;
@@ -67,5 +82,7 @@ class YELLPOINTANDPRAY_API ALaser : public AActor, public IReset
 		virtual void Reset_Implementation() override;
 
 		virtual void Tick(float DeltaTime) override;
+
+		virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 };

@@ -1,5 +1,7 @@
 #include "Obstacles/Laser/Laser.h"
 
+#include "Net/UnrealNetwork.h"
+
 ALaser::ALaser() {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -48,16 +50,23 @@ void ALaser::TouchingLaser(AYellPointAndPrayCharacter* character) {
 
 void ALaser::SetLaserActive(bool bActive)
 {
-	if (bActive && GetWorld()->GetTimerManager().IsTimerActive(reactivateTimerHandle))
-		GetWorld()->GetTimerManager().ClearTimer(reactivateTimerHandle);
+	if (bIsLaserActive == bActive)
+		return;
 	
-	bIsLaserActive = bActive;
-    
+	if (HasAuthority()) {
+		bIsLaserActive = bActive;
+		OnRep_IsLaserActive();
+	}
+}
+
+void ALaser::UpdateLaserVisuals()
+{
 	if (niagaraLaser) {
 		niagaraLaser->ResetSystem();
-		if (bActive)
+		if (bIsLaserActive) {
 			niagaraLaser->Activate();
-		else {
+			niagaraLaser->SetVisibility(true);
+		} else {
 			niagaraLaser->Deactivate();
 			niagaraLaser->SetVisibility(false);
 		}
@@ -65,43 +74,74 @@ void ALaser::SetLaserActive(bool bActive)
     
 	if (niagaraLaserImpact) {
 		niagaraLaserImpact->ResetSystem();
-		if (bActive)
+		if (bIsLaserActive) {
 			niagaraLaserImpact->Activate();
-		else {
+			niagaraLaserImpact->SetVisibility(true);
+		} else {
 			niagaraLaserImpact->Deactivate();
 			niagaraLaserImpact->SetVisibility(false);
 		}
 	}
-	
+    
 	if (collisionSphere)
-		collisionSphere->SetCollisionEnabled(bActive ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
-	
-	SetActorTickEnabled(bActive);
+		collisionSphere->SetCollisionEnabled(bIsLaserActive ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
+    
+	SetActorTickEnabled(bIsLaserActive);
 }
 
 void ALaser::DeactivateLaserTemporarily(float duration) {
+
+	if (!HasAuthority()) {
+		Server_DeactivateLaserTemporarily(duration);
+		return;
+	}
+	
 	if (!bIsLaserActive)
 		return;
 
-    UE_LOG(LogTemp, Warning, TEXT("ALaser::DeactivateTemporarily - %s for %.1f seconds"), *GetName(), duration);
+	Multicast_DeactivateLaserTemporarily(duration);
 
-	// FTimerDelegate Delegate;
-	// Delegate.BindUObject(this, &ALaser::ReactivateLasers);
+	FTimerDelegate Delegate;
+	Delegate.BindUObject(this, &ALaser::ReactivateLasers);
 
 	SetLaserActive(false);
-	SetActorTickEnabled(false);
 
-	// GetWorld()->GetTimerManager().SetTimer(
-	// 	reactivateTimerHandle,
-	// 	Delegate,
-	// 	duration,
-	// 	false
-	// );
+	GetWorld()->GetTimerManager().SetTimer(
+		reactivateTimerHandle,
+		Delegate,
+		duration,
+		false
+	);
+}
+
+void ALaser::Server_DeactivateLaserTemporarily_Implementation(float duration) {
+	DeactivateLaserTemporarily(duration);
+}
+
+void ALaser::Multicast_DeactivateLaserTemporarily_Implementation(float duration) {
+	if (!HasAuthority())
+		SetLaserActive(false);
 }
 
 void ALaser::ReactivateLasers() {
-	SetLaserActive(true);
-	SetActorTickEnabled(true);
+	if (HasAuthority()) {
+		SetLaserActive(true);
+		Multicast_ReactivateLaser();
+	}
+}
+
+void ALaser::Multicast_ReactivateLaser_Implementation() {
+	if (!HasAuthority())
+		SetLaserActive(true);
+}
+
+void ALaser::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ALaser, bIsLaserActive);
+}
+
+void ALaser::OnRep_IsLaserActive() {
+	UpdateLaserVisuals();
 }
 
 void ALaser::Tick(float DeltaTime) {
@@ -140,7 +180,7 @@ void ALaser::Tick(float DeltaTime) {
 		if (niagaraLaserImpact)
 			niagaraLaserImpact->SetWorldLocation(RV_Hit.Location);
 		
-		if (AYellPointAndPrayCharacter* character = Cast<AYellPointAndPrayCharacter>(RV_Hit.GetActor())) {
+		if (AYellPointAndPrayCharacter* character = Cast<AYellPointAndPrayCharacter>(RV_Hit.GetActor())){
 			if (HasAuthority())
 				TouchingLaser(character);
 		}
