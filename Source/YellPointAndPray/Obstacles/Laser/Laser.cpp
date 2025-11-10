@@ -31,7 +31,7 @@ void ALaser::BeginPlay() {
 
 void ALaser::Reset_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Lazer-specific reset called!"));
+	UE_LOG(LogTemp, Warning, TEXT("Laser-specific reset called!"));
 }
 
 void ALaser::SetLaserColors() {
@@ -51,44 +51,36 @@ void ALaser::SetLaserActive(bool bActive)
 	bIsLaserActive = bActive;
     
 	if (niagaraLaser) {
-		UE_LOG(LogTemp, Warning, TEXT("  - Setting niagaraLaser active: %s"), bActive ? TEXT("true") : TEXT("false"));
-		niagaraLaser->SetActive(bActive, true);
-		if (!bActive) {
+		niagaraLaser->ResetSystem();
+		if (bActive)
+			niagaraLaser->Activate();
+		else {
 			niagaraLaser->Deactivate();
 			niagaraLaser->SetVisibility(false);
 		}
 	}
     
-	if (niagaraLaserImpact){
-		UE_LOG(LogTemp, Warning, TEXT("  - Setting niagaraLaserImpact active: %s"), bActive ? TEXT("true") : TEXT("false"));
-		niagaraLaserImpact->SetActive(bActive, true);
-		if (!bActive) {
+	if (niagaraLaserImpact) {
+		niagaraLaserImpact->ResetSystem();
+		if (bActive)
+			niagaraLaserImpact->Activate();
+		else {
 			niagaraLaserImpact->Deactivate();
 			niagaraLaserImpact->SetVisibility(false);
 		}
 	}
-
+	
 	if (collisionSphere)
-		collisionSphere->SetCollisionEnabled(bActive ? ECollisionEnabled::NoCollision : ECollisionEnabled::NoCollision);
+		collisionSphere->SetCollisionEnabled(bActive ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
+	
+	SetActorTickEnabled(bActive);
 }
 
 void ALaser::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
 	if (!bIsLaserActive)
-	{
-		if (niagaraLaser && niagaraLaser->IsActive()) {
-			UE_LOG(LogTemp, Warning, TEXT("Laser %s: niagaraLaser was still active, forcing deactivate"), *GetName());
-			niagaraLaser->SetActive(false, true);
-			niagaraLaser->Deactivate();
-		}
-		if (niagaraLaserImpact && niagaraLaserImpact->IsActive()) {
-			UE_LOG(LogTemp, Warning, TEXT("Laser %s: niagaraLaserImpact was still active, forcing deactivate"), *GetName());
-			niagaraLaserImpact->SetActive(false, true);
-			niagaraLaserImpact->Deactivate();
-		}
 		return;
-	}
 
 	float distance = 2500.0f;
 	FVector startTrace = GetActorLocation();

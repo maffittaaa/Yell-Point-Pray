@@ -16,7 +16,7 @@ AEletricBox::AEletricBox()
 void AEletricBox::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALaser::StaticClass(), laserActors);
 }
 
@@ -25,17 +25,9 @@ void AEletricBox::Interact_Implementation(AActor* Interactor) {
 		ALaser* laser = Cast<ALaser>(laserActor);
 
 		if (laser) {
-			UE_LOG(LogTemp, Warning, TEXT("Deactivating laser: %s, Was active: %s"), 
-				*laser->GetName(), 
-				laser->IsLaserActive() ? TEXT("Yes") : TEXT("No"));
 			
 			laser->SetLaserActive(false);
 			laser->SetActorTickEnabled(false);
-
-			UE_LOG(LogTemp, Warning, TEXT("Laser %s now active: %s"), 
-			   *laser->GetName(), 
-			   laser->IsLaserActive() ? TEXT("Yes") : TEXT("No"));
-			UE_LOG(LogTemp, Warning, TEXT("Laser is deactivated"));
 		} else
 			UE_LOG(LogTemp, Error, TEXT("Failed to cast to ALaser: %s"), *laserActor->GetName());
 	}
