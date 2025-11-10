@@ -21,7 +21,9 @@ public:
 	UStaticMeshComponent* eletricBoxMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Laser")
-	TArray<ALaser*> lasers;
+	TArray<AActor*> laserActors;
+
+
 	
 protected:
 	// Called when the game starts or when spawned

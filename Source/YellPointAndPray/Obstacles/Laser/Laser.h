@@ -38,6 +38,16 @@ class YELLPOINTANDPRAY_API ALaser : public AActor, public IReset
 
 		void TouchingLaser(AYellPointAndPrayCharacter* character);
 
+		UFUNCTION(BlueprintCallable, Category = "Laser")
+		void SetLaserActive(bool bActive);
+
+		UFUNCTION(BlueprintCallable, Category = "Laser")
+		bool IsLaserActive() const { return bIsLaserActive; }
+
+	private:
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Laser", meta = (AllowPrivateAccess = "true"))
+		bool bIsLaserActive = true;
+
 	protected: 
 		virtual void BeginPlay() override;
 

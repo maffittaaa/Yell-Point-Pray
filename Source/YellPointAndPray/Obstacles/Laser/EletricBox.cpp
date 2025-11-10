@@ -1,5 +1,7 @@
 #include "Obstacles/Laser/EletricBox.h"
 
+#include "Kismet/GameplayStatics.h"
+
 AEletricBox::AEletricBox()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -14,14 +16,29 @@ AEletricBox::AEletricBox()
 void AEletricBox::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALaser::StaticClass(), laserActors);
 }
 
 void AEletricBox::Interact_Implementation(AActor* Interactor) {
-	for (ALaser* laser : lasers)
-		laser->niagaraLaserImpact->SetActive(false);
+	for (AActor* laserActor : laserActors) {
+		ALaser* laser = Cast<ALaser>(laserActor);
 
-	UE_LOG(LogTemp, Warning, TEXT("Laser is deactivated"));
+		if (laser) {
+			UE_LOG(LogTemp, Warning, TEXT("Deactivating laser: %s, Was active: %s"), 
+				*laser->GetName(), 
+				laser->IsLaserActive() ? TEXT("Yes") : TEXT("No"));
+			
+			laser->SetLaserActive(false);
+			laser->SetActorTickEnabled(false);
+
+			UE_LOG(LogTemp, Warning, TEXT("Laser %s now active: %s"), 
+			   *laser->GetName(), 
+			   laser->IsLaserActive() ? TEXT("Yes") : TEXT("No"));
+			UE_LOG(LogTemp, Warning, TEXT("Laser is deactivated"));
+		} else
+			UE_LOG(LogTemp, Error, TEXT("Failed to cast to ALaser: %s"), *laserActor->GetName());
+	}
 }
 
 void AEletricBox::Tick(float DeltaTime)

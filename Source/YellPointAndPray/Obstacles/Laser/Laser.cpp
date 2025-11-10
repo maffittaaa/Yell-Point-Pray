@@ -46,8 +46,49 @@ void ALaser::TouchingLaser(AYellPointAndPrayCharacter* character) {
 	//implementation of the alert guards
 }
 
+void ALaser::SetLaserActive(bool bActive)
+{
+	bIsLaserActive = bActive;
+    
+	if (niagaraLaser) {
+		UE_LOG(LogTemp, Warning, TEXT("  - Setting niagaraLaser active: %s"), bActive ? TEXT("true") : TEXT("false"));
+		niagaraLaser->SetActive(bActive, true);
+		if (!bActive) {
+			niagaraLaser->Deactivate();
+			niagaraLaser->SetVisibility(false);
+		}
+	}
+    
+	if (niagaraLaserImpact){
+		UE_LOG(LogTemp, Warning, TEXT("  - Setting niagaraLaserImpact active: %s"), bActive ? TEXT("true") : TEXT("false"));
+		niagaraLaserImpact->SetActive(bActive, true);
+		if (!bActive) {
+			niagaraLaserImpact->Deactivate();
+			niagaraLaserImpact->SetVisibility(false);
+		}
+	}
+
+	if (collisionSphere)
+		collisionSphere->SetCollisionEnabled(bActive ? ECollisionEnabled::NoCollision : ECollisionEnabled::NoCollision);
+}
+
 void ALaser::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
+
+	if (!bIsLaserActive)
+	{
+		if (niagaraLaser && niagaraLaser->IsActive()) {
+			UE_LOG(LogTemp, Warning, TEXT("Laser %s: niagaraLaser was still active, forcing deactivate"), *GetName());
+			niagaraLaser->SetActive(false, true);
+			niagaraLaser->Deactivate();
+		}
+		if (niagaraLaserImpact && niagaraLaserImpact->IsActive()) {
+			UE_LOG(LogTemp, Warning, TEXT("Laser %s: niagaraLaserImpact was still active, forcing deactivate"), *GetName());
+			niagaraLaserImpact->SetActive(false, true);
+			niagaraLaserImpact->Deactivate();
+		}
+		return;
+	}
 
 	float distance = 2500.0f;
 	FVector startTrace = GetActorLocation();
@@ -72,21 +113,17 @@ void ALaser::Tick(float DeltaTime) {
 	);
 
 	FVector beamEnd = bHit ? RV_Hit.Location : endTrace; //select in blueprint
-	niagaraLaser->SetVariableVec3(FName("User.BeamEnd"), beamEnd);
+	if (niagaraLaser)
+		niagaraLaser->SetVariableVec3(FName("User.BeamEnd"), beamEnd);
 	
 	if (bHit) {
-		if (niagaraLaserImpact) {
+		if (niagaraLaserImpact)
 			niagaraLaserImpact->SetWorldLocation(RV_Hit.Location);
-			niagaraLaserImpact->SetActive(true);
-		}
 		
 		if (AYellPointAndPrayCharacter* character = Cast<AYellPointAndPrayCharacter>(RV_Hit.GetActor())) {
 			if (HasAuthority())
 				TouchingLaser(character);
 		}
-	} else {
-		if (niagaraLaserImpact)
-			niagaraLaserImpact->SetActive(false);
 	}
 }
 
