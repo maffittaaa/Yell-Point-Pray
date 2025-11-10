@@ -49,7 +49,7 @@ void ALaser::TouchingLaser(AYellPointAndPrayCharacter* character) {
 void ALaser::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
-	float distance = 2100.0f;
+	float distance = 2500.0f;
 	FVector startTrace = GetActorLocation();
 	FVector endTrace = startTrace + (GetActorForwardVector() * distance);
 	ECollisionChannel traceChannel = ECC_WorldStatic;
