@@ -48,6 +48,9 @@ void ALaser::TouchingLaser(AYellPointAndPrayCharacter* character) {
 
 void ALaser::SetLaserActive(bool bActive)
 {
+	if (bActive && GetWorld()->GetTimerManager().IsTimerActive(reactivateTimerHandle))
+		GetWorld()->GetTimerManager().ClearTimer(reactivateTimerHandle);
+	
 	bIsLaserActive = bActive;
     
 	if (niagaraLaser) {
@@ -74,6 +77,31 @@ void ALaser::SetLaserActive(bool bActive)
 		collisionSphere->SetCollisionEnabled(bActive ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
 	
 	SetActorTickEnabled(bActive);
+}
+
+void ALaser::DeactivateLaserTemporarily(float duration) {
+	if (!bIsLaserActive)
+		return;
+
+    UE_LOG(LogTemp, Warning, TEXT("ALaser::DeactivateTemporarily - %s for %.1f seconds"), *GetName(), duration);
+
+	// FTimerDelegate Delegate;
+	// Delegate.BindUObject(this, &ALaser::ReactivateLasers);
+
+	SetLaserActive(false);
+	SetActorTickEnabled(false);
+
+	// GetWorld()->GetTimerManager().SetTimer(
+	// 	reactivateTimerHandle,
+	// 	Delegate,
+	// 	duration,
+	// 	false
+	// );
+}
+
+void ALaser::ReactivateLasers() {
+	SetLaserActive(true);
+	SetActorTickEnabled(true);
 }
 
 void ALaser::Tick(float DeltaTime) {

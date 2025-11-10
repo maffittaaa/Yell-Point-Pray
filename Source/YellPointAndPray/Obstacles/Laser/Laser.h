@@ -44,6 +44,14 @@ class YELLPOINTANDPRAY_API ALaser : public AActor, public IReset
 		UFUNCTION(BlueprintCallable, Category = "Laser")
 		bool IsLaserActive() const { return bIsLaserActive; }
 
+		UFUNCTION()
+		void DeactivateLaserTemporarily(float duration = 3.0f);
+
+		FTimerHandle reactivateTimerHandle;
+
+		UFUNCTION()
+		void ReactivateLasers();
+
 	private:
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Laser", meta = (AllowPrivateAccess = "true"))
 		bool bIsLaserActive = true;

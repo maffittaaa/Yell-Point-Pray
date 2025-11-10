@@ -19,8 +19,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Laser")
 	TArray<AActor*> laserActors;
-
-
 	
 protected:
 	virtual void BeginPlay() override;

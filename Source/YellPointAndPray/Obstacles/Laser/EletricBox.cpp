@@ -2,8 +2,7 @@
 
 #include "Kismet/GameplayStatics.h"
 
-AEletricBox::AEletricBox()
-{
+AEletricBox::AEletricBox() {
 	PrimaryActorTick.bCanEverTick = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
@@ -13,8 +12,7 @@ AEletricBox::AEletricBox()
 
 }
 
-void AEletricBox::BeginPlay()
-{
+void AEletricBox::BeginPlay() {
 	Super::BeginPlay();
 	
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALaser::StaticClass(), laserActors);
@@ -25,17 +23,15 @@ void AEletricBox::Interact_Implementation(AActor* Interactor) {
 		ALaser* laser = Cast<ALaser>(laserActor);
 
 		if (laser) {
-			
-			laser->SetLaserActive(false);
-			laser->SetActorTickEnabled(false);
+			laser->DeactivateLaserTemporarily(3.0f);
 		} else
 			UE_LOG(LogTemp, Error, TEXT("Failed to cast to ALaser: %s"), *laserActor->GetName());
 	}
 }
 
-void AEletricBox::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 
+
+void AEletricBox::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
 }
 
