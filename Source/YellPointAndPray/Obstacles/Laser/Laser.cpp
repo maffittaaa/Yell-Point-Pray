@@ -1,4 +1,4 @@
-#include "Obstacles/Laser.h"
+#include "Obstacles/Laser/Laser.h"
 
 ALaser::ALaser() {
 	PrimaryActorTick.bCanEverTick = true;

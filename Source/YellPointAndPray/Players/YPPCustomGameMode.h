@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "YellPointAndPrayCharacter.h"
-#include "Obstacles/Camera.h"
+#include "Obstacles/Camera/Camera.h"
 #include "YPPCustomPlayerState.h"
 #include "GameFramework/GameModeBase.h"
 #include <GameFramework/GameMode.h>
