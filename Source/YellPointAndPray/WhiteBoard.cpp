@@ -77,7 +77,7 @@ void AWhiteBoard::InitializeBackground() {
 	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, context);
 }
 
-void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D drawLocation) {
+void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D drawLocation, UMaterial* brushMaterial) {
 	if (dynamicMaterialInstanceBrush)
 		dynamicMaterialInstanceBrush->SetTextureParameterValue(FName("BrushTexture"), brushTexture);
 	

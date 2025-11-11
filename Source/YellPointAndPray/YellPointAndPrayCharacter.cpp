@@ -804,7 +804,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 				);
 
 				
-				whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, UVCoordinates);
+				whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, UVCoordinates, whiteboardBrushMaterial);
 				Server_UpdateDrawingData(UVCoordinates, true);
 			}
 		}
