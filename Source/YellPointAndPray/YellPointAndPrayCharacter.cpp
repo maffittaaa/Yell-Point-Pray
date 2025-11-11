@@ -736,7 +736,7 @@ void AYellPointAndPrayCharacter::OnRep_DrawingData()
 {
 	if (!IsLocallyControlled() && bReplicatedIsDrawing && whiteboard) {
 		float whiteboardBrushSize = 10.0f;
-		whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, replicatedMouseUV);
+		//whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, replicatedMouseUV);
 	}
 }
 

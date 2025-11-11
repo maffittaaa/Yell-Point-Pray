@@ -78,15 +78,6 @@ void AYPPCustomGameMode::PostLogin(APlayerController* NewPlayer)
         PlayerState->IsHost = true;
     }
 
-    UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(GetWorld());
-
-    UYPPCustomGameInstance* YPPGameInstance = Cast<UYPPCustomGameInstance>(GameInstance);
-
-    if (YPPGameInstance)
-    {
-        YPPGameInstance->PlayerLoggedIn(PlayerState, AssignedRole);
-    }
-
     SpawnPlayer(NewPlayer, AssignedRole);
 }
 
@@ -184,7 +175,32 @@ void AYPPCustomGameMode::LoadLevel(FName LevelName)
         {
             if (APlayerController* PC = It->Get())
             {
-                //PC->ClientTravel("/Game/FirstPerson/Lvl_MainTest", TRAVEL_Relative);
+                AYellPointAndPrayPlayerController* YPPPlayerController = Cast<AYellPointAndPrayPlayerController>(PC);
+
+                if (YPPPlayerController) 
+                {
+                    AYPPCustomPlayerState* PlayerState = Cast<AYPPCustomPlayerState>(PC->PlayerState);
+
+                    if (PlayerState) 
+                    {
+                        UGameInstance* GameInstance = GetWorld()->GetGameInstance();
+                        if (GameInstance)
+                        {
+                            // Cast to your specific game instance class if needed
+                            UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GameInstance);
+                        
+                            if (CustomGameInstance)
+                            {
+                                CustomGameInstance->PlayerTravelling(YPPPlayerController->GetPawn()->GetClass(), PlayerState->PlayerType, PlayerState);
+
+                                UE_LOG(LogTemp, Warning, TEXT("Travelling: PlayerState: %s"), *PlayerState->GetName());
+                                UE_LOG(LogTemp, Warning, TEXT("Travelling: PlayerType: %d"), PlayerState->PlayerType);
+                                UE_LOG(LogTemp, Warning, TEXT("Travelling: PlayerClass: %s"), *YPPPlayerController->GetPawn()->GetClass()->GetName());
+                                UE_LOG(LogTemp, Warning, TEXT("Travelling"));
+                            }
+                        }
+                    }
+                }
             }
         }
     }

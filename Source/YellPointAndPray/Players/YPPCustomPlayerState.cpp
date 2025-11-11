@@ -5,6 +5,7 @@
 #include "Net/UnrealNetwork.h"
 #include <Kismet/GameplayStatics.h>
 #include "YPPCustomGameMode.h"
+#include "YPPCustomGameInstance.h"
 
 AYPPCustomPlayerState::AYPPCustomPlayerState()
 {
@@ -12,6 +13,45 @@ AYPPCustomPlayerState::AYPPCustomPlayerState()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 	bReplicates = true;
+}
+
+void AYPPCustomPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (!HasAuthority()) return;
+	
+	UGameInstance* GameInstance = GetWorld()->GetGameInstance();
+	if (GameInstance)
+	{
+		// Cast to your specific game instance class if needed
+		UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GameInstance);
+		if (CustomGameInstance)
+		{
+			// Use your game instance
+			if (CustomGameInstance->GetPlayerType(this) != EPlayerType::None)
+			{
+				AController* NewPlayer = GetPlayerController();
+				FActorSpawnParameters SpawnParams;
+				SpawnParams.Owner = NewPlayer;
+				PlayerType = CustomGameInstance->GetPlayerType(this);
+
+				APawn* NewPawn = GetWorld()->SpawnActor<APawn>(CustomGameInstance->GetPlayerClass(this), FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+				
+				if (NewPawn) 
+				{
+					if (NewPlayer->GetPawn())
+					{
+						NewPlayer->GetPawn()->Destroy();
+						UE_LOG(LogTemp, Warning, TEXT("Destroying Current Pawn"));
+					}
+
+					NewPlayer->Possess(NewPawn);
+					UE_LOG(LogTemp, Warning, TEXT("Has Player Pocessing now"));
+				}			
+			}
+		}
+	}
 }
 
 void AYPPCustomPlayerState::OnRep_PlayerType()
@@ -43,9 +83,9 @@ void AYPPCustomPlayerState::Tick(float DeltaTime)
 
 	if (!HasAuthority()) return;
 
-	TimePassed -= DeltaTime;
+	TimePassed += DeltaTime;
 	// UE_LOG(LogTemp, Warning, TEXT("Time passed: %f"), TimePassed);
-	if (TimePassed > 5 && !LevelLoaded)
+	if (TimePassed > 10 && !LevelLoaded && IsHost)
 	{
 		LevelLoaded = true;
 		FName LevelName = "Lvl_MainTest";

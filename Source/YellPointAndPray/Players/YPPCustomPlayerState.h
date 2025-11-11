@@ -41,6 +41,7 @@ public:
 	// Server-side settEPlayerType
 	void SetPlayerType(EPlayerType NewType);
 
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 	// Replication

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "Engine/Engine.h"
+#include "list"
 #include "YPPCustomPlayerState.h"
 #include "GameFramework/PlayerState.h"
 #include "YPPCustomGameInstance.generated.h"
@@ -19,17 +20,27 @@ class YELLPOINTANDPRAY_API UYPPCustomGameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public:
-	void PlayerLoggedIn(AYPPCustomPlayerState* NewPlayerState, EPlayerType NewPlayerType);
+	void PlayerTravelling(TSubclassOf<APawn> NewPawnClass, EPlayerType NewPlayerType, AYPPCustomPlayerState* PlayerState);
 
 	UPROPERTY()
 	AYPPCustomPlayerState* PlayerStateRef = nullptr;
+	
+	EPlayerType GetPlayerType(AYPPCustomPlayerState* PlayerState);
+
+	TSubclassOf<APawn> GetPlayerClass(AYPPCustomPlayerState* PlayerState);
+
+	TArray<AYPPCustomPlayerState*> ListPlayersStates;
+	TArray<EPlayerType> ListPlayersTypes;
+	TArray<TSubclassOf<APawn>> ListPlayersPawnsClasses;
+protected:
 
 	UPROPERTY()
-	EPlayerType PlayerType = EPlayerType::None;
+	EPlayerType DefaultType = EPlayerType::None;
 
-protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Asymmetric")
+	TSubclassOf<APawn> DefaultClass;
+
+	int GetPlayerIndex(AYPPCustomPlayerState* PlayerState);
+
 	virtual void Init() override;
-
-private:
-	void OnMapLoad(UWorld* World);
 };
