@@ -21,12 +21,13 @@ class YELLPOINTANDPRAY_API AYPPCustomPlayerState : public APlayerState
 private:
 	float TimePassed = 0;
 
-	UPROPERTY(Replicated)
-	bool LevelLoaded = false;
 	void ChangeToLevel(FName LevelName);
 
 public:
 	AYPPCustomPlayerState();
+
+	UPROPERTY(Replicated)
+	bool LevelLoaded = false;
 
 	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere)
 	bool IsHost = false;

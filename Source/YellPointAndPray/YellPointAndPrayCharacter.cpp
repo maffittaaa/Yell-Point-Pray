@@ -637,7 +637,8 @@ void AYellPointAndPrayCharacter::Client_HideGameOver_Implementation()
 		if (PC)
 		{
 			PC->SetPause(false);
-			PC->SetInputMode(PreviousInputMode);
+			FInputModeGameOnly GameOnly;
+			PC->SetInputMode(GameOnly);
 			PC->bShowMouseCursor = false;
 		}
 	}
@@ -647,39 +648,41 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 {
 	if (!HasAuthority()) return;
 
-	if (hitObject->GetClass()->ImplementsInterface(UInteractable::StaticClass())) {
-		if (InventoryComponent->IsInventoryFull()){
-			UE_LOG(LogTemp, Warning, TEXT("INVENTORY IS FULL"));
-		} 
-		else 
+	if (hitObject->GetClass()->ImplementsInterface(UInteractable::StaticClass())) 
+	{
+		ATreasurePickable* Treasure = Cast<ATreasurePickable>(hitObject);
+
+		if (Treasure)
 		{
-			ATreasurePickable* Treasure = Cast<ATreasurePickable>(hitObject);
+			AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
 
-			if (Treasure)
+			if (GameMode)
 			{
-				AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
-
-				if (GameMode)
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Called Game won"));
-					GameMode->GameOver(true);
-				}
-
-				//return;
+				UE_LOG(LogTemp, Warning, TEXT("Called Game won"));
+				GameMode->GameOver(true);
 			}
-
-			APickableItem* PickableItem = Cast<APickableItem>(hitObject);
-
-			if (PickableItem) 
-				InventoryComponent->SetInventory(PickableItem);
-
-			if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard")) {
-				enumVariable = InWhiteboard;
-				OnRepState();
-			}
-			
-			IInteractable::Execute_Interact(hitObject, character);
 		}
+
+		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard")) 
+		{
+			enumVariable = InWhiteboard;
+			OnRepState();
+		}
+
+		APickableItem* PickableItem = Cast<APickableItem>(hitObject);
+
+		if (PickableItem) 
+		{
+			if (InventoryComponent->IsInventoryFull())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("INVENTORY IS FULL"));
+				return;
+			}
+
+			InventoryComponent->SetInventory(PickableItem);
+		}
+			
+		IInteractable::Execute_Interact(hitObject, character);
 	}
 }
 

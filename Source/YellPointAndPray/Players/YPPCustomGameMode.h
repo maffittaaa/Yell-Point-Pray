@@ -23,15 +23,11 @@ private:
     AYPPCustomGameMode();
 public:
     virtual void PostLogin(APlayerController* NewPlayer) override;
-    virtual void PostSeamlessTravel() override;
-    virtual void BeginPlay() override;
     void GameOver(bool State);
 
     void RestartGame();
 
     void LoadLevel(FName LevelName);
-    
-    void PostLoadLevel();
 
     void SpawnPlayer(APlayerController* NewPlayer, EPlayerType AssignedRole);
 

@@ -16,48 +16,46 @@ void UYPPCustomGameInstance::Init()
 
 void UYPPCustomGameInstance::OnMapLoad(UWorld* World)
 {
-    UE_LOG(LogTemp, Warning, TEXT("GI: OnMapLoad called - World: %s, NetMode: %d, HasAuthGameMode: %s"),
-        *GetNameSafe(World),
-        World ? World->GetNetMode() : -1,
-        World && World->GetAuthGameMode() ? TEXT("Yes") : TEXT("No"));
+    if (!GEngine) return;
+
+    APlayerController* PlayerController = GetFirstLocalPlayerController();
+
+    UE_LOG(LogTemp, Warning, TEXT("MI: World %d"), World);
+
+    if (PlayerController) 
+    {
+        AYPPCustomPlayerState* playerState = Cast<AYPPCustomPlayerState>(PlayerController->PlayerState);
+
+        if (playerState) 
+        {
+            if (PlayerStateRef) 
+            {
+                playerState->LevelLoaded = true;
+                playerState = PlayerStateRef;
+                UE_LOG(LogTemp, Warning, TEXT("MI: Has Player"));
+            }
+            else 
+            {
+                UE_LOG(LogTemp, Warning, TEXT("MI: No Player State Ref"));
+            }
+        }
+        else 
+        {
+            UE_LOG(LogTemp, Warning, TEXT("MI: Player State not found"));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("MI: Player Controller not found"));
+    }
 }
 
 void UYPPCustomGameInstance::PlayerLoggedIn(AYPPCustomPlayerState* NewPlayerState, EPlayerType NewPlayerType)
 {
     if (!NewPlayerState) return;
 
-    FLoggedInPlayer NewPlayer;
-    NewPlayer.PlayerStateRef = NewPlayerState;
-    NewPlayer.PlayerType = NewPlayerType;
+    PlayerStateRef = NewPlayerState;
+    PlayerType = NewPlayerType;
+    UE_LOG(LogTemp, Warning, TEXT("MI: New PLayer was stored: %d"), PlayerType);
 
-    PlayersLoggedIn.Add(NewPlayer);
-}
-
-bool UYPPCustomGameInstance::HasPlayers() 
-{
-    if (PlayersLoggedIn.Num() <= 0) return false;
-
-    for (FLoggedInPlayer CurrentPlayerSocket : PlayersLoggedIn)
-    {
-        if (CurrentPlayerSocket.PlayerStateRef == nullptr)
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-EPlayerType UYPPCustomGameInstance::GetPlayer(const AYPPCustomPlayerState* PlayerState)
-{
-    if (!PlayerState) return EPlayerType::None;
-
-    for (const FLoggedInPlayer& CurrentPlayer : PlayersLoggedIn)
-    {
-        if (CurrentPlayer.PlayerStateRef == PlayerState)
-        {
-            return CurrentPlayer.PlayerType;
-        }
-    }
-    return EPlayerType::None;
 }

@@ -13,20 +13,6 @@
  * 
  */
 
-USTRUCT(BlueprintType)
-struct FLoggedInPlayer
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY()
-	// Storing a reference to the unique object associated with the player
-	AYPPCustomPlayerState* PlayerStateRef = nullptr;
-
-	UPROPERTY()
-	EPlayerType PlayerType = EPlayerType::None;
-};
-
 UCLASS()
 class YELLPOINTANDPRAY_API UYPPCustomGameInstance : public UGameInstance
 {
@@ -34,20 +20,16 @@ class YELLPOINTANDPRAY_API UYPPCustomGameInstance : public UGameInstance
 	
 public:
 	void PlayerLoggedIn(AYPPCustomPlayerState* NewPlayerState, EPlayerType NewPlayerType);
-	bool HasPlayers();
-	EPlayerType GetPlayer(const AYPPCustomPlayerState* PlayerState);
 
 	UPROPERTY()
-	TArray<FLoggedInPlayer> PlayersLoggedIn;
+	AYPPCustomPlayerState* PlayerStateRef = nullptr;
+
+	UPROPERTY()
+	EPlayerType PlayerType = EPlayerType::None;
 
 protected:
 	virtual void Init() override;
 
 private:
 	void OnMapLoad(UWorld* World);
-
-	// FIX: Use FName to track the map, as it's a stable identifier across delegate calls.
-	UPROPERTY()
-	FName LastLoadedMapName = FName(TEXT("None")); // <--- ADDED THIS LINE
-
 };
