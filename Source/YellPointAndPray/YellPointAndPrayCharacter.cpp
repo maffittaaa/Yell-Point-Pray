@@ -747,8 +747,11 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 
 		float normalizedX = mousePosition.X / viewportSize.X;
 		float normalizedY = mousePosition.Y / viewportSize.Y;
+
+		FVector2D NormalizedMousePosition = FVector2D(normalizedX, normalizedY);
+		FVector2D ScreenMousePosition = mousePosition;
 		
-		playerController->DeprojectScreenPositionToWorld(normalizedX * viewportSize.X, normalizedY * viewportSize.Y, start, direction);
+		playerController->DeprojectScreenPositionToWorld(NormalizedMousePosition.X * viewportSize.X, NormalizedMousePosition.Y * viewportSize.Y, start, direction);
 		FVector end = start + (direction * distance);
 	
 		ECollisionChannel traceChannel = ECC_Visibility;
