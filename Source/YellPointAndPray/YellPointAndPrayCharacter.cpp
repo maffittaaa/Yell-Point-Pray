@@ -767,11 +767,11 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 	
 		ECollisionChannel traceChannel = ECC_Visibility;
 		FCollisionQueryParams RV_TraceParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), false, this);
-		RV_TraceParams.bTraceComplex = true;
+		RV_TraceParams.bTraceComplex = false;
 		RV_TraceParams.bReturnPhysicalMaterial = false;
 		RV_TraceParams.AddIgnoredActor(this);
 
-		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.0f, 0, 1.0f);
+		//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.0f, 0, 1.0f);
 	
 		bool bHit2 = GetWorld()->LineTraceSingleByChannel(
 			RV_Hit,
@@ -787,7 +787,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 		
 			if (whiteboard) {
 				UE_LOG(LogTemp, Warning, TEXT("Successfully cast to whiteboard - calling Draw()"));
-				float whiteboardBrushSize = 10.0f;
+				float whiteboardBrushSize = 5.0f;
 				FVector2D UVCoordinates;
 				FVector LocalImpact = RV_Hit.GetComponent()->GetComponentTransform().InverseTransformPosition(RV_Hit.ImpactPoint);
 				FBoxSphereBounds Bounds = RV_Hit.GetComponent()->CalcBounds(FTransform());
@@ -802,8 +802,9 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 					FVector2D(0, 1), 
 					LocalImpact.Y
 				);
+
 				
-				whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, UVCoordinates);
+				whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, UVCoordinates, whiteboardBrushMaterial);
 				Server_UpdateDrawingData(UVCoordinates, true);
 			}
 		}

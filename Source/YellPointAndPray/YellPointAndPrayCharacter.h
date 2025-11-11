@@ -148,6 +148,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UPROPERTY(EditAnywhere, Category = "Whiteboard")
 		UTexture2D* whiteboardBrushTexture;
 
+		UPROPERTY(EditAnywhere, Category = "Whiteboard")
+		UMaterial* whiteboardBrushMaterial;
+
 		UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Camera")
 		TSoftObjectPtr<ACameraActor> whiteboardCamera;
 	
