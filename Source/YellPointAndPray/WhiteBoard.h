@@ -36,10 +36,6 @@ class YELLPOINTANDPRAY_API AWhiteBoard : public AActor, public IInteractable
 
 		UPROPERTY(EditAnywhere, Category = "WhiteboardMaterial")
 		UMaterial* materialBrush;
-
-		void ServerSetMaterial();
-
-
 	
 	protected:
 		virtual void BeginPlay() override;

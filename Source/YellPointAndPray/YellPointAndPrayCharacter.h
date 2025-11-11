@@ -162,6 +162,18 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Player Controller")
 		APlayerController* playerController;
 
+		UPROPERTY(ReplicatedUsing = OnRep_DrawingData)
+		FVector2D replicatedMouseUV;
+
+		UPROPERTY(Replicated)
+		bool bReplicatedIsDrawing;
+
+		UFUNCTION()
+		void OnRep_DrawingData();
+	
+		UFUNCTION(Server, Reliable)
+		void Server_UpdateDrawingData(FVector2D mouseUV, bool bIsDrawingNow);
+
 	protected:
 
 		/** Called from Input Actions for movement input */

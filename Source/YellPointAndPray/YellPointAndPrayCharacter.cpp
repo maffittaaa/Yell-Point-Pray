@@ -585,6 +585,9 @@ void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME(AYellPointAndPrayCharacter, ItemCreated);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, enumVariable);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, DuckUsing);
+	DOREPLIFETIME(AYellPointAndPrayCharacter, replicatedMouseUV);
+	DOREPLIFETIME(AYellPointAndPrayCharacter, bReplicatedIsDrawing);
+	
 }
 
 void AYellPointAndPrayCharacter::Client_ShowGameOver_Implementation(bool State)
@@ -724,13 +727,18 @@ void AYellPointAndPrayCharacter::Caught_Implementation()
 	UE_LOG(LogTemp, Warning, TEXT("YOU GOT CAUGHT NOOB L"));
 }
 
-// void AYellPointAndPrayCharacter::CharacterStartDrawing(const FInputActionValue& value)
-// {
-// 	if (enumVariable == InWhiteboard){
-// 		isDrawing = true;
-// 		UE_LOG(LogTemp, Warning, TEXT("Started drawing"));
-// 	}
-// }
+void AYellPointAndPrayCharacter::Server_UpdateDrawingData_Implementation(FVector2D MouseUV, bool bIsDrawingNow) {
+	replicatedMouseUV = MouseUV;
+	bReplicatedIsDrawing = bIsDrawingNow;
+}
+
+void AYellPointAndPrayCharacter::OnRep_DrawingData()
+{
+	if (!IsLocallyControlled() && bReplicatedIsDrawing && whiteboard) {
+		float whiteboardBrushSize = 10.0f;
+		whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, replicatedMouseUV);
+	}
+}
 
 void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value) {
 	isDrawing = true;
@@ -796,6 +804,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 				);
 				
 				whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, UVCoordinates);
+				Server_UpdateDrawingData(UVCoordinates, true);
 			}
 		}
 	}
@@ -803,6 +812,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 
 void AYellPointAndPrayCharacter::CharacterStopDrawing(const FInputActionValue& value) {
 	isDrawing = false;
+	Server_UpdateDrawingData(FVector2D::ZeroVector, false);
 	UE_LOG(LogTemp, Warning, TEXT("Stopped drawing"));
 }
 

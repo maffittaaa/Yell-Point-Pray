@@ -16,12 +16,6 @@ AWhiteBoard::AWhiteBoard() {
 	dynamicMaterialInstanceBrush = nullptr;
 }
 
-
-void AWhiteBoard::ServerSetMaterial()
-{
-	meshComp->SetMaterial(0, dynamicMaterialInstanceCanvas);
-}
-
 void AWhiteBoard::BeginPlay() {
 	Super::BeginPlay();
 	
@@ -35,15 +29,13 @@ void AWhiteBoard::BeginPlay() {
 	dynamicMaterialInstanceCanvas = UMaterialInstanceDynamic::Create(materialCanvas, this);
 	dynamicMaterialInstanceCanvas->SetTextureParameterValue(FName("RenderTarget"), renderTarget2D);
 	
-	ServerSetMaterial();
+	meshComp->SetMaterial(0, dynamicMaterialInstanceCanvas);
 	
 	dynamicMaterialInstanceBrush = UMaterialInstanceDynamic::Create(materialBrush, this);
 
 	if (canvasTexture)
 		InitializeBackground();
 }
-
-
 
 void AWhiteBoard::Interact_Implementation(AActor* Interactor) {
 	UE_LOG(LogTemp, Warning, TEXT("Show Board"));
