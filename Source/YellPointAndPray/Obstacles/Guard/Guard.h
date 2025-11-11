@@ -51,7 +51,7 @@ protected:
 
 	int SuspicionMax = 100;
 	UPROPERTY(Replicated)
-	int CurrentSuspicion = 0;
+	float CurrentSuspicion = 0;
 
 	UFUNCTION()
 	void Patrol();

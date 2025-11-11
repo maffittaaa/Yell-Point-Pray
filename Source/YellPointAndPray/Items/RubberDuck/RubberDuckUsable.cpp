@@ -38,7 +38,7 @@ void ARubberDuckUsable::Throw_Implementation(AActor* User, UWorld* World, TSubcl
 	if (!HasAuthority()) return; 
 
 	FActorSpawnParameters SpawnParams;
-	AActor* SpawnedDuck = World->SpawnActor<AActor>(NewHoldingItemClass, NewPosition, FRotator::ZeroRotator, SpawnParams);
+	AActor* SpawnedDuck = GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, NewPosition, FRotator::ZeroRotator, SpawnParams);
 	if (!SpawnedDuck) 
 	{
 		return;
@@ -57,6 +57,7 @@ void ARubberDuckUsable::Throw_Implementation(AActor* User, UWorld* World, TSubcl
 		// Apply the impulse
 		PrimComp->AddImpulse(dir.Vector() * ThrowStrength);
 	}
+	SpawnedDuck->ForceNetUpdate();
 }
 
 void ARubberDuckUsable::ChangeAdd(int ItemSelect) {

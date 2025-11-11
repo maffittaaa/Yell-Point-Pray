@@ -97,7 +97,7 @@ void AGuard::Tick(float DeltaTime)
 		CurrentSuspicion -= DeltaTime * 10;
 		float Distance = FVector::Dist(GetActorTransform().GetLocation(), LastSeenLocation);
 		UE_LOG(LogTemp, Warning, TEXT("Distance Amount:  %f"), Distance)
-		if (Distance < 200.f) {
+		if (Distance < 100.f) {
 			UE_LOG(LogTemp, Warning, TEXT("in  "));
 			LookAround(DeltaTime);
 		}
@@ -111,14 +111,14 @@ void AGuard::Tick(float DeltaTime)
 			Suspicious = false;
 		}
 	}
-	//FVector Dir = this->GetVelocity().GetSafeNormal();
-	//FRotator NewRotation = FRotationMatrix::MakeFromX(Dir).Rotator();
-	//SetActorRotation(NewRotation);
+	FVector Dir = this->GetVelocity().GetSafeNormal();
+	FRotator NewRotation = FRotationMatrix::MakeFromX(Dir).Rotator();
+	SetActorRotation(NewRotation);
 	if (Seen == true) {
 		//UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %f"), CurrentSuspicion);
 
 		FVector Direction = TargetPlayer->GetActorLocation() - GetActorLocation();
-		FRotator NewRotation = FRotationMatrix::MakeFromX(Direction).Rotator();
+		NewRotation = FRotationMatrix::MakeFromX(Direction).Rotator();
 		SetActorRotation(NewRotation);
 		CurrentSuspicion += 30 * DeltaTime;
 		if (CurrentSuspicion >= 100) {
@@ -275,7 +275,7 @@ void AGuard::LookAround(float DeltaTime)
 		return;
 	}
 
-	float RotationThisFrame = 100.f * DeltaTime * invert;
+	float RotationThisFrame = 2.f * DeltaTime * invert;
 	UE_LOG(LogTemp, Warning, TEXT("AAAAAAAAAAAAAAAAAAAt:  %f"), RotationThisFrame)
 	ExtraRotation += RotationThisFrame;
 

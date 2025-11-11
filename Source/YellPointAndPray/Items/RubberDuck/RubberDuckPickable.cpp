@@ -18,7 +18,6 @@ ARubberDuckPickable::ARubberDuckPickable() {
 	SphereCollider->SetupAttachment(Mesh);
 }
 
-
 void ARubberDuckPickable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -43,18 +42,30 @@ void ARubberDuckPickable::CallGuard() {
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGuard::StaticClass(), FoundActors);
 	for (auto& FoundActor : FoundActors)
 	{
-		FVector Loc = FoundActor->GetActorLocation();
-		UNavigationPath* NavPath = NavSys->FindPathToLocationSynchronously(GetWorld(), Loc, GetActorLocation());
-		if (NavPath->GetPathLength() < 200) {
-			UE_LOG(LogTemp, Warning, TEXT("Close Enough"));
+		if (!Cast<AGuard>(FoundActor))
+			break;
+			
 
-			Cast<AGuard>(FoundActor)->Called(GetActorLocation());
+		FVector Loc = FoundActor->GetActorTransform().GetLocation();
+
+//		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), Loc.X);
+
+		FVector Loc2 = Mesh->GetComponentLocation();
+		
+		UNavigationPath* NavPath = NavSys->FindPathToLocationSynchronously(GetWorld(), Loc, Loc2);
+		float da = NavPath->GetPathLength();
+		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), da);
+		if (da < 2000) {
+			UE_LOG(LogTemp, Warning, TEXT("Close Enough"));	
+
+			FVector duckLoc = GetActorTransform().GetLocation();
+			Cast<AGuard>(FoundActor)->Called(duckLoc);
 		}
 	}
 }
 
 void ARubberDuckPickable::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit){
-	if (!HasQuacked) {
+	if (!HasQuacked && HasAuthority()) {
 		HasQuacked = true;
 		CallGuard();
 	}
