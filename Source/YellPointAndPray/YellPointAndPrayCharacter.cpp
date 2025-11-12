@@ -511,7 +511,8 @@ void AYellPointAndPrayCharacter::OnRepState() {
 	playerController = Cast<APlayerController>(GetController());
 	if (!playerController) return;
 	
-	if (enumVariable == InWhiteboard) {
+	if (enumVariable == InWhiteboard)
+	{
 		float blendTime = 0.0f;
 		ACameraActor* camera = whiteboardCamera.LoadSynchronous();//to get the actual camera object
 		
@@ -552,29 +553,30 @@ void AYellPointAndPrayCharacter::OnRepState() {
 				}
 			}
 		}
-	} else {
-		if (UEnhancedInputLocalPlayerSubsystem* subsystem2 = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))  {
-			AYellPointAndPrayPlayerController* yellPlayerController = Cast<AYellPointAndPrayPlayerController>(playerController);
-			if (yellPlayerController) {
-				for (UInputMappingContext* drawingContext : yellPlayerController->DrawingContexts) {
-					if (drawingContext) {
-						subsystem2->RemoveMappingContext(drawingContext);
-						for (UInputMappingContext* DefaultContexts : yellPlayerController->DefaultMappingContexts){
-							if (DefaultContexts)
-								subsystem2->AddMappingContext(DefaultContexts, 1);
-						}
-					}
-				}
-			}
-				
-			SetActorHiddenInGame(false);
-			GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-			SetActorEnableCollision(true);
-			playerController->bShowMouseCursor = false;
-			playerController->SetShowMouseCursor(false);
-			isDrawing = false;
-		}
 	}
+	// } else {
+	// 	if (UEnhancedInputLocalPlayerSubsystem* subsystem2 = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))  {
+	// 		AYellPointAndPrayPlayerController* yellPlayerController = Cast<AYellPointAndPrayPlayerController>(playerController);
+	// 		if (yellPlayerController) {
+	// 			for (UInputMappingContext* drawingContext : yellPlayerController->DrawingContexts) {
+	// 				if (drawingContext) {
+	// 					subsystem2->RemoveMappingContext(drawingContext);
+	// 					for (UInputMappingContext* DefaultContexts : yellPlayerController->DefaultMappingContexts){
+	// 						if (DefaultContexts)
+	// 							subsystem2->AddMappingContext(DefaultContexts, 1);
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 			
+	// 		SetActorHiddenInGame(false);
+	// 		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	// 		SetActorEnableCollision(true);
+	// 		playerController->bShowMouseCursor = false;
+	// 		playerController->SetShowMouseCursor(false);
+	// 		isDrawing = false;
+	// 	}
+	// }
 }
 
 void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -735,7 +737,8 @@ void AYellPointAndPrayCharacter::Server_UpdateDrawingData_Implementation(FVector
 void AYellPointAndPrayCharacter::OnRep_DrawingData()
 {
 	if (!IsLocallyControlled() && bReplicatedIsDrawing && whiteboard) {
-		float whiteboardBrushSize = 50.0f;
+		UE_LOG(LogTemp, Warning, TEXT("Drawing?!: %d"), bReplicatedIsDrawing);
+		float whiteboardBrushSize = 40.0f;
 		AYPPCustomPlayerState* customPlayerState = Cast<AYPPCustomPlayerState>(this->GetPlayerState());
 		
 		whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, replicatedMouseUV, customPlayerState);
@@ -788,8 +791,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 			whiteboard = Cast<AWhiteBoard>(hitActor);
 		
 			if (whiteboard) {
-				UE_LOG(LogTemp, Warning, TEXT("Successfully cast to whiteboard - calling Draw()"));
-				float whiteboardBrushSize = 50.0f;
+				float whiteboardBrushSize = 40.0f;
 				FVector2D UVCoordinates;
 				FVector LocalImpact = RV_Hit.GetComponent()->GetComponentTransform().InverseTransformPosition(RV_Hit.ImpactPoint);
 				FBoxSphereBounds Bounds = RV_Hit.GetComponent()->CalcBounds(FTransform());
@@ -808,7 +810,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 				AYPPCustomPlayerState* customPlayerState = Cast<AYPPCustomPlayerState>(this->GetPlayerState());
 				
 				whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, UVCoordinates, customPlayerState);
-				Server_UpdateDrawingData(UVCoordinates, true);
+				Server_UpdateDrawingData(UVCoordinates, isDrawing);
 			}
 		}
 	}
@@ -816,7 +818,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 
 void AYellPointAndPrayCharacter::CharacterStopDrawing(const FInputActionValue& value) {
 	isDrawing = false;
-	Server_UpdateDrawingData(FVector2D::ZeroVector, false);
+	Server_UpdateDrawingData(FVector2D::ZeroVector, isDrawing);
 	UE_LOG(LogTemp, Warning, TEXT("Stopped drawing"));
 }
 
