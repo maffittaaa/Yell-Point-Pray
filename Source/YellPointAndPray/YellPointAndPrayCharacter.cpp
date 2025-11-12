@@ -754,7 +754,7 @@ void AYellPointAndPrayCharacter::OnRep_DrawingData()
 {
 	if (!IsLocallyControlled() && bReplicatedIsDrawing && whiteboard) {
 		UE_LOG(LogTemp, Warning, TEXT("Drawing?!: %d"), bReplicatedIsDrawing);
-		float whiteboardBrushSize = 20.0f;
+		float whiteboardBrushSize = 10.0f;
 		
 		AYPPCustomPlayerState* customPlayerState = Cast<AYPPCustomPlayerState>(this->GetPlayerState());
 		whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, replicatedMouseUV, customPlayerState);
@@ -807,7 +807,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 			whiteboard = Cast<AWhiteBoard>(hitActor);
 		
 			if (whiteboard) {
-				float whiteboardBrushSize = 20.0f;
+				float whiteboardBrushSize = 10.0f;
 				FVector2D UVCoordinates;
 				FVector LocalImpact = RV_Hit.GetComponent()->GetComponentTransform().InverseTransformPosition(RV_Hit.ImpactPoint);
 				FBoxSphereBounds Bounds = RV_Hit.GetComponent()->CalcBounds(FTransform());
