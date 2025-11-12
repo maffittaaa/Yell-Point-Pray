@@ -12,12 +12,10 @@ void UYPPCustomGameInstance::PlayerTravelling(TSubclassOf<APawn> NewPawnClass, E
 {
     if (!NewPawnClass) return;
 
-	ListPlayersStates.Add(NewPlayerState);
-    ListPlayersTypes.Add(NewPlayerType);
-    ListPlayersPawnsClasses.Add(NewPawnClass);
-
-    DefaultClass = ListPlayersPawnsClasses[0];
-    DefaultType = ListPlayersTypes[0];
+    PlayerInfoArray.Add(FPlayerInfo(NewPlayerState, NewPlayerType, NewPawnClass, NewPlayerState->IsHost));
+    
+    DefaultClass = PlayerInfoArray[0].PawnClass;
+    DefaultType = PlayerInfoArray[0].PlayerType;
 
     UE_LOG(LogTemp, Warning, TEXT("MI: New Player State was stored: %s"), *NewPlayerState->GetName());
     UE_LOG(LogTemp, Warning, TEXT("MI: New Player Class was stored: %s"), *NewPawnClass->GetName());
@@ -34,14 +32,18 @@ EPlayerType UYPPCustomGameInstance::GetPlayerType(AYPPCustomPlayerState* PlayerS
         return DefaultType;
     }
 
-    UE_LOG(LogTemp, Warning, TEXT("MI: Get PlayerType: %d"), ListPlayersTypes[index]);
+    PlayerState->IsHost = PlayerInfoArray[index].bIsHost;
 
-    return ListPlayersTypes[index];
+    if (PlayerState->IsHost)
+    {
+        PlayerState->LevelLoaded = true;
+    }
+    
+    return PlayerInfoArray[index].PlayerType;
 }
 
-TSubclassOf<APawn> UYPPCustomGameInstance::GetPlayerClass(AYPPCustomPlayerState* PlayerState)
+TSubclassOf<APawn> UYPPCustomGameInstance::GetPlayerClass(const AYPPCustomPlayerState* PlayerState)
 {
-
     int index = GetPlayerIndex(PlayerState);
 
     if (index == -1)
@@ -49,52 +51,42 @@ TSubclassOf<APawn> UYPPCustomGameInstance::GetPlayerClass(AYPPCustomPlayerState*
         UE_LOG(LogTemp, Warning, TEXT("MI: Index is -1"));
         return DefaultClass;
     }
+
+    if (PlayerState->IsHost)
+    {
+        GoingUp = !GoingUp;
+    }
     
-    UE_LOG(LogTemp, Warning, TEXT("MI: Get PlayerClass: %s"), *ListPlayersPawnsClasses[index]->GetName());
-    return ListPlayersPawnsClasses[index];
+    UE_LOG(LogTemp, Warning, TEXT("MI: Get PlayerClass: %s"), *PlayerInfoArray[index].PawnClass->GetName());
+    return PlayerInfoArray[index].PawnClass;
 }
 
-int UYPPCustomGameInstance::GetPlayerIndex(AYPPCustomPlayerState* PlayerState)
+void UYPPCustomGameInstance::ClearPlayerInfoArray()
+{
+    PlayerInfoArray.Empty();
+}
+
+int UYPPCustomGameInstance::GetPlayerIndex(const AYPPCustomPlayerState* PlayerState)
 {
     FString PlayerStateName = PlayerState->GetName();
     TCHAR LastCharPlayer = PlayerStateName[PlayerStateName.Len() - 1];
     int LastNumPlayer = FCString::Atoi(&LastCharPlayer);
-
-    if (!ListPlayersStates.IsValidIndex(0)) return -1;
-
-    UE_LOG(LogTemp, Warning, TEXT("MI: ----- Getting Player Index -----"));
-    UE_LOG(LogTemp, Warning, TEXT("MI: LastNumPlayer: %i"), LastNumPlayer);
-
-    FString ListStateName0 = ListPlayersStates[0]->GetName();
-    TCHAR LastCharList0 = ListStateName0[21];
-    int LastNumList0 = FCString::Atoi(&LastCharList0) + 3;
-    UE_LOG(LogTemp, Warning, TEXT("MI: 0LastNumPlayer: %s"), *ListPlayersStates[0]->GetName());
-    UE_LOG(LogTemp, Warning, TEXT("MI: 0LastNumPlayer: %i"), LastNumList0);
-
-    FString ListStateName1 = ListPlayersStates[1]->GetName();
-    TCHAR LastCharList1 = ListStateName1[21];
-    int LastNumList1 = FCString::Atoi(&LastCharList1) + 3;
-    UE_LOG(LogTemp, Warning, TEXT("MI: 1LastNumPlayer: %s"), *ListPlayersStates[1]->GetName());
-    UE_LOG(LogTemp, Warning, TEXT("MI: 1LastNumPlayer: %i"), LastNumList1);
-
-    FString ListStateName2 = ListPlayersStates[2]->GetName();
-    TCHAR LastCharList2 = ListStateName2[21];
-    int LastNumList2 = FCString::Atoi(&LastCharList2) + 3;
-    UE_LOG(LogTemp, Warning, TEXT("MI: 2LastNumPlayer: %s"), *ListPlayersStates[2]->GetName());
-    UE_LOG(LogTemp, Warning, TEXT("MI: 2LastNumPlayer: %i"), LastNumList2);
-
-    for (int i = 0; ListPlayersStates.Num() > i; i++)
+    
+    for (int i = 0; PlayerInfoArray.Num() > i; i++)
     {
-        FString ListStateName = ListPlayersStates[i]->GetName();
+        FString ListStateName = PlayerInfoArray[i].PlayerState->GetName();
         TCHAR LastCharList = ListStateName[ListStateName.Len() - 1];
-        int LastNumList = FCString::Atoi(&LastCharList) + 3;
 
-        //UE_LOG(LogTemp, Warning, TEXT("MI: LastNumList: %i, LastNumPlayer: %i"), LastNumList, LastNumPlayer);
+        int Players = 3;
+        if (!GoingUp)
+        {
+            Players *= -1;
+        }
+        
+        int LastNumList = FCString::Atoi(&LastCharList) + Players;
 
         if (LastNumList == LastNumPlayer)
         {
-            UE_LOG(LogTemp, Warning, TEXT("MI: MATCH: LastNumList: %i, LastNumPlayer: %i"), LastNumList, LastNumPlayer);
-            UE_LOG(LogTemp, Warning, TEXT("MI: ----- Ended Player Index -----"));
             return i;
             break;
         }

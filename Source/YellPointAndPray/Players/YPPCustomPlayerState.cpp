@@ -21,36 +21,43 @@ void AYPPCustomPlayerState::BeginPlay()
 
 	if (!HasAuthority()) return;
 	
-	UGameInstance* GameInstance = GetWorld()->GetGameInstance();
-	if (GameInstance)
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYPPCustomPlayerState::ReplacePlayerPawn, 0.1f, false);
+}
+
+void AYPPCustomPlayerState::ReplacePlayerPawn()
+{
+	UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GetWorld()->GetGameInstance());
+	if (!CustomGameInstance) return;
+    
+	if (CustomGameInstance->GetPlayerType(this) != EPlayerType::None)
 	{
-		// Cast to your specific game instance class if needed
-		UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GameInstance);
-		if (CustomGameInstance)
+		AController* PlayerController = GetPlayerController();
+		if (!PlayerController) return;
+        
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = PlayerController;
+        
+		APawn* NewPawn = GetWorld()->SpawnActor<APawn>(
+			CustomGameInstance->GetPlayerClass(this), 
+			FVector::ZeroVector, 
+			FRotator::ZeroRotator, 
+			SpawnParams
+		);
+        
+		if (NewPawn) 
 		{
-			// Use your game instance
-			if (CustomGameInstance->GetPlayerType(this) != EPlayerType::None)
+			if (PlayerController->GetPawn())
 			{
-				AController* NewPlayer = GetPlayerController();
-				FActorSpawnParameters SpawnParams;
-				SpawnParams.Owner = NewPlayer;
-				PlayerType = CustomGameInstance->GetPlayerType(this);
-
-				APawn* NewPawn = GetWorld()->SpawnActor<APawn>(CustomGameInstance->GetPlayerClass(this), FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
-				
-				if (NewPawn) 
-				{
-					if (NewPlayer->GetPawn())
-					{
-						NewPlayer->GetPawn()->Destroy();
-						UE_LOG(LogTemp, Warning, TEXT("Destroying Current Pawn"));
-					}
-
-					NewPlayer->Possess(NewPawn);
-					UE_LOG(LogTemp, Warning, TEXT("Has Player Pocessing now"));
-				}			
+				PlayerController->GetPawn()->Destroy();
+				UE_LOG(LogTemp, Warning, TEXT("Destroying Current Pawn"));
 			}
-		}
+
+			PlayerController->Possess(NewPawn);
+			Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode())->AddPlayerAfterChangedMap(NewPawn);
+			
+			UE_LOG(LogTemp, Warning, TEXT("Has Player Possessing now"));
+		}			
 	}
 }
 

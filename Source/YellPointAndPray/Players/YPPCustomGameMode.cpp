@@ -132,6 +132,11 @@ void AYPPCustomGameMode::SpawnPlayer(APlayerController* NewPlayer, EPlayerType A
     }
 }
 
+void AYPPCustomGameMode::AddPlayerAfterChangedMap(APawn* Pawn)
+{
+    PlayersArray.Add(Pawn);
+}
+
 void AYPPCustomGameMode::GameOver(bool State)
 {
     UE_LOG(LogTemp, Warning, TEXT("Game Over"));
@@ -170,26 +175,21 @@ void AYPPCustomGameMode::LoadLevel(FName LevelName)
 {
     if (GetWorld()->GetNetMode() == NM_ListenServer || GetWorld()->GetNetMode() == NM_DedicatedServer)
     {
-        // Server tells all clients to travel
-        for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+        if (UGameInstance* GameInstance = GetWorld()->GetGameInstance())
         {
-            if (APlayerController* PC = It->Get())
+            if (UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GameInstance))
             {
-                AYellPointAndPrayPlayerController* YPPPlayerController = Cast<AYellPointAndPrayPlayerController>(PC);
-
-                if (YPPPlayerController) 
+                // CustomGameInstance->ClearPlayerInfoArray();
+                
+                for (APawn* Pawn : PlayersArray)
                 {
-                    AYPPCustomPlayerState* PlayerState = Cast<AYPPCustomPlayerState>(PC->PlayerState);
-
-                    if (PlayerState) 
+                    AController* Controller = Pawn->GetController();
+            
+                    if (APlayerController* PC = Cast<APlayerController>(Controller))
                     {
-                        UGameInstance* GameInstance = GetWorld()->GetGameInstance();
-                        if (GameInstance)
+                        if (AYellPointAndPrayPlayerController* YPPPlayerController = Cast<AYellPointAndPrayPlayerController>(PC)) 
                         {
-                            // Cast to your specific game instance class if needed
-                            UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GameInstance);
-                        
-                            if (CustomGameInstance)
+                            if (AYPPCustomPlayerState* PlayerState = Cast<AYPPCustomPlayerState>(PC->PlayerState)) 
                             {
                                 CustomGameInstance->PlayerTravelling(YPPPlayerController->GetPawn()->GetClass(), PlayerState->PlayerType, PlayerState);
 
@@ -204,5 +204,6 @@ void AYPPCustomGameMode::LoadLevel(FName LevelName)
             }
         }
     }
+    PlayersArray.Empty();
     GetWorld()->ServerTravel(TEXT("/Game/FirstPerson/Lvl_MainTest?listen"));
 }

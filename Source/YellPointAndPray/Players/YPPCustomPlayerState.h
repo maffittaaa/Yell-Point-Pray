@@ -38,6 +38,7 @@ public:
 	UFUNCTION()
 	void OnRep_PlayerType();
 
+	void ReplacePlayerPawn();
 	// Server-side settEPlayerType
 	void SetPlayerType(EPlayerType NewType);
 

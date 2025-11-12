@@ -24,11 +24,13 @@ private:
 public:
     virtual void PostLogin(APlayerController* NewPlayer) override;
     void GameOver(bool State);
-
+    
     void RestartGame();
 
     void LoadLevel(FName LevelName);
 
+    void AddPlayerAfterChangedMap(APawn* Pawn);
+    
     void SpawnPlayer(APlayerController* NewPlayer, EPlayerType AssignedRole);
 
     UPROPERTY(EditDefaultsOnly, Category = "Asymmetric")
