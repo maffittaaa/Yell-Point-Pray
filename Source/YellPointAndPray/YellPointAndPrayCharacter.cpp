@@ -255,22 +255,28 @@ bool AYellPointAndPrayCharacter::Server_KnockGuard_Validate(AActor* CurrentKnock
 
 void AYellPointAndPrayCharacter::MoveInput(const FInputActionValue& Value)
 {
-	// get the Vector2D move axis
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	if (!bMovementInputEnabled) return;
 
-	// pass the axis values to the move input
+	FVector2D MovementVector = Value.Get<FVector2D>();
 	DoMove(MovementVector.X, MovementVector.Y);
 
 }
 
 void AYellPointAndPrayCharacter::LookInput(const FInputActionValue& Value)
 {
-	// get the Vector2D look axis
+	if (!bLookInputEnabled) return;
+	
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-	// pass the axis values to the aim input
 	DoAim(LookAxisVector.X, LookAxisVector.Y);
 
+}
+
+void AYellPointAndPrayCharacter::SetMovementInputEnabled(bool bEnabled){
+	bMovementInputEnabled = bEnabled;
+}
+
+void AYellPointAndPrayCharacter::SetLookInputEnabled(bool bEnabled){
+	bLookInputEnabled = bEnabled;
 }
 
 void AYellPointAndPrayCharacter::DoAim(float Yaw, float Pitch)
@@ -510,6 +516,9 @@ void AYellPointAndPrayCharacter::OnRepState() {
 	
 	playerController = Cast<APlayerController>(GetController());
 	if (!playerController) return;
+
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))
+		Subsystem->RequestRebuildControlMappings();
 	
 	if (enumVariable == InWhiteboard)
 	{
@@ -519,17 +528,22 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		playerController->SetViewTargetWithBlend(camera, blendTime, VTBlend_EaseIn);
 		
 		UE_LOG(LogTemp, Warning, TEXT("Camera and movement locked"));
+		SetMovementInputEnabled(false);
+		SetLookInputEnabled(false);
 		
 		SetActorHiddenInGame(true);
 		GetCharacterMovement()->DisableMovement();
 		SetActorEnableCollision(false);
 		
+		FInputModeGameAndUI inputMode;
+		inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		inputMode.SetHideCursorDuringCapture(false);
+		playerController->SetInputMode(inputMode);
+		
 		playerController->bShowMouseCursor = true;
 		playerController->SetShowMouseCursor(true);
+		
 		UE_LOG(LogTemp, Warning, TEXT("Cursor visibility after set: %d"), playerController->bShowMouseCursor);
-	
-		FInputModeGameOnly inputMode;
-		playerController->SetInputMode(inputMode);
 		
 		paintBrushWidget = CreateWidget<UUserWidget>(GetWorld(), paintBrushWidgetClass, FName("PaintBrush"));
 		playerController->SetMouseCursorWidget(EMouseCursor::Type::Default ,paintBrushWidget);
@@ -550,6 +564,7 @@ void AYellPointAndPrayCharacter::OnRepState() {
 						}
 					}
 				}
+				subsystem->RequestRebuildControlMappings();
 			}
 		}
 	}
@@ -731,13 +746,15 @@ void AYellPointAndPrayCharacter::Caught_Implementation()
 void AYellPointAndPrayCharacter::Server_UpdateDrawingData_Implementation(FVector2D MouseUV, bool bIsDrawingNow) {
 	replicatedMouseUV = MouseUV;
 	bReplicatedIsDrawing = bIsDrawingNow;
+	
+	OnRep_DrawingData();
 }
 
 void AYellPointAndPrayCharacter::OnRep_DrawingData()
 {
 	if (!IsLocallyControlled() && bReplicatedIsDrawing && whiteboard) {
 		UE_LOG(LogTemp, Warning, TEXT("Drawing?!: %d"), bReplicatedIsDrawing);
-		float whiteboardBrushSize = 40.0f;
+		float whiteboardBrushSize = 20.0f;
 		
 		AYPPCustomPlayerState* customPlayerState = Cast<AYPPCustomPlayerState>(this->GetPlayerState());
 		whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, replicatedMouseUV, customPlayerState);
@@ -790,7 +807,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 			whiteboard = Cast<AWhiteBoard>(hitActor);
 		
 			if (whiteboard) {
-				float whiteboardBrushSize = 40.0f;
+				float whiteboardBrushSize = 20.0f;
 				FVector2D UVCoordinates;
 				FVector LocalImpact = RV_Hit.GetComponent()->GetComponentTransform().InverseTransformPosition(RV_Hit.ImpactPoint);
 				FBoxSphereBounds Bounds = RV_Hit.GetComponent()->CalcBounds(FTransform());

@@ -152,6 +152,18 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Camera")
 		TSoftObjectPtr<ACameraActor> whiteboardCamera;
+
+		UPROPERTY(BlueprintReadOnly)
+		bool bMovementInputEnabled = true;
+		    
+		UPROPERTY(BlueprintReadOnly) 
+		bool bLookInputEnabled = true;
+	
+		UFUNCTION(BlueprintCallable)
+		void SetMovementInputEnabled(bool bEnabled);
+	    
+		UFUNCTION(BlueprintCallable)
+		void SetLookInputEnabled(bool bEnabled);
 	
 		FHitResult RV_Hit;
 		bool bHit;
