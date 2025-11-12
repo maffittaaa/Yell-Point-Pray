@@ -2,6 +2,7 @@
 #include "YellPointAndPrayCharacter.h"
 #include "Engine/Canvas.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PlayerState.h"
 #include "Kismet/KismetRenderingLibrary.h"
 
 AWhiteBoard::AWhiteBoard() {
@@ -35,6 +36,7 @@ void AWhiteBoard::BeginPlay() {
 
 	if (canvasTexture)
 		InitializeBackground();
+	
 }
 
 void AWhiteBoard::Interact_Implementation(AActor* Interactor) {
@@ -77,9 +79,21 @@ void AWhiteBoard::InitializeBackground() {
 	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, context);
 }
 
-void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D drawLocation, UMaterial* brushMaterial) {
-	if (dynamicMaterialInstanceBrush)
-		dynamicMaterialInstanceBrush->SetTextureParameterValue(FName("BrushTexture"), brushTexture);
+void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D drawLocation, AYPPCustomPlayerState* playerState) {
+	
+	if (dynamicMaterialInstanceBrush) {
+		UTexture2D* playerBrushTexture = brushTexture;
+		if (playerState->PlayerType == EPlayerType::Blind)
+			playerBrushTexture = brushTexture_P1;
+		else if (playerState->PlayerType == EPlayerType::Deaf)
+			playerBrushTexture = brushTexture_P2;
+		else
+			playerBrushTexture = brushTexture_P3;
+
+		if (playerBrushTexture) {
+			dynamicMaterialInstanceBrush->SetTextureParameterValue(FName("BrushTexture"), playerBrushTexture);
+		}
+	}
 	
 	UCanvas* canvas = nullptr;
 	FVector2D size;
@@ -103,7 +117,7 @@ void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D draw
 	
 	if (canvas && dynamicMaterialInstanceBrush) {
 		canvas->K2_DrawMaterial(
-		materialBrush,
+		dynamicMaterialInstanceBrush,
 		screenPosition,
 		screenSize,
 		coordinatePositon,

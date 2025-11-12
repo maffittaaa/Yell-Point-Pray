@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Interfaces/Interactable.h"
 #include "Camera/CameraActor.h"
+#include "Players/YPPCustomGameInstance.h"
+#include "Players/YPPCustomPlayerState.h"
 #include "WhiteBoard.generated.h"
 
 UCLASS()
@@ -33,9 +35,18 @@ class YELLPOINTANDPRAY_API AWhiteBoard : public AActor, public IInteractable
 
 		UPROPERTY(EditAnywhere, Category = "WhiteboardMaterial")
 		UMaterial* materialCanvas;
-
+		
 		UPROPERTY(EditAnywhere, Category = "WhiteboardMaterial")
 		UMaterial* materialBrush;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WhiteboardBrush")
+		UTexture2D* brushTexture_P1;
+	
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WhiteboardBrush")
+		UTexture2D* brushTexture_P2;
+	
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WhiteboardBrush")
+		UTexture2D* brushTexture_P3;
 	
 	protected:
 		virtual void BeginPlay() override;
@@ -46,7 +57,7 @@ class YELLPOINTANDPRAY_API AWhiteBoard : public AActor, public IInteractable
 
 		virtual void Interact_Implementation(AActor* interactor) override;
 
-		void Draw(UTexture2D* brushTexture, float brushSize, FVector2D drawLocation, UMaterial* brushMaterial);
+		void Draw(UTexture2D* brushTexture, float brushSize, FVector2D drawLocation, AYPPCustomPlayerState* playerState);
 
 		void InitializeBackground();
 

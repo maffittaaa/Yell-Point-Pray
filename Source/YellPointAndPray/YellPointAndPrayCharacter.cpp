@@ -735,8 +735,10 @@ void AYellPointAndPrayCharacter::Server_UpdateDrawingData_Implementation(FVector
 void AYellPointAndPrayCharacter::OnRep_DrawingData()
 {
 	if (!IsLocallyControlled() && bReplicatedIsDrawing && whiteboard) {
-		float whiteboardBrushSize = 10.0f;
-		//whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, replicatedMouseUV);
+		float whiteboardBrushSize = 50.0f;
+		AYPPCustomPlayerState* customPlayerState = Cast<AYPPCustomPlayerState>(this->GetPlayerState());
+		
+		whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, replicatedMouseUV, customPlayerState);
 	}
 }
 
@@ -787,7 +789,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 		
 			if (whiteboard) {
 				UE_LOG(LogTemp, Warning, TEXT("Successfully cast to whiteboard - calling Draw()"));
-				float whiteboardBrushSize = 5.0f;
+				float whiteboardBrushSize = 50.0f;
 				FVector2D UVCoordinates;
 				FVector LocalImpact = RV_Hit.GetComponent()->GetComponentTransform().InverseTransformPosition(RV_Hit.ImpactPoint);
 				FBoxSphereBounds Bounds = RV_Hit.GetComponent()->CalcBounds(FTransform());
@@ -803,8 +805,9 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 					LocalImpact.Y
 				);
 
+				AYPPCustomPlayerState* customPlayerState = Cast<AYPPCustomPlayerState>(this->GetPlayerState());
 				
-				whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, UVCoordinates, whiteboardBrushMaterial);
+				whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, UVCoordinates, customPlayerState);
 				Server_UpdateDrawingData(UVCoordinates, true);
 			}
 		}
