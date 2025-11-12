@@ -533,7 +533,6 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		
 		paintBrushWidget = CreateWidget<UUserWidget>(GetWorld(), paintBrushWidgetClass, FName("PaintBrush"));
 		playerController->SetMouseCursorWidget(EMouseCursor::Type::Default ,paintBrushWidget);
-		UE_LOG(LogTemp, Warning, TEXT("Drawing %d"), isDrawing);
 		
 		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer())) { //adding the map context for drawing
 			AYellPointAndPrayPlayerController* yellPlayerController = Cast<AYellPointAndPrayPlayerController>(playerController);
@@ -739,8 +738,8 @@ void AYellPointAndPrayCharacter::OnRep_DrawingData()
 	if (!IsLocallyControlled() && bReplicatedIsDrawing && whiteboard) {
 		UE_LOG(LogTemp, Warning, TEXT("Drawing?!: %d"), bReplicatedIsDrawing);
 		float whiteboardBrushSize = 40.0f;
-		AYPPCustomPlayerState* customPlayerState = Cast<AYPPCustomPlayerState>(this->GetPlayerState());
 		
+		AYPPCustomPlayerState* customPlayerState = Cast<AYPPCustomPlayerState>(this->GetPlayerState());
 		whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, replicatedMouseUV, customPlayerState);
 	}
 }
