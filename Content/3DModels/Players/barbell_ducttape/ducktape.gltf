@@ -1,0 +1,606 @@
+{
+  "accessors": [
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 2178,
+      "max": [
+        0.2512473165988922,
+        7.620000275210259e-08,
+        0.01990724913775921
+      ],
+      "min": [
+        0.052678145468235016,
+        7.620000275210259e-08,
+        -0.01990724913775921
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 26136,
+      "componentType": 5126,
+      "count": 2178,
+      "max": [
+        8.986738219904367e-13,
+        1.0,
+        2.220446049250313e-16
+      ],
+      "min": [
+        -8.986738219904367e-13,
+        -1.0,
+        -2.220446049250313e-16
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5126,
+      "count": 2178,
+      "max": [
+        -1.0,
+        4.494156782830494e-13,
+        2.5785524485399947e-05,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -8.986738219904367e-13,
+        -1.2894039173261262e-05,
+        -1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 2178,
+      "max": [
+        1.0,
+        0.7336429953575134
+      ],
+      "min": [
+        0.0,
+        0.003732025623321533
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5125,
+      "count": 12288,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 5,
+      "componentType": 5126,
+      "count": 13,
+      "max": [
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "min": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        6.123234262925839e-17,
+        0.0,
+        0.0,
+        0.0,
+        -1.0,
+        6.123234262925839e-17,
+        0.0,
+        -0.2387734204530716,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "type": "MAT4"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5123,
+      "count": 2178,
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 4,
+      "byteOffset": 34848,
+      "componentType": 5126,
+      "count": 2178,
+      "max": [
+        1.0,
+        0.5,
+        0.0,
+        0.0
+      ],
+      "min": [
+        0.5,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "type": "VEC4"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "davidthe19th (https://sketchfab.com/davidthe19th)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/barbell-ducttape-1ef2f152c31b418fb8e8ad0c116a67cd",
+      "title": "Barbell ducttape"
+    },
+    "generator": "Sketchfab-16.63.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 17424,
+      "byteStride": 8,
+      "name": "shortBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 49152,
+      "byteOffset": 17424,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 17424,
+      "byteOffset": 66576,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 52272,
+      "byteOffset": 84000,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 69696,
+      "byteOffset": 136272,
+      "byteStride": 16,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 832,
+      "byteOffset": 205968,
+      "name": "floatBufferViews"
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 206800,
+      "uri": "scene.bin"
+    }
+  ],
+  "extensionsRequired": [
+    "KHR_materials_pbrSpecularGlossiness"
+  ],
+  "extensionsUsed": [
+    "KHR_materials_pbrSpecularGlossiness"
+  ],
+  "images": [
+    {
+      "uri": "textures/DuctTape02_BM_diffuse.png"
+    },
+    {
+      "uri": "textures/DuctTape02_BM_normal.png"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "extensions": {
+        "KHR_materials_pbrSpecularGlossiness": {
+          "diffuseFactor": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "diffuseTexture": {
+            "index": 0
+          },
+          "glossinessFactor": 0.6175226438785337,
+          "specularFactor": [
+            0.028952469188477523,
+            0.028952469188477523,
+            0.028952469188477523
+          ]
+        }
+      },
+      "name": "DuctTape02_BM",
+      "normalTexture": {
+        "index": 1
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "0",
+      "primitives": [
+        {
+          "attributes": {
+            "JOINTS_0": 6,
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TANGENT": 2,
+            "TEXCOORD_0": 3,
+            "TEXCOORD_1": 3,
+            "WEIGHTS_0": 7
+          },
+          "indices": 4,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.009999999776482582,
+        0.0,
+        0.0,
+        -0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "2aaca2b0447a4b53b4d2e6f1723bfe92.fbx"
+    },
+    {
+      "children": [
+        3
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4
+      ],
+      "matrix": [
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.629206793918314e-05,
+        -99.99999999999868,
+        0.0,
+        0.0,
+        99.99999999999868,
+        -1.629206793918314e-05,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "KP_DuctTape01_ARM"
+    },
+    {
+      "children": [
+        5,
+        7,
+        6
+      ],
+      "name": "Object_4"
+    },
+    {
+      "children": [
+        8
+      ],
+      "name": "_rootJoint"
+    },
+    {
+      "matrix": [
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        6.123233995736766e-15,
+        -100.0,
+        0.0,
+        0.0,
+        100.0,
+        6.123233995736766e-15,
+        0.0,
+        -1.4901161193847656e-07,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Object_6"
+    },
+    {
+      "mesh": 0,
+      "name": "Object_7",
+      "skin": 0
+    },
+    {
+      "children": [
+        9
+      ],
+      "name": "Tape001_00",
+      "rotation": [
+        -1.3234889800848443e-23,
+        -0.0,
+        0.0,
+        1.0
+      ],
+      "translation": [
+        0.05270871892571449,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "children": [
+        10
+      ],
+      "name": "Tape002_01",
+      "rotation": [
+        -1.3234889800848443e-23,
+        -0.0,
+        0.0,
+        1.0
+      ],
+      "translation": [
+        0.018572773784399033,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "children": [
+        11
+      ],
+      "name": "Tape003_02",
+      "rotation": [
+        4.999999987376214e-07,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "translation": [
+        0.018545933067798615,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "children": [
+        12
+      ],
+      "name": "Tape004_03",
+      "rotation": [
+        -5.293955920339377e-23,
+        -0.0,
+        0.0,
+        1.0
+      ],
+      "translation": [
+        0.01866620033979416,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "children": [
+        13
+      ],
+      "name": "Tape005_04",
+      "rotation": [
+        -1.0587911840678754e-22,
+        -0.0,
+        0.0,
+        1.0
+      ],
+      "translation": [
+        0.018612578511238098,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "children": [
+        14
+      ],
+      "name": "Tape006_05",
+      "translation": [
+        0.01860181987285614,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "children": [
+        15
+      ],
+      "name": "Tape007_06",
+      "translation": [
+        0.01865650713443756,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "children": [
+        16
+      ],
+      "name": "Tape008_07",
+      "rotation": [
+        -5.293955920339377e-23,
+        -0.0,
+        0.0,
+        1.0
+      ],
+      "translation": [
+        0.01860228180885315,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "children": [
+        17
+      ],
+      "name": "Tape009_08",
+      "translation": [
+        0.018607109785079956,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "children": [
+        18
+      ],
+      "name": "Tape010_09",
+      "translation": [
+        0.01866193115711212,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "children": [
+        19
+      ],
+      "name": "Tape011_010",
+      "translation": [
+        0.01853756606578827,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "Tape011_end_011",
+      "rotation": [
+        5.293955920339377e-23,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "translation": [
+        0.0,
+        0.019050000235438347,
+        0.0
+      ]
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "skins": [
+    {
+      "inverseBindMatrices": 5,
+      "joints": [
+        5,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "skeleton": 5
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    }
+  ]
+}

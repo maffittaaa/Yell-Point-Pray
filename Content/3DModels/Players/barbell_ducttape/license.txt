@@ -1,0 +1,11 @@
+Model Information:
+* title:	Barbell ducttape
+* source:	https://sketchfab.com/3d-models/barbell-ducttape-1ef2f152c31b418fb8e8ad0c116a67cd
+* author:	davidthe19th (https://sketchfab.com/davidthe19th)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Barbell ducttape" (https://sketchfab.com/3d-models/barbell-ducttape-1ef2f152c31b418fb8e8ad0c116a67cd) by davidthe19th (https://sketchfab.com/davidthe19th) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

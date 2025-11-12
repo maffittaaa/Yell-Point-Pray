@@ -1,0 +1,11 @@
+Model Information:
+* title:	Arcade Ahri's Headphones (LoL)
+* source:	https://sketchfab.com/3d-models/arcade-ahris-headphones-lol-526de2875c4f4c3b92e6194088d0fa50
+* author:	_tom.j.l_ (https://sketchfab.com/_t_jay_lee_)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Arcade Ahri's Headphones (LoL)" (https://sketchfab.com/3d-models/arcade-ahris-headphones-lol-526de2875c4f4c3b92e6194088d0fa50) by _tom.j.l_ (https://sketchfab.com/_t_jay_lee_) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

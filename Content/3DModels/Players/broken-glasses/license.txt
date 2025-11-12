@@ -1,0 +1,11 @@
+Model Information:
+* title:	Broken-Glasses
+* source:	https://sketchfab.com/3d-models/broken-glasses-712e68fd5dfa4ed29f0db52ef6a154fe
+* author:	Speaker Man 3.0 (https://sketchfab.com/benjamimpalandi)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Broken-Glasses" (https://sketchfab.com/3d-models/broken-glasses-712e68fd5dfa4ed29f0db52ef6a154fe) by Speaker Man 3.0 (https://sketchfab.com/benjamimpalandi) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
