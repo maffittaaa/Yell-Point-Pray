@@ -28,6 +28,7 @@ void AGuard::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	DOREPLIFETIME(AGuard, Seen);
 	DOREPLIFETIME(AGuard, CurrentWaypoint);
 	DOREPLIFETIME(AGuard, TargetPlayer);
+	DOREPLIFETIME(AGuard, Suspicious);
 	DOREPLIFETIME(AGuard, CurrentSuspicion);
 	DOREPLIFETIME(AGuard, Knocked);
 	DOREPLIFETIME(AGuard, World);
@@ -44,10 +45,16 @@ void AGuard::BeginPlay()
 		PawnSensingComp->OnSeePawn.AddDynamic(this, &AGuard::SeenPlayer);
 	}
 	Patrol();
+
+	StartLocation = GetActorLocation();
+	StartRotation = GetActorTransform().GetRotation();
 }
 
 void AGuard::Reset_Implementation()
 {
+	UnKnockMySelf();
+	FRotator rotation = StartRotation.Rotator();
+	TeleportTo(StartLocation, rotation);
 	UE_LOG(LogTemp, Warning, TEXT("Guard-specific reset called!"));
 }
 
@@ -257,6 +264,37 @@ void AGuard::KnockMySelf()
 	{
 		// If we're on server or in standalone, call directly
 		ServerKnock_Implementation();
+	}
+}
+
+void AGuard::ServerUnKnock_Implementation()
+{
+	if (!HasAuthority()) return;
+
+	Knocked = false;
+	Patroling = true;
+	Seen = false;
+	Suspicious = false;
+	TargetPlayer = nullptr;
+	CurrentSuspicion = 0;
+}
+
+bool AGuard::ServerUnKnock_Validate()
+{
+	return true;
+}
+
+void AGuard::UnKnockMySelf()
+{
+	// Only clients should call server RPCs
+	if (!HasAuthority() && GetNetMode() != NM_Standalone)
+	{
+		ServerUnKnock();
+	}
+	else
+	{
+		// If we're on server or in standalone, call directly
+		ServerUnKnock_Implementation();
 	}
 }
 

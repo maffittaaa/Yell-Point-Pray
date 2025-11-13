@@ -66,6 +66,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	FVector StartLocation;
+	FQuat StartRotation;
+
 	AActor* LastOpen;
 	float CloseTimer = 0;
 
@@ -90,6 +93,12 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	virtual void ServerKnock() override;
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerUnKnock();
+
 	UFUNCTION()
 	void KnockMySelf();
+
+	UFUNCTION()
+	void UnKnockMySelf();
 };

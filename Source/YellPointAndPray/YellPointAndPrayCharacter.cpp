@@ -132,7 +132,7 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 		GameOverWidget = CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetClass, FName("GameOver"));
 
 	StartLocation = GetActorLocation();
-	StartRotation = GetActorRotation();
+	StartRotation = GetActorTransform().GetRotation();
 	enumVariable = InGame;
 	InventoryComponent->StoreInitialInventory(InventoryComponent->GetAllInventory());
 
@@ -152,7 +152,8 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 
 void AYellPointAndPrayCharacter::Reset_Implementation()
 {
-	TeleportTo(StartLocation, StartRotation);
+	FRotator rotation = StartRotation.Rotator();
+	TeleportTo(StartLocation, rotation);
 
 	if (HoldingItem != nullptr)
 	{

@@ -3,3 +3,7 @@
 
 #include "Players/YPPDeafCharacter.h"
 
+AYPPDeafCharacter::AYPPDeafCharacter()
+{
+	
+}
