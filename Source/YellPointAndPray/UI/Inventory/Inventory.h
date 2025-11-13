@@ -46,7 +46,14 @@ protected:
 
 	void ResetSlotToDefaultValue(int SlotID);
 
+	TArray<FUInventoryStruct> InitalInventorySlots;
+	
 public:	
+	TArray<FUInventoryStruct> GetAllInventory();
+	
+	void StoreInitialInventory(TArray<FUInventoryStruct> InitialInventory);
+	void RestoreInventoryWithInitalItems();
+
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	

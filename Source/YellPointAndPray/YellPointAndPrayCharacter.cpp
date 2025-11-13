@@ -134,12 +134,34 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 	StartLocation = GetActorLocation();
 	StartRotation = GetActorRotation();
 	enumVariable = InGame;
+	InventoryComponent->StoreInitialInventory(InventoryComponent->GetAllInventory());
+
+	AYPPCustomPlayerState* CustomPlayerState = Cast<AYPPCustomPlayerState>(GetPlayerState());
+	
+	if (HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("We have a customplayerstate"));
+		
+		AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
+		if (GameMode)
+		{
+			GameMode->StoreAllItemsInMap();
+		}
+	}
 }
 
 void AYellPointAndPrayCharacter::Reset_Implementation()
 {
 	TeleportTo(StartLocation, StartRotation);
+
+	if (HoldingItem != nullptr)
+	{
+		ServerDeleteItem();
+	}
+	
+	InventoryComponent->RestoreInventoryWithInitalItems();
 	Client_HideGameOver();
+	
 	UE_LOG(LogTemp, Warning, TEXT("CHARACTER-specific reset called!"));
 }
 

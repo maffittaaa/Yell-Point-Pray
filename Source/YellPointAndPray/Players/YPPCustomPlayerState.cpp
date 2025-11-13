@@ -100,7 +100,6 @@ void AYPPCustomPlayerState::Tick(float DeltaTime)
 	}
 }
 
-
 void AYPPCustomPlayerState::ChangeToLevel(FName LevelName)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Game is Starting"));

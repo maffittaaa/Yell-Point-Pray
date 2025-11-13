@@ -14,6 +14,26 @@
 /**
  * 
  */
+USTRUCT(BlueprintType)
+struct FPickableItemData
+{
+    GENERATED_BODY()
+
+    UPROPERTY()
+    TSubclassOf<APickableItem> ItemClass;
+
+    UPROPERTY()
+    FTransform Transform;
+
+    UPROPERTY()
+    FString ItemName;
+
+    FPickableItemData(){}
+    
+    FPickableItemData(TSubclassOf<APickableItem> ItemClass, FTransform Transform, FString ItemName)
+        : ItemClass(ItemClass), Transform(Transform), ItemName(ItemName){}
+};
+
 UCLASS()
 class YELLPOINTANDPRAY_API AYPPCustomGameMode : public AGameModeBase
 {
@@ -22,6 +42,12 @@ private:
     TArray<APawn*> PlayersArray;
     AYPPCustomGameMode();
 public:
+    TArray<FPickableItemData> InitialItemsSpawned;
+    
+    void StoreAllItemsInMap();
+    void RestoreAllItemsInMap();
+    void DeleteAllItemsInMap();
+    
     virtual void PostLogin(APlayerController* NewPlayer) override;
     void GameOver(bool State);
     

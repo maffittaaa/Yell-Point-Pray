@@ -151,6 +151,72 @@ void AYPPCustomGameMode::GameOver(bool State)
     }
 }
 
+void AYPPCustomGameMode::StoreAllItemsInMap()
+{
+    TSubclassOf<APickableItem> ClassToFind = APickableItem::StaticClass();
+    TArray<AActor*> FoundActors;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ClassToFind, FoundActors);
+
+    InitialItemsSpawned.Empty();
+
+    for (AActor* Actor : FoundActors)
+    {
+        APickableItem* PickableItem = Cast<APickableItem>(Actor);
+        if (PickableItem && PickableItem->IsValidLowLevel())
+        {
+            FPickableItemData ItemData = FPickableItemData(PickableItem->GetClass(), PickableItem->GetActorTransform(), PickableItem->GetName());
+            
+            InitialItemsSpawned.Add(ItemData);
+            
+            UE_LOG(LogTemp, Warning, TEXT("Stored PickableItem: %s at location %s"), 
+                *PickableItem->GetName(), 
+                *ItemData.Transform.GetLocation().ToString());
+        }
+    }
+}
+
+void AYPPCustomGameMode::DeleteAllItemsInMap()
+{
+    TSubclassOf<APickableItem> ClassToFind = APickableItem::StaticClass();
+    TArray<AActor*> FoundActors;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ClassToFind, FoundActors);
+
+    for (AActor* Actor : FoundActors)
+    {
+        Actor->Destroy();
+    }
+}
+
+void AYPPCustomGameMode::RestoreAllItemsInMap()
+{
+    if (GetWorld() == nullptr) return;
+
+    DeleteAllItemsInMap();
+    
+    for (const FPickableItemData& ItemData : InitialItemsSpawned)
+    {
+        if (ItemData.ItemClass && ItemData.ItemClass->IsValidLowLevel())
+        {
+            FActorSpawnParameters SpawnParams;
+            
+            APickableItem* NewItem = GetWorld()->SpawnActor<APickableItem>(
+                ItemData.ItemClass, 
+                ItemData.Transform, 
+                SpawnParams
+            );
+            
+            if (NewItem)
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Restored PickableItem: %s"), *ItemData.ItemName);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT("Failed to restore PickableItem: %s"), *ItemData.ItemName);
+            }
+        }
+    }
+}
+
 void AYPPCustomGameMode::RestartGame()
 {
     if (!HasAuthority())
@@ -164,6 +230,8 @@ void AYPPCustomGameMode::RestartGame()
 
     // Get all actors that implement the UReset interface
     UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UReset::StaticClass(), Resetables);
+
+    RestoreAllItemsInMap();
 
     for (auto& Actor : Resetables)
     {

@@ -21,6 +21,34 @@ void UInventory::BeginPlay()
 	Super::BeginPlay();
 }
 
+void UInventory::StoreInitialInventory(TArray<FUInventoryStruct> InitialInventory)
+{
+	// InventorySlots = InitialInventory;
+	InitalInventorySlots = InitialInventory;
+}
+
+void UInventory::RestoreInventoryWithInitalItems()
+{
+	for (int i = 0; i < InventorySlots.Num(); i++)
+	{
+		if (InventorySlots[i].Item != nullptr)
+		{
+			FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
+			InventorySlots[i].Item->DetachFromActor(DetachRules);
+			InventorySlots[i].Item->Destroy();
+		}
+
+		ResetSlotToDefaultValue(i);
+	}
+
+	InventorySlots = InitalInventorySlots;
+}
+
+TArray<FUInventoryStruct> UInventory::GetAllInventory()
+{
+	return InventorySlots;
+}
+
 void UInventory::DeleteInventorySlot_Implementation(int SlotID)
 {
 	if (InventorySlots[SlotID].Item == nullptr) 
@@ -28,7 +56,6 @@ void UInventory::DeleteInventorySlot_Implementation(int SlotID)
 		UE_LOG(LogTemp, Warning, TEXT("No item to Delete")); 
 		return;
 	}
-
 	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
 	InventorySlots[SlotID].Item->DetachFromActor(DetachRules);
 	InventorySlots[SlotID].Item->Destroy();
