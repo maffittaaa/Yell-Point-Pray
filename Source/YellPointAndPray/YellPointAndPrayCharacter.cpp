@@ -550,12 +550,8 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		playerController->SetViewTargetWithBlend(camera, blendTime, VTBlend_EaseIn);
 		
 		UE_LOG(LogTemp, Warning, TEXT("Camera and movement locked"));
-		SetMovementInputEnabled(false);
 		SetLookInputEnabled(false);
-		
 		SetActorHiddenInGame(true);
-		GetCharacterMovement()->DisableMovement();
-		SetActorEnableCollision(false);
 		
 		FInputModeGameAndUI inputMode;
 		inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
@@ -756,8 +752,7 @@ void AYellPointAndPrayCharacter::Caught_Implementation()
 {
 	AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
 
-	if (GameMode)
-	{
+	if (GameMode) {
 		UE_LOG(LogTemp, Warning, TEXT("Called Caught Game Over"));
 		GameMode->GameOver(false);
 	}
@@ -768,13 +763,12 @@ void AYellPointAndPrayCharacter::Caught_Implementation()
 void AYellPointAndPrayCharacter::Server_UpdateDrawingData_Implementation(FVector2D MouseUV, bool bIsDrawingNow) {
 	replicatedMouseUV = MouseUV;
 	bReplicatedIsDrawing = bIsDrawingNow;
-	
 	OnRep_DrawingData();
 }
 
 void AYellPointAndPrayCharacter::OnRep_DrawingData()
 {
-	if (!IsLocallyControlled() && bReplicatedIsDrawing && whiteboard) {
+	if (whiteboard) {
 		UE_LOG(LogTemp, Warning, TEXT("Drawing?!: %d"), bReplicatedIsDrawing);
 		float whiteboardBrushSize = 10.0f;
 		
@@ -803,7 +797,6 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 		float normalizedY = mousePosition.Y / viewportSize.Y;
 
 		FVector2D NormalizedMousePosition = FVector2D(normalizedX, normalizedY);
-		FVector2D ScreenMousePosition = mousePosition;
 		
 		playerController->DeprojectScreenPositionToWorld(NormalizedMousePosition.X * viewportSize.X, NormalizedMousePosition.Y * viewportSize.Y, start, direction);
 		FVector end = start + (direction * distance);
@@ -814,7 +807,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 		RV_TraceParams.bReturnPhysicalMaterial = false;
 		RV_TraceParams.AddIgnoredActor(this);
 
-		//DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.0f, 0, 1.0f);
+		DrawDebugLine(GetWorld(), start, end, FColor::Red, false, -1.0f, 0, 1.0f);
 	
 		bool bHit2 = GetWorld()->LineTraceSingleByChannel(
 			RV_Hit,
@@ -844,10 +837,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 					FVector2D(0, 1), 
 					LocalImpact.Y
 				);
-
-				AYPPCustomPlayerState* customPlayerState = Cast<AYPPCustomPlayerState>(this->GetPlayerState());
 				
-				whiteboard->Draw(whiteboardBrushTexture, whiteboardBrushSize, UVCoordinates, customPlayerState);
 				Server_UpdateDrawingData(UVCoordinates, isDrawing);
 			}
 		}
@@ -867,9 +857,7 @@ void AYellPointAndPrayCharacter::Tick(float DeltaTime)
 		AddTraceAndWidget();
 
 	if (KnockGuardWidgetClass && InventoryComponent->GetSlotID(InventoryComponent->CurrentItemSelected) == 1)
-	{
 		AddKnockGuardWidget();
-	}
 }
 
 //Cesar Stuff -----------------------------------------------------------------------
