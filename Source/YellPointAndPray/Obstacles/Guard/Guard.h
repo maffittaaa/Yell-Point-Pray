@@ -40,6 +40,12 @@ protected:
 	UPROPERTY(Replicated, VisibleAnywhere)
 	bool Seen = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Suspicious Mark")
+	UStaticMeshComponent* suspiciousMark;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Alerted Mark")
+	UStaticMeshComponent* alertedMark;
+
 	AAIController* AIController;
 
 	UPROPERTY(Replicated)

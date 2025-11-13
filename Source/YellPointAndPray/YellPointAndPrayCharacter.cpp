@@ -113,7 +113,9 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::CharacterDrawing);
 		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Completed, this, &AYellPointAndPrayCharacter::CharacterStopDrawing);
 		//GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, teste.IsBoundToObject(this) && teste.GetAction() != nullptr ? "yay bound properly!" : "oh noes failed to bind the draw :(");
-			
+
+		// //Closing Board
+		// EnhancedInputComponent->BindAction(CloseBoardAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::ClosingBoard);
 	}
 	else
 		UE_LOG(LogYellPointAndPray, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
@@ -587,29 +589,36 @@ void AYellPointAndPrayCharacter::OnRepState() {
 			}
 		}
 	}
-	// } else {
-	// 	if (UEnhancedInputLocalPlayerSubsystem* subsystem2 = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))  {
-	// 		AYellPointAndPrayPlayerController* yellPlayerController = Cast<AYellPointAndPrayPlayerController>(playerController);
-	// 		if (yellPlayerController) {
-	// 			for (UInputMappingContext* drawingContext : yellPlayerController->DrawingContexts) {
-	// 				if (drawingContext) {
-	// 					subsystem2->RemoveMappingContext(drawingContext);
-	// 					for (UInputMappingContext* DefaultContexts : yellPlayerController->DefaultMappingContexts){
-	// 						if (DefaultContexts)
-	// 							subsystem2->AddMappingContext(DefaultContexts, 1);
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 			
-	// 		SetActorHiddenInGame(false);
-	// 		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-	// 		SetActorEnableCollision(true);
-	// 		playerController->bShowMouseCursor = false;
-	// 		playerController->SetShowMouseCursor(false);
-	// 		isDrawing = false;
-	// 	}
-	// }
+	else {
+		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))  {
+	 		AYellPointAndPrayPlayerController* yellPlayerController = Cast<AYellPointAndPrayPlayerController>(playerController);
+	 		if (yellPlayerController) {
+	 			for (UInputMappingContext* drawingContext : yellPlayerController->DrawingContexts) {
+	 				if (drawingContext) {
+	 					subsystem->RemoveMappingContext(drawingContext);
+	 					
+	 					for (UInputMappingContext* DefaultContexts : yellPlayerController->DefaultMappingContexts){
+	 						if (DefaultContexts)
+	 							subsystem->AddMappingContext(DefaultContexts, 1);
+	 					}
+	 				}
+	 			}
+	 		}
+
+			subsystem->RequestRebuildControlMappings();
+
+			// ACameraActor* camera = player camera again! (wait)
+			
+			SetLookInputEnabled(true);
+			SetActorHiddenInGame(false);
+
+			FInputModeGameOnly inputMode;
+			playerController->SetInputMode(inputMode);
+		
+			playerController->bShowMouseCursor = false;
+			playerController->SetShowMouseCursor(false);
+	 	}
+	}
 }
 
 void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

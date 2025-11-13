@@ -79,6 +79,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UInputAction* DrawAction;
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		UInputAction* CloseBoardAction;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 		UInputAction* MouseRelease;
 		
 	public:
@@ -99,11 +102,6 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		void Duck();
 		void StopDuck();
-	
-		void CharacterDrawing(const FInputActionValue& value);
-		void CharacterStopDrawing(const FInputActionValue& value);
-	
-		bool isDrawing = false;
 
 		UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "CurrentGuard")
 		AActor* KnockableActor = nullptr;
@@ -134,7 +132,8 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf<UUserWidget> GameOverWidgetClass;
-
+	
+		//Whiteboard interaction
 		UPROPERTY()
 		UUserWidget* paintBrushWidget;
 
@@ -152,6 +151,27 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Camera")
 		TSoftObjectPtr<ACameraActor> whiteboardCamera;
+
+		UPROPERTY(ReplicatedUsing = OnRep_DrawingData)
+		FVector2D replicatedMouseUV;
+
+		UPROPERTY(Replicated)
+		bool bReplicatedIsDrawing;
+
+		void CharacterDrawing(const FInputActionValue& value);
+		void CharacterStopDrawing(const FInputActionValue& value);
+			
+		bool isDrawing = false;
+
+		UFUNCTION()
+		void OnRep_DrawingData();
+		
+		UFUNCTION(Server, Reliable)
+		void Server_UpdateDrawingData(FVector2D mouseUV, bool bIsDrawingNow);
+
+		// UFUNCTION()
+		// void ClosingBoard(const FInputActionValue& value);
+		//Whiteboard end of interaction
 
 		UPROPERTY(BlueprintReadOnly)
 		bool bMovementInputEnabled = true;
@@ -175,18 +195,6 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Player Controller")
 		APlayerController* playerController;
-
-		UPROPERTY(ReplicatedUsing = OnRep_DrawingData)
-		FVector2D replicatedMouseUV;
-
-		UPROPERTY(Replicated)
-		bool bReplicatedIsDrawing;
-
-		UFUNCTION()
-		void OnRep_DrawingData();
-	
-		UFUNCTION(Server, Reliable)
-		void Server_UpdateDrawingData(FVector2D mouseUV, bool bIsDrawingNow);
 
 	protected:
 

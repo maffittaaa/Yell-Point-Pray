@@ -17,7 +17,17 @@ AGuard::AGuard()
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
 	PawnSensingComp->SightRadius = 2000.f;
 	PawnSensingComp->HearingThreshold = 1000.f;
-	PawnSensingComp->SetPeripheralVisionAngle(45.f);	
+	PawnSensingComp->SetPeripheralVisionAngle(45.f);
+
+	suspiciousMark = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Suspicious Mark"));
+	suspiciousMark->SetupAttachment(RootComponent);
+	suspiciousMark->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	suspiciousMark->SetHiddenInGame(true);
+	
+	alertedMark = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Alerted Mark"));
+	alertedMark->SetupAttachment(RootComponent);
+	alertedMark->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	alertedMark->SetHiddenInGame(true);
 }
 
 void AGuard::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -102,6 +112,7 @@ void AGuard::Tick(float DeltaTime)
 	if (Suspicious == true) {
 		//UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %f"), CurrentSuspicion)
 		CurrentSuspicion -= DeltaTime * 10;
+		suspiciousMark->SetHiddenInGame(false);
 		float Distance = FVector::Dist(GetActorTransform().GetLocation(), LastSeenLocation);
 		UE_LOG(LogTemp, Warning, TEXT("Distance Amount:  %f"), Distance)
 		if (Distance < 200.f) {
@@ -116,6 +127,7 @@ void AGuard::Tick(float DeltaTime)
 			Patroling = true;
 			Seen = false;
 			Suspicious = false;
+			suspiciousMark->SetHiddenInGame(true);
 		}
 	}
 	//FVector Dir = this->GetVelocity().GetSafeNormal();
@@ -128,6 +140,8 @@ void AGuard::Tick(float DeltaTime)
 		FRotator NewRotation = FRotationMatrix::MakeFromX(Direction).Rotator();
 		SetActorRotation(NewRotation);
 		CurrentSuspicion += 30 * DeltaTime;
+		suspiciousMark->SetHiddenInGame(true);
+		alertedMark->SetHiddenInGame(false);
 		if (CurrentSuspicion >= 100) {
 			if (TargetPlayer && TargetPlayer->GetClass()->ImplementsInterface(UCaughtable::StaticClass()))
 			{
