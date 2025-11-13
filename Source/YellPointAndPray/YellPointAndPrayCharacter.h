@@ -237,7 +237,7 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 	public:
 		FVector StartLocation;
-		FRotator StartRotation;
+		FQuat StartRotation;
 
 		UFUNCTION(Client, Reliable)
 		void Client_ShowGameOver(bool State);
@@ -299,10 +299,8 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		public:
 
-
 		UFUNCTION(Server, Reliable)
 		void GetDuck(ARubberDuckUsable* Duck);
-
 
 		//Cesar Stuff -----------------------------------------
 		virtual  void OnItemAdded_Implementation(const FString& Name) override;

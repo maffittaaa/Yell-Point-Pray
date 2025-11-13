@@ -14,4 +14,7 @@ class YELLPOINTANDPRAY_API AYPPDeafCharacter : public AYellPointAndPrayCharacter
 {
 	GENERATED_BODY()
 	
+public:
+	AYPPDeafCharacter();
+	
 };

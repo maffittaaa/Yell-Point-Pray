@@ -5,11 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Interactable.h"
+#include "Interfaces/Reset.h"
 #include <Components/TimelineComponent.h>
 #include "Door.generated.h"
 
 UCLASS()
-class YELLPOINTANDPRAY_API ADoor : public AActor, public IInteractable
+class YELLPOINTANDPRAY_API ADoor : public AActor, public IInteractable, public IReset
 {
 	GENERATED_BODY()
 	
@@ -40,6 +41,8 @@ protected:
 	UPROPERTY(EditAnywhere, Replicated)
 	bool Locked;
 
+	UPROPERTY(EditAnywhere, Replicated)
+	bool isInitiallyLocked;
 
 public:	
 	// Called every frame
@@ -47,12 +50,23 @@ public:
 
 	virtual void Interact_Implementation(AActor* Interactor) override;
 
+	virtual void Reset_Implementation() override;
+
 	UFUNCTION(Server, Reliable)
 	void ServerInteract(AActor* Interactor);
+
+	UFUNCTION(Server, Reliable)
+	void CloseDoor();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastDoor(float FinalYaw);
 
 	UFUNCTION(Server, Reliable)
 	void UnlockDoor();
+
+	UFUNCTION(Server, Reliable)
+	void LockDoor();
+
+	UFUNCTION(Server, Reliable)
+	void GetLockDoor();
 };

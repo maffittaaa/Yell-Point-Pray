@@ -12,8 +12,6 @@ ADoor::ADoor()
 	FrameMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FrameMeshComp"));
 	FrameMeshComp->SetupAttachment(RootComponent);
 
-
-
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(FrameMeshComp);
 
@@ -34,13 +32,14 @@ void ADoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ADoor, Play);
 	DOREPLIFETIME(ADoor, Side);
 	DOREPLIFETIME(ADoor, Locked);
+	DOREPLIFETIME(ADoor, isInitiallyLocked);
 }
 
 // Called when the game starts or when spawned
 void ADoor::BeginPlay()
 {
 	Super::BeginPlay();
-
+	GetLockDoor();
 }
 
 void ADoor::MulticastDoor_Implementation(float FinalYaw)
@@ -121,12 +120,54 @@ void ADoor::ServerInteract_Implementation(AActor* Interactor) {
 
 	IsOpen = -IsOpen;
 
-
 	Play = true;
 }
 
 void ADoor::UnlockDoor_Implementation() {
 	UE_LOG(LogTemp, Warning, TEXT("Door Unlocked."));
 	Locked = false;
+}
+
+void ADoor::Reset_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Door reset called!"));
+	LockDoor();
+	CloseDoor();
+}
+
+void ADoor::CloseDoor_Implementation() {
+	if (IsOpen == -1 || !HasAuthority()) return;
+
+	if (IsOpen == 1)
+	{
+		Side = 1;
+	}
+
+	IsOpen = -IsOpen;
+
+	Play = true;
+}
+
+void ADoor::LockDoor_Implementation() {
+	
+	if (isInitiallyLocked) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Door Locked."));
+		Locked = true;
+	}
+}
+
+void ADoor::GetLockDoor_Implementation() {
+	
+	if (Locked)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Door Is Initially Locked."));
+		isInitiallyLocked = true;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Door Is NOT Initially Locked."));
+		isInitiallyLocked = false;
+	}
 }
 
