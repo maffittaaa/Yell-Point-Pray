@@ -136,20 +136,20 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 	StartLocation = GetActorLocation();
 	StartRotation = GetActorTransform().GetRotation();
 	enumVariable = InGame;
-	InventoryComponent->StoreInitialInventory(InventoryComponent->GetAllInventory());
 
 	AYPPCustomPlayerState* CustomPlayerState = Cast<AYPPCustomPlayerState>(GetPlayerState());
 	
 	if (HasAuthority())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("We have a customplayerstate"));
-		
 		AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
 		if (GameMode)
 		{
 			GameMode->StoreAllItemsInMap();
 		}
 	}
+
+	FTimerHandle TimerHandle; 
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYellPointAndPrayCharacter::RestoreTravelInventory, 0.5f, false);
 }
 
 void AYellPointAndPrayCharacter::Reset_Implementation()
@@ -160,12 +160,30 @@ void AYellPointAndPrayCharacter::Reset_Implementation()
 	if (HoldingItem != nullptr)
 	{
 		ServerDeleteItem();
-	}
-	
-	InventoryComponent->RestoreInventoryWithInitalItems();
+	}	
+	RestoreTravelInventory();
 	Client_HideGameOver();
-	
-	UE_LOG(LogTemp, Warning, TEXT("CHARACTER-specific reset called!"));
+
+	//UE_LOG(LogTemp, Warning, TEXT("CHARACTER-specific reset called!"));
+}
+
+void AYellPointAndPrayCharacter::RestoreTravelInventory()
+{
+	if (UGameInstance* GameInstance = GetWorld()->GetGameInstance())
+	{
+		if (UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GameInstance))
+		{
+			if (AYPPCustomPlayerState* CustomPlayerState = Cast<AYPPCustomPlayerState>(GetPlayerState()))
+			{
+				FPlayerInventoryInfo TravelInventory = CustomGameInstance->GetPlayerInventory(CustomPlayerState);
+				if (TravelInventory.InventorySlots.Num() > 0)
+				{
+					InventoryComponent->RestoreInventoryWithTravelData(TravelInventory.InventorySlots);
+					//UE_LOG(LogTemp, Warning, TEXT("Player: Restored travel inventory with %d slots"), TravelInventory.InventorySlots.Num());
+				}
+			}
+		}
+	}
 }
 
 void AYellPointAndPrayCharacter::AddTraceAndWidget() 

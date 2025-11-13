@@ -264,6 +264,8 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		virtual void Reset_Implementation() override;
 
+		void RestoreTravelInventory();
+
 		virtual void Caught_Implementation() override;
 	
 		UFUNCTION()

@@ -8,18 +8,39 @@ void UYPPCustomGameInstance::Init()
     Super::Init();
 }
 
-void UYPPCustomGameInstance::PlayerTravelling(TSubclassOf<APawn> NewPawnClass, EPlayerType NewPlayerType, AYPPCustomPlayerState* NewPlayerState)
+void UYPPCustomGameInstance::PlayerTravelling(TSubclassOf<APawn> NewPawnClass, EPlayerType NewPlayerType, AYPPCustomPlayerState* NewPlayerState, const FPlayerInventoryInfo& InventoryInfo)
 {
     if (!NewPawnClass) return;
 
-    PlayerInfoArray.Add(FPlayerInfo(NewPlayerState, NewPlayerType, NewPawnClass, NewPlayerState->IsHost));
-    
+    PlayerInfoArray.Add(FPlayerInfo(NewPlayerState, NewPlayerType, NewPawnClass, NewPlayerState->IsHost, InventoryInfo));
+
     DefaultClass = PlayerInfoArray[0].PawnClass;
     DefaultType = PlayerInfoArray[0].PlayerType;
 
     UE_LOG(LogTemp, Warning, TEXT("MI: New Player State was stored: %s"), *NewPlayerState->GetName());
     UE_LOG(LogTemp, Warning, TEXT("MI: New Player Class was stored: %s"), *NewPawnClass->GetName());
     UE_LOG(LogTemp, Warning, TEXT("MI: New Player Type was stored: %d"), NewPlayerType);
+    UE_LOG(LogTemp, Warning, TEXT("MI: Inventory slots stored: %d"), InventoryInfo.InventorySlots.Num());
+}
+
+void UYPPCustomGameInstance::StorePlayerInventory(AYPPCustomPlayerState* PlayerState, const TArray<FUInventoryStruct>& Inventory)
+{
+    int index = GetPlayerIndex(PlayerState);
+    if (index != -1)
+    {
+        PlayerInfoArray[index].InventoryInfo = FPlayerInventoryInfo(Inventory);
+        UE_LOG(LogTemp, Warning, TEXT("MI: Stored inventory for player: %s, slots: %d"), *PlayerState->GetName(), Inventory.Num());
+    }
+}
+
+FPlayerInventoryInfo UYPPCustomGameInstance::GetPlayerInventory(AYPPCustomPlayerState* PlayerState)
+{
+    int index = GetPlayerIndex(PlayerState);
+    if (index != -1)
+    {
+        return PlayerInfoArray[index].InventoryInfo;
+    }
+    return FPlayerInventoryInfo();
 }
 
 EPlayerType UYPPCustomGameInstance::GetPlayerType(AYPPCustomPlayerState* PlayerState)
@@ -78,10 +99,10 @@ int UYPPCustomGameInstance::GetPlayerIndex(const AYPPCustomPlayerState* PlayerSt
         TCHAR LastCharList = ListStateName[ListStateName.Len() - 1];
 
         int Players = 3;
-        if (!GoingUp)
-        {
-            Players *= -1;
-        }
+        //if (!GoingUp)
+        //{
+        //    Players *= -1;
+        //}
         
         int LastNumList = FCString::Atoi(&LastCharList) + Players;
 

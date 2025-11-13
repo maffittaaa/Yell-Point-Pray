@@ -26,6 +26,17 @@ public:
 	AUsableItem* Item = nullptr;
 };
 
+USTRUCT(BlueprintType)
+struct FInventoryTravelData
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	TSubclassOf<AUsableItem> ItemClass;
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class YELLPOINTANDPRAY_API UInventory : public UActorComponent
 {
@@ -46,12 +57,15 @@ protected:
 
 	void ResetSlotToDefaultValue(int SlotID);
 
-	TArray<FUInventoryStruct> InitalInventorySlots;
+	TArray<FUInventoryStruct> TravelInventory;
 	
 public:	
 	TArray<FUInventoryStruct> GetAllInventory();
 	
 	void StoreInitialInventory(TArray<FUInventoryStruct> InitialInventory);
+	
+	void RestoreInventoryWithTravelData(const TArray<FUInventoryStruct>& TravelData);
+
 	void RestoreInventoryWithInitalItems();
 
 	// Called every frame

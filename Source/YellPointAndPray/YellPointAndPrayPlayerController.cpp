@@ -40,6 +40,7 @@ void AYellPointAndPrayPlayerController::BeginPlay()
 	}
 }
 
+
 void AYellPointAndPrayPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();

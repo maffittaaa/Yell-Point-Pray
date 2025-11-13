@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "Engine/Engine.h"
 #include "list"
+#include "UI/Inventory/Inventory.h"
 #include "YPPCustomPlayerState.h"
 #include "GameFramework/PlayerState.h"
 #include "YPPCustomGameInstance.generated.h"
@@ -13,6 +14,18 @@
 /**
  * 
  */
+
+USTRUCT()
+struct FPlayerInventoryInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<FUInventoryStruct> InventorySlots;
+
+	FPlayerInventoryInfo() {}
+	FPlayerInventoryInfo(const TArray<FUInventoryStruct>& Slots) : InventorySlots(Slots) {}
+};
 
 USTRUCT(BlueprintType)
 struct FPlayerInfo
@@ -31,11 +44,13 @@ struct FPlayerInfo
 	UPROPERTY()
 	bool bIsHost = false;
 
-	// Constructor for easy initialization
-	FPlayerInfo() {}
-    
-	FPlayerInfo(AYPPCustomPlayerState* InPlayerState, EPlayerType InPlayerType, TSubclassOf<APawn> InPawnClass, bool bInIsHost)
-		: PlayerState(InPlayerState), PlayerType(InPlayerType), PawnClass(InPawnClass), bIsHost(bInIsHost) {}
+	UPROPERTY() // Add this
+	FPlayerInventoryInfo InventoryInfo;
+
+	FPlayerInfo() : PlayerState(nullptr), PlayerType(EPlayerType::None), PawnClass(nullptr), bIsHost(false) {}
+	FPlayerInfo(AYPPCustomPlayerState* InPlayerState, EPlayerType InPlayerType, TSubclassOf<APawn> InPawnClass, bool InIsHost, const FPlayerInventoryInfo& InInventoryInfo)
+		: PlayerState(InPlayerState), PlayerType(InPlayerType), PawnClass(InPawnClass), bIsHost(InIsHost), InventoryInfo(InInventoryInfo) {
+	}
 };
 
 UCLASS()
@@ -44,7 +59,11 @@ class YELLPOINTANDPRAY_API UYPPCustomGameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public:
-	void PlayerTravelling(TSubclassOf<APawn> NewPawnClass, EPlayerType NewPlayerType, AYPPCustomPlayerState* PlayerState);
+	void PlayerTravelling(TSubclassOf<APawn> NewPawnClass, EPlayerType NewPlayerType, AYPPCustomPlayerState* PlayerState, const FPlayerInventoryInfo& InventoryInfo);
+
+	void StorePlayerInventory(AYPPCustomPlayerState* PlayerState, const TArray<FUInventoryStruct>& Inventory);
+
+	FPlayerInventoryInfo GetPlayerInventory(AYPPCustomPlayerState* PlayerState);
 
 	UPROPERTY()
 	AYPPCustomPlayerState* PlayerStateRef = nullptr;
