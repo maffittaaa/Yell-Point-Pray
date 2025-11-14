@@ -225,8 +225,7 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 		
 		UClass* HoldingItemClass = nullptr;
-
-
+	
 		UPROPERTY(ReplicatedUsing = OnRep_HoldingItem)
 		AActor* HoldingItem;
 

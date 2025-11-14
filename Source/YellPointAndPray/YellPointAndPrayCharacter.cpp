@@ -26,6 +26,8 @@
 
 using namespace std;
 
+#pragma optimize("", off)
+
 AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 {
 	// Set size for collision capsule
@@ -621,7 +623,7 @@ void AYellPointAndPrayCharacter::OnRepState() {
 
 			subsystem->RequestRebuildControlMappings();
 
-			// ACameraActor* camera = player camera again! (wait)
+			playerController->SetViewTargetWithBlend(this, 0.0f, VTBlend_EaseIn);
 			
 			SetLookInputEnabled(true);
 			SetActorHiddenInGame(false);
@@ -726,8 +728,8 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 
 		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard") && enumVariable != InWhiteboard) {
 			enumVariable = InWhiteboard;
-			OnRepState();
 			whiteboard = Cast<AWhiteBoard>(hitObject);
+			OnRepState();
 		}
 		APickableItem* PickableItem = Cast<APickableItem>(hitObject);
 
@@ -756,6 +758,8 @@ void AYellPointAndPrayCharacter::Interact() {
 
 		if (whiteboard)
 			whiteboard->CloseBoard();
+		
+		whiteboard = nullptr;
 		return;
 	}
 	
@@ -898,3 +902,5 @@ void AYellPointAndPrayCharacter::Tick(float DeltaTime)
 void AYellPointAndPrayCharacter::OnItemAdded_Implementation(const FString& Name) {
 	UE_LOG(LogTemp, Warning, TEXT("Code Works im the best :D!"));
 }
+
+#pragma optimize("", on)
