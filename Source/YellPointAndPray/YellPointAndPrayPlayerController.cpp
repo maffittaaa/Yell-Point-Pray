@@ -112,6 +112,8 @@ void AYellPointAndPrayPlayerController::OnPlayerJoinedGame(const FString& Player
 	}
 }
 
+//GAMEOVERWIDGET
+
 void AYellPointAndPrayPlayerController::Server_OnBackToMainMenuClicked_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("Back to Main Menu in the Server"));
@@ -121,6 +123,56 @@ void AYellPointAndPrayPlayerController::Server_OnBackToMainMenuClicked_Implement
 void AYellPointAndPrayPlayerController::Server_OnRestartClicked_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Restarting Level in the Server..."));
+
+	AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
+
+	if (GameMode)
+	{
+		GameMode->RestartGame();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("No GameMode Found"));
+	}
+}
+
+//LOBBY
+
+void AYellPointAndPrayPlayerController::Server_OnReadyClicked_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Ready in the Server..."));
+
+	AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
+
+	if (GameMode)
+	{
+		GameMode->RestartGame();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("No GameMode Found"));
+	}
+}
+
+void AYellPointAndPrayPlayerController::Server_OnCancelClicked_Implementation()
+{
+	UE_LOG(LogTemp, Log, TEXT("Cancel in the Server"));
+
+	AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
+
+	if (GameMode)
+	{
+		GameMode->RestartGame();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("No GameMode Found"));
+	}
+}
+
+void AYellPointAndPrayPlayerController::Server_OnEnterClicked_Implementation()
+{
+	UE_LOG(LogTemp, Log, TEXT("Enter in the Server"));
 
 	AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
 

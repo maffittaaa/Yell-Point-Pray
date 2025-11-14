@@ -127,6 +127,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UUserWidget* GameOverWidget;
 
 		UPROPERTY()
+		UUserWidget* ReadyWidget;
+
+		UPROPERTY()
 		int TimesWidgetCreated = 0;
 
 		UPROPERTY()
@@ -140,6 +143,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf<UUserWidget> GameOverWidgetClass;
+
+		UPROPERTY(EditAnywhere, Category = "Components")
+		TSubclassOf<UUserWidget> ReadyWidgetClass;
 	
 		//Whiteboard interaction
 		UPROPERTY()

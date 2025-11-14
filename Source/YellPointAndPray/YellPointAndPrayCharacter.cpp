@@ -23,6 +23,7 @@
 #include <Items/Treasure/TreasurePickable.h>
 #include <Players/YPPCustomGameMode.h>
 #include <UI/Menus/MenusLevelScript.h>
+#include <Server/LobbyLevelScript.h>
 
 #include "Players/YPPCustomGameInstance.h"
 
@@ -161,6 +162,47 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 	Hands2->SetWorldLocation(HandsPos->GetComponentLocation());
 	Hands2->SetWorldRotation(HandsPos->GetComponentRotation());
 	OriginalDiff = (FirstPersonCameraComponent->GetComponentLocation() - Hands2->GetComponentLocation()).Length();
+	
+	FString LevelName = GetWorld()->GetMapName();
+	LevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
+
+	if (LevelName == "Lvl_Lobby")
+	{
+		if (ReadyWidgetClass) 
+		{
+			ReadyWidget = CreateWidget<UUserWidget>(GetWorld(), ReadyWidgetClass, FName("Lobby"));
+			
+			ReadyWidget->AddToViewport();
+
+			UE_LOG(LogTemp, Warning, TEXT("Ready widget added to viewport"));
+
+			APlayerController* PC = Cast<APlayerController>(GetController());
+
+			UWorld* World = GetWorld();
+			if (World)
+			{
+				ALobbyLevelScript* LevelScript = Cast<ALobbyLevelScript>(World->GetLevelScriptActor());
+
+				if (LevelScript && PC)
+				{
+					LevelScript->SetLocalPlayerController(PC);
+					LevelScript->RegisterPlayerReadyWidget(ReadyWidget, false);
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Player: No World"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Player: No Ready widget class"));
+		}
+	}
+	else 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player: Current Level is %s"), *GetWorld()->GetMapName());
+	}
 }
 
 void AYellPointAndPrayCharacter::Reset_Implementation()

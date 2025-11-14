@@ -70,7 +70,7 @@ public:
 	
 	EPlayerType GetPlayerType(AYPPCustomPlayerState* PlayerState);
 
-	TSubclassOf<APawn> GetPlayerClass(const AYPPCustomPlayerState* PlayerState);
+	TSubclassOf<APawn> GetPlayerClass(AYPPCustomPlayerState* PlayerState);
 
 	void ClearPlayerInfoArray();
 	
@@ -85,7 +85,7 @@ protected:
 
 	bool GoingUp = true;
 	
-	int GetPlayerIndex(const AYPPCustomPlayerState* PlayerState);
+	int GetPlayerIndex(AYPPCustomPlayerState* PlayerState);
 
 	virtual void Init() override;
 };

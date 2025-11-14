@@ -29,7 +29,7 @@ void UYPPCustomGameInstance::StorePlayerInventory(AYPPCustomPlayerState* PlayerS
     if (index != -1)
     {
         PlayerInfoArray[index].InventoryInfo = FPlayerInventoryInfo(Inventory);
-        UE_LOG(LogTemp, Warning, TEXT("MI: Stored inventory for player: %s, slots: %d"), *PlayerState->GetName(), Inventory.Num());
+        //UE_LOG(LogTemp, Warning, TEXT("MI: Stored inventory for player: %s, slots: %d"), *PlayerState->GetName(), Inventory.Num());
     }
 }
 
@@ -63,7 +63,7 @@ EPlayerType UYPPCustomGameInstance::GetPlayerType(AYPPCustomPlayerState* PlayerS
     return PlayerInfoArray[index].PlayerType;
 }
 
-TSubclassOf<APawn> UYPPCustomGameInstance::GetPlayerClass(const AYPPCustomPlayerState* PlayerState)
+TSubclassOf<APawn> UYPPCustomGameInstance::GetPlayerClass(AYPPCustomPlayerState* PlayerState)
 {
     int index = GetPlayerIndex(PlayerState);
 
@@ -87,7 +87,7 @@ void UYPPCustomGameInstance::ClearPlayerInfoArray()
     PlayerInfoArray.Empty();
 }
 
-int UYPPCustomGameInstance::GetPlayerIndex(const AYPPCustomPlayerState* PlayerState)
+int UYPPCustomGameInstance::GetPlayerIndex(AYPPCustomPlayerState* PlayerState)
 {
     FString PlayerStateName = PlayerState->GetName();
     TCHAR LastCharPlayer = PlayerStateName[PlayerStateName.Len() - 1];

@@ -32,6 +32,15 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_OnBackToMainMenuClicked();
 
+	UFUNCTION(Server, Reliable)
+	void Server_OnReadyClicked();
+
+	UFUNCTION(Server, Reliable)
+	void Server_OnCancelClicked();
+
+	UFUNCTION(Server, Reliable)
+	void Server_OnEnterClicked();
+
 	UFUNCTION(BlueprintCallable)
 	void OnSuccessfullyJoinedGameServer();
 
