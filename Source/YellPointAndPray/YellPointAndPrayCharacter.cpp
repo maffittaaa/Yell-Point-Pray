@@ -109,13 +109,10 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(MouseRelease, ETriggerEvent::Completed, this, &AYellPointAndPrayCharacter::CallDuck);
 
 		//Drawing
-		// EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::CharacterStartDrawing);
 		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::CharacterDrawing);
 		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Completed, this, &AYellPointAndPrayCharacter::CharacterStopDrawing);
 		//GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, teste.IsBoundToObject(this) && teste.GetAction() != nullptr ? "yay bound properly!" : "oh noes failed to bind the draw :(");
-
-		// //Closing Board
-		// EnhancedInputComponent->BindAction(CloseBoardAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::ClosingBoard);
+		
 	}
 	else
 		UE_LOG(LogYellPointAndPray, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
@@ -606,8 +603,7 @@ void AYellPointAndPrayCharacter::OnRepState() {
 				subsystem->RequestRebuildControlMappings();
 			}
 		}
-	}
-	else {
+	} else {
 		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))  {
 	 		AYellPointAndPrayPlayerController* yellPlayerController = Cast<AYellPointAndPrayPlayerController>(playerController);
 	 		if (yellPlayerController) {
@@ -728,12 +724,11 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 			}
 		}
 
-		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard")) 
-		{
+		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard") && enumVariable != InWhiteboard) {
 			enumVariable = InWhiteboard;
 			OnRepState();
+			whiteboard = Cast<AWhiteBoard>(hitObject);
 		}
-
 		APickableItem* PickableItem = Cast<APickableItem>(hitObject);
 
 		if (PickableItem) 
@@ -753,6 +748,16 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 
 void AYellPointAndPrayCharacter::Interact() {
 	UE_LOG(LogTemp, Warning, TEXT("YOU CALLED INTERACT"));
+
+	if (enumVariable == InWhiteboard) {
+		UE_LOG(LogTemp, Warning, TEXT("Closing whiteboard"));
+		enumVariable = InGame;
+		OnRepState();
+
+		if (whiteboard)
+			whiteboard->CloseBoard();
+		return;
+	}
 	
 	//Get vector to do the ray
 	FVector start;
