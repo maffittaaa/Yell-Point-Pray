@@ -158,7 +158,7 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UMaterial* whiteboardBrushMaterial;
 
 		UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Camera")
-		TSoftObjectPtr<ACameraActor> whiteboardCamera;
+		TSoftObjectPtr<AActor> whiteboardCamera;
 
 		UPROPERTY(ReplicatedUsing = OnRep_DrawingData)
 		FVector2D replicatedMouseUV;
@@ -177,8 +177,6 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UFUNCTION(Server, Reliable)
 		void Server_UpdateDrawingData(FVector2D mouseUV, bool bIsDrawingNow);
 
-		// UFUNCTION()
-		// void ClosingBoard(const FInputActionValue& value);
 		//Whiteboard end of interaction
 
 		UPROPERTY(BlueprintReadOnly)

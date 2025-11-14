@@ -24,6 +24,8 @@
 #include <Players/YPPCustomGameMode.h>
 #include <UI/Menus/MenusLevelScript.h>
 
+#include "Players/YPPCustomGameInstance.h"
+
 using namespace std;
 
 #pragma optimize("", off)
@@ -575,7 +577,7 @@ void AYellPointAndPrayCharacter::OnRepState() {
 	if (enumVariable == InWhiteboard)
 	{
 		float blendTime = 0.0f;
-		ACameraActor* camera = whiteboardCamera.LoadSynchronous();//to get the actual camera object
+		AActor* camera = whiteboardCamera.LoadSynchronous();//to get the actual camera object
 		
 		playerController->SetViewTargetWithBlend(camera, blendTime, VTBlend_EaseIn);
 		
@@ -590,10 +592,12 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		
 		playerController->bShowMouseCursor = true;
 		playerController->SetShowMouseCursor(true);
+
+		whiteboard->CloseWidget();
 		
 		UE_LOG(LogTemp, Warning, TEXT("Cursor visibility after set: %d"), playerController->bShowMouseCursor);
 		
-		paintBrushWidget = CreateWidget<UUserWidget>(GetWorld(), paintBrushWidgetClass, FName("PaintBrush"));
+		paintBrushWidget = CreateWidget<UUserWidget>(GetWorld(), paintBrushWidgetClass, FName("WPaintBrush"));
 		playerController->SetMouseCursorWidget(EMouseCursor::Type::Default ,paintBrushWidget);
 		
 		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer())) { //adding the map context for drawing
@@ -625,7 +629,7 @@ void AYellPointAndPrayCharacter::OnRepState() {
 	 					
 	 					for (UInputMappingContext* DefaultContexts : yellPlayerController->DefaultMappingContexts){
 	 						if (DefaultContexts)
-	 							subsystem->AddMappingContext(DefaultContexts, 1);
+	 							subsystem->AddMappingContext(DefaultContexts, 2);
 	 					}
 	 				}
 	 			}
@@ -739,6 +743,7 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard") && enumVariable != InWhiteboard) {
 			enumVariable = InWhiteboard;
 			whiteboard = Cast<AWhiteBoard>(hitObject);
+			
 			OnRepState();
 		}
 		

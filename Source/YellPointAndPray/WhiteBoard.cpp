@@ -1,8 +1,7 @@
 #include "WhiteBoard.h"
 #include "YellPointAndPrayCharacter.h"
+#include "Components/Button.h"
 #include "Engine/Canvas.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/PlayerState.h"
 #include "Kismet/KismetRenderingLibrary.h"
 
 AWhiteBoard::AWhiteBoard() {
@@ -125,7 +124,28 @@ void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D draw
 
 void AWhiteBoard::CloseBoard() {
 	UE_LOG(LogTemp, Warning, TEXT("Close Board"));
+	
+	if (closingWidget && closingWidget->IsInViewport()) {
+		closingWidget->RemoveFromParent();
+		closingWidget = nullptr;
+	}
 }
+
+void AWhiteBoard::CloseWidget() { 
+	if (closingWidgetClass) {
+		closingWidget = CreateWidget<UUserWidget>(GetWorld(), closingWidgetClass, FName("WClosingBoard"));
+		if (closingWidget) {
+			//closingWidget->AddToViewport();
+			UButton* closeButton = Cast<UButton>(closingWidget->GetWidgetFromName(FName("CloseButton")));
+			if (closeButton) {
+				closeButton->OnClicked.AddDynamic(this, &AWhiteBoard::CloseBoard);
+				UE_LOG(LogTemp, Warning, TEXT("Close button bound successfully"));
+			} else
+				UE_LOG(LogTemp, Warning, TEXT("CloseButton not found in widget"));
+		}
+	}
+}
+
 
 void AWhiteBoard::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);

@@ -5,8 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Interactable.h"
-#include "Camera/CameraActor.h"
-#include "Players/YPPCustomGameInstance.h"
+#include "Components/Button.h"
 #include "Players/YPPCustomPlayerState.h"
 #include "WhiteBoard.generated.h"
 
@@ -47,6 +46,16 @@ class YELLPOINTANDPRAY_API AWhiteBoard : public AActor, public IInteractable
 	
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WhiteboardBrush")
 		UTexture2D* brushTexture_P3;
+
+		//closing board
+		UPROPERTY()
+		UUserWidget* closingWidget;
+
+		UPROPERTY(EditAnywhere, Category = "Whiteboard")
+		TSubclassOf<UUserWidget> closingWidgetClass;
+	
+		UFUNCTION()
+		void CloseWidget();
 	
 	protected:
 		virtual void BeginPlay() override;
