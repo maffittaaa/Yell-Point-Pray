@@ -731,6 +731,7 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 			whiteboard = Cast<AWhiteBoard>(hitObject);
 			OnRepState();
 		}
+		
 		APickableItem* PickableItem = Cast<APickableItem>(hitObject);
 
 		if (PickableItem) 
