@@ -39,6 +39,14 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* FirstPersonMesh;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* Hands;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* Hands2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* HandsPos;
+
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
@@ -231,6 +239,8 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UFUNCTION()
 		void OnRep_HoldingItem();
+
+		void HandMovement(float DeltaTime);
 
 		UPROPERTY(Replicated)
 		bool ItemCreated = false;

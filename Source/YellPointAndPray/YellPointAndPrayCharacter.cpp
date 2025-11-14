@@ -51,6 +51,12 @@ AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 	FirstPersonCameraComponent->FirstPersonFieldOfView = 70.0f;
 	FirstPersonCameraComponent->FirstPersonScale = 0.6f;
 
+	Hands = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hands Mesh"));
+	Hands2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hands2 Mesh"));
+	Hands2->SetupAttachment(Hands);
+	HandsPos = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hands Position"));
+	HandsPos->SetupAttachment(FirstPersonCameraComponent);
+
 	// configure the character comps
 	GetMesh()->SetOwnerNoSee(true);
 	GetMesh()->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::WorldSpaceRepresentation;
@@ -149,6 +155,9 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 
 	FTimerHandle TimerHandle; 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYellPointAndPrayCharacter::RestoreTravelInventory, 0.5f, false);
+
+	Hands2->SetWorldLocation(HandsPos->GetComponentLocation());
+	Hands2->SetWorldRotation(HandsPos->GetComponentRotation());
 }
 
 void AYellPointAndPrayCharacter::Reset_Implementation()
@@ -896,6 +905,36 @@ void AYellPointAndPrayCharacter::Tick(float DeltaTime)
 
 	if (KnockGuardWidgetClass && InventoryComponent->GetSlotID(InventoryComponent->CurrentItemSelected) == 1)
 		AddKnockGuardWidget();
+
+	HandMovement(DeltaTime);
+
+}
+
+void AYellPointAndPrayCharacter::HandMovement(float DeltaTime)
+{
+	FVector TargetLocation = HandsPos->GetComponentLocation();
+	FVector CurrentLocation = Hands2->GetComponentLocation();
+	FVector Dir = TargetLocation - CurrentLocation;
+	FRotator CurrentRotation = Hands2->GetComponentRotation();
+	FRotator TargetRotation = HandsPos->GetComponentRotation();
+	FRotator Rot = TargetRotation - CurrentRotation;
+
+	if (Dir.Length() > 10) {
+		CurrentLocation += Dir.GetSafeNormal() * DeltaTime * 400;
+	}
+	else {
+		CurrentLocation = TargetLocation;
+	}
+
+	if (!Rot.IsNearlyZero(0.1f)) {
+		CurrentRotation += Rot.GetNormalized() * DeltaTime * 50;
+	}
+	else {
+		CurrentRotation = TargetRotation;
+	}
+
+	Hands2->SetWorldLocation(CurrentLocation);
+	Hands2->SetWorldRotation(CurrentRotation);
 }
 
 //Cesar Stuff -----------------------------------------------------------------------

@@ -180,7 +180,7 @@ void AGuard::OpenDoors()
 	params.AddIgnoredActor(this);
 
 	//ray
-	if (World->LineTraceSingleByChannel(hit, start, start + dir * 100, ECC_Visibility, params)) {
+	if (World->LineTraceSingleByChannel(hit, start, start + dir * 300, ECC_Visibility, params)) {
 		DrawDebugLine(World, start, start + dir * 100, FColor::Red, false, -1.0f, 0, 1.0f);
 		if (AActor* hitObject = hit.GetActor())
 		{
