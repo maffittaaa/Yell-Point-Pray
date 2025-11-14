@@ -242,6 +242,8 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		void HandMovement(float DeltaTime);
 
+		float OriginalDiff;
+
 		UPROPERTY(Replicated)
 		bool ItemCreated = false;
 

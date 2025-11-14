@@ -158,6 +158,7 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 
 	Hands2->SetWorldLocation(HandsPos->GetComponentLocation());
 	Hands2->SetWorldRotation(HandsPos->GetComponentRotation());
+	OriginalDiff = (FirstPersonCameraComponent->GetComponentLocation() - Hands2->GetComponentLocation()).Length();
 }
 
 void AYellPointAndPrayCharacter::Reset_Implementation()
@@ -935,6 +936,15 @@ void AYellPointAndPrayCharacter::HandMovement(float DeltaTime)
 
 	Hands2->SetWorldLocation(CurrentLocation);
 	Hands2->SetWorldRotation(CurrentRotation);
+
+
+	FVector ToBody = FirstPersonCameraComponent->GetComponentLocation() - Hands2->GetComponentLocation();
+	if (ToBody.Length() > OriginalDiff + 10) {
+		FVector Final = ToBody.GetSafeNormal();
+		Final *= ToBody.Length() - OriginalDiff;
+		Final += CurrentLocation;
+		Hands2->SetWorldLocation(Final);
+	}
 }
 
 //Cesar Stuff -----------------------------------------------------------------------
