@@ -12,6 +12,9 @@ AWhiteBoard::AWhiteBoard() {
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	meshComp->SetupAttachment(RootComponent);
 
+	cubeMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WhiteboardBehind"));
+	meshComp->SetupAttachment(RootComponent);
+
 	dynamicMaterialInstanceCanvas = nullptr;
 	dynamicMaterialInstanceBrush = nullptr;
 }
@@ -125,26 +128,26 @@ void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D draw
 void AWhiteBoard::CloseBoard_Implementation() {
 	UE_LOG(LogTemp, Warning, TEXT("Close Board"));
 	
-	if (closingWidget && closingWidget->IsInViewport()) {
-		closingWidget->RemoveFromParent();
-		closingWidget = nullptr;
-	}
+	// if (closingWidget && closingWidget->IsInViewport()) {
+	// 	closingWidget->RemoveFromParent();
+	// 	closingWidget = nullptr;
+	// }
 }
 
-void AWhiteBoard::CloseWidget() { 
-	if (closingWidgetClass) {
-		closingWidget = CreateWidget<UUserWidget>(GetWorld(), closingWidgetClass, FName("WClosingBoard"));
-		if (closingWidget) {
-			//closingWidget->AddToViewport();
-			UButton* closeButton = Cast<UButton>(closingWidget->GetWidgetFromName(FName("CloseButton")));
-			if (closeButton) {
-				closeButton->OnClicked.AddDynamic(this, &AWhiteBoard::CloseBoard);
-				UE_LOG(LogTemp, Warning, TEXT("Close button bound successfully"));
-			} else
-				UE_LOG(LogTemp, Warning, TEXT("CloseButton not found in widget"));
-		}
-	}
-}
+// void AWhiteBoard::CloseWidget() { 
+// 	if (closingWidgetClass) {
+// 		closingWidget = CreateWidget<UUserWidget>(GetWorld(), closingWidgetClass, FName("WClosingBoard"));
+// 		if (closingWidget) {
+// 			//closingWidget->AddToViewport();
+// 			UButton* closeButton = Cast<UButton>(closingWidget->GetWidgetFromName(FName("CloseButton")));
+// 			if (closeButton) {
+// 				closeButton->OnClicked.AddDynamic(this, &AWhiteBoard::CloseBoard);
+// 				UE_LOG(LogTemp, Warning, TEXT("Close button bound successfully"));
+// 			} else
+// 				UE_LOG(LogTemp, Warning, TEXT("CloseButton not found in widget"));
+// 		}
+// 	}
+// }
 
 
 void AWhiteBoard::Tick(float DeltaTime) {

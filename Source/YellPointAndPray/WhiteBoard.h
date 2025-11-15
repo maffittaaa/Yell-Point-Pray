@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Interactable.h"
 #include "Components/Button.h"
@@ -19,6 +20,9 @@ class YELLPOINTANDPRAY_API AWhiteBoard : public AActor, public IInteractable
 	
 		UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* meshComp;
+
+		UPROPERTY(EditAnywhere, Category = "Whiteboard")
+		UStaticMeshComponent* cubeMeshComp;
 
 		UPROPERTY(EditAnywhere, Category = "WhiteboardRenderTarget")
 		UTextureRenderTarget2D* renderTarget2D;
@@ -47,15 +51,15 @@ class YELLPOINTANDPRAY_API AWhiteBoard : public AActor, public IInteractable
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WhiteboardBrush")
 		UTexture2D* brushTexture_P3;
 
-		//closing board
-		UPROPERTY()
-		UUserWidget* closingWidget;
-
-		UPROPERTY(EditAnywhere, Category = "Whiteboard")
-		TSubclassOf<UUserWidget> closingWidgetClass;
+		// //closing board
+		// UPROPERTY()
+		// UUserWidget* closingWidget;
+		//
+		// UPROPERTY(EditAnywhere, Category = "Whiteboard")
+		// TSubclassOf<UUserWidget> closingWidgetClass;
 	
-		UFUNCTION()
-		void CloseWidget();
+		// UFUNCTION()
+		// void CloseWidget();
 	
 	protected:
 		virtual void BeginPlay() override;

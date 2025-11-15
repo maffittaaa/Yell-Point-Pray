@@ -642,7 +642,7 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		playerController->bShowMouseCursor = true;
 		playerController->SetShowMouseCursor(true);
 
-		whiteboard->CloseWidget();
+		// whiteboard->CloseWidget();
 		
 		UE_LOG(LogTemp, Warning, TEXT("Cursor visibility after set: %d"), playerController->bShowMouseCursor);
 		
