@@ -103,32 +103,12 @@ void AYPPCustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AYPPCustomPlayerState, PlayerType);
 	DOREPLIFETIME(AYPPCustomPlayerState, IsHost);
-	DOREPLIFETIME(AYPPCustomPlayerState, LevelLoaded);
+	DOREPLIFETIME(AYPPCustomPlayerState, bIsReady);
 }
 
-void AYPPCustomPlayerState::Tick(float DeltaTime)
+void AYPPCustomPlayerState::OnRep_IsPlayerReady()
 {
-	Super::Tick(DeltaTime);
-
-	if (!HasAuthority()) return;
-
-	TimePassed -= DeltaTime;
-	// UE_LOG(LogTemp, Warning, TEXT("Time passed: %f"), TimePassed);
-	if (TimePassed > 10 && !LevelLoaded && IsHost)
-	{
-		LevelLoaded = true;
-		FName LevelName = "Lvl_MainTest";
-		ChangeToLevel(LevelName);
-	}
-}
-
-void AYPPCustomPlayerState::ChangeToLevel(FName LevelName)
-{
-	UE_LOG(LogTemp, Warning, TEXT("PS: Game is Starting"));
-
-	AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
-	if (GameMode)
-	{
-		GameMode->LoadLevel(LevelName);
-	}
+	// This will be called on all clients when bIsReady changes.
+	// Here, you can add visual or audio feedback for the state change.
+	UE_LOG(LogTemp, Warning, TEXT("Player's ready state is now: %s"), bIsReady ? TEXT("True") : TEXT("False"));
 }

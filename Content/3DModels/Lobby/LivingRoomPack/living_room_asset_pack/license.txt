@@ -1,0 +1,11 @@
+Model Information:
+* title:	Living room Asset Pack
+* source:	https://sketchfab.com/3d-models/living-room-asset-pack-eafcacc7dc8643d68b435b177d049567
+* author:	shadowdraak (https://sketchfab.com/shadowdraak)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Living room Asset Pack" (https://sketchfab.com/3d-models/living-room-asset-pack-eafcacc7dc8643d68b435b177d049567) by shadowdraak (https://sketchfab.com/shadowdraak) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

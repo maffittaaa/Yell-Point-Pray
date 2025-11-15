@@ -1,0 +1,8 @@
+Model Information:
+* title:	Mat
+* source:	https://sketchfab.com/3d-models/mat-0cb60a5838824537abf7513c691b9b55
+* author:	SketchfabRealityScanUser2000 (https://sketchfab.com/SketchfabRealityScanUser2000)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works

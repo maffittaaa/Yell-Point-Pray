@@ -54,11 +54,6 @@ EPlayerType UYPPCustomGameInstance::GetPlayerType(AYPPCustomPlayerState* PlayerS
     }
 
     PlayerState->IsHost = PlayerInfoArray[index].bIsHost;
-
-    if (PlayerState->IsHost)
-    {
-        PlayerState->LevelLoaded = true;
-    }
     
     return PlayerInfoArray[index].PlayerType;
 }

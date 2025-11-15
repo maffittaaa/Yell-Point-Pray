@@ -40,6 +40,9 @@ class YELLPOINTANDPRAY_API AYPPCustomGameMode : public AGameModeBase
     GENERATED_BODY()
 private:
     TArray<APawn*> PlayersArray;
+
+    int PlayersReady = 0;
+
     AYPPCustomGameMode();
 public:
     TArray<FPickableItemData> InitialItemsSpawned;
@@ -53,6 +56,7 @@ public:
     
     void RestartGame();
 
+    int GetPlayersReady();
     void PlayerGotReady();
     void PlayerCancelReady();
     void EnterGame();

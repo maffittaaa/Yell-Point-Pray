@@ -1,0 +1,8 @@
+Model Information:
+* title:	power outlet
+* source:	https://sketchfab.com/3d-models/power-outlet-b8fdbdfcd60c4b9d84600e577fafdcf4
+* author:	cereal (https://sketchfab.com/skeeeyee)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works

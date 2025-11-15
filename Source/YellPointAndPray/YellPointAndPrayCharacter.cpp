@@ -23,7 +23,7 @@
 #include <Items/Treasure/TreasurePickable.h>
 #include <Players/YPPCustomGameMode.h>
 #include <UI/Menus/MenusLevelScript.h>
-#include <Server/LobbyLevelScript.h>
+#include <Lobby/LobbyLevelScript.h>
 
 #include "Players/YPPCustomGameInstance.h"
 
@@ -186,6 +186,7 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 
 				if (LevelScript && PC)
 				{
+					//PC->SetShowMouseCursor(true);
 					LevelScript->SetLocalPlayerController(PC);
 					LevelScript->RegisterPlayerReadyWidget(ReadyWidget, false);
 				}

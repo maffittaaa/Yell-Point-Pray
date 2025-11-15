@@ -238,6 +238,26 @@ void AYPPCustomGameMode::RestartGame()
     }
 }
 
+void AYPPCustomGameMode::PlayerGotReady() 
+{
+    PlayersReady++;
+}
+
+void AYPPCustomGameMode::PlayerCancelReady() 
+{
+    PlayersReady--;
+}
+
+int AYPPCustomGameMode::GetPlayersReady()
+{
+    return PlayersReady;
+}
+
+void AYPPCustomGameMode::EnterGame() 
+{
+    LoadLevel("Lvl_MainTest");
+}
+
 void AYPPCustomGameMode::LoadLevel(FName LevelName) 
 {
     if (GetWorld()->GetNetMode() == NM_ListenServer || GetWorld()->GetNetMode() == NM_DedicatedServer)

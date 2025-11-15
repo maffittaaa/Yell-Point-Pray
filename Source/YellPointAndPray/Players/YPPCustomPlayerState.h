@@ -21,13 +21,14 @@ class YELLPOINTANDPRAY_API AYPPCustomPlayerState : public APlayerState
 private:
 	float TimePassed = 0;
 
-	void ChangeToLevel(FName LevelName);
-
 public:
 	AYPPCustomPlayerState();
 
-	UPROPERTY(Replicated)
-	bool LevelLoaded = false;
+	UPROPERTY(ReplicatedUsing = OnRep_IsPlayerReady, BlueprintReadOnly, Category = "Game State")
+	bool bIsReady = false;
+
+	UFUNCTION()
+	void OnRep_IsPlayerReady();
 
 	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere)
 	bool IsHost = false;
@@ -43,7 +44,6 @@ public:
 	void SetPlayerType(EPlayerType NewType);
 
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
 
 	// Replication
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
