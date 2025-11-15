@@ -623,9 +623,15 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		
 		playerController->SetViewTargetWithBlend(camera, blendTime, VTBlend_EaseIn);
 		
-		UE_LOG(LogTemp, Warning, TEXT("Camera and movement locked"));
 		SetLookInputEnabled(false);
 		SetActorHiddenInGame(true);
+
+		UE_LOG(LogTemp, Warning, TEXT("Camera and movement locked"));
+
+		GetMesh()->SetVisibility(false, true);
+		FirstPersonMesh->SetVisibility(false, true);
+		if (Hands) Hands->SetVisibility(false, true);
+		if (Hands2) Hands2->SetVisibility(false, true);
 		
 		FInputModeGameAndUI inputMode;
 		inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
@@ -677,18 +683,26 @@ void AYellPointAndPrayCharacter::OnRepState() {
 	 			}
 	 		}
 
-			subsystem->RequestRebuildControlMappings();
-
 			playerController->SetViewTargetWithBlend(this, 0.0f, VTBlend_EaseIn);
 			
-			SetLookInputEnabled(true);
 			SetActorHiddenInGame(false);
+			GetMesh()->SetVisibility(true, true);
+			FirstPersonMesh->SetVisibility(IsLocallyControlled(), true);
+			if (Hands) Hands->SetVisibility(true, true);
+			if (Hands2) Hands2->SetVisibility(true, true);
 
+			SetLookInputEnabled(true);
+			
 			FInputModeGameOnly inputMode;
 			playerController->SetInputMode(inputMode);
 		
 			playerController->bShowMouseCursor = false;
 			playerController->SetShowMouseCursor(false);
+
+			if (paintBrushWidget) {
+				paintBrushWidget->RemoveFromParent();
+				paintBrushWidget = nullptr;
+			}
 	 	}
 	}
 }
@@ -703,7 +717,6 @@ void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME(AYellPointAndPrayCharacter, DuckUsing);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, replicatedMouseUV);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, bReplicatedIsDrawing);
-	
 }
 
 void AYellPointAndPrayCharacter::Client_ShowGameOver_Implementation(bool State)
@@ -813,6 +826,8 @@ void AYellPointAndPrayCharacter::Interact() {
 		UE_LOG(LogTemp, Warning, TEXT("Closing whiteboard"));
 		enumVariable = InGame;
 		OnRepState();
+	
+		ForceNetUpdate();
 
 		if (whiteboard)
 			whiteboard->CloseBoard();
