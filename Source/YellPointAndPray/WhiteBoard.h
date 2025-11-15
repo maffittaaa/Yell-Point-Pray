@@ -70,6 +70,6 @@ class YELLPOINTANDPRAY_API AWhiteBoard : public AActor, public IInteractable
 
 		void InitializeBackground();
 
-		UFUNCTION(BlueprintCallable)
+		UFUNCTION(BlueprintCallable, Server, Reliable)
 		void CloseBoard();
 };

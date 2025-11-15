@@ -131,6 +131,8 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 void AYellPointAndPrayCharacter::BeginPlay() {
 	Super::BeginPlay();
+	
+	enumVariable = InGame;
 
 	if (interactWidgetClass)
 		interactWidget = CreateWidget<UUserWidget>(GetWorld(), interactWidgetClass, FName("Interact"));
@@ -143,7 +145,6 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 
 	StartLocation = GetActorLocation();
 	StartRotation = GetActorTransform().GetRotation();
-	enumVariable = InGame;
 
 	AYPPCustomPlayerState* CustomPlayerState = Cast<AYPPCustomPlayerState>(GetPlayerState());
 	
@@ -624,14 +625,14 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		playerController->SetViewTargetWithBlend(camera, blendTime, VTBlend_EaseIn);
 		
 		SetLookInputEnabled(false);
-		SetActorHiddenInGame(true);
+		//SetActorHiddenInGame(true);
 
 		UE_LOG(LogTemp, Warning, TEXT("Camera and movement locked"));
 
-		GetMesh()->SetVisibility(false, true);
-		FirstPersonMesh->SetVisibility(false, true);
-		if (Hands) Hands->SetVisibility(false, true);
-		if (Hands2) Hands2->SetVisibility(false, true);
+		// GetMesh()->SetVisibility(false, true);
+		// FirstPersonMesh->SetVisibility(false, true);
+		// if (Hands) Hands->SetVisibility(false, true);
+		// if (Hands2) Hands2->SetVisibility(false, true);
 		
 		FInputModeGameAndUI inputMode;
 		inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
@@ -668,6 +669,27 @@ void AYellPointAndPrayCharacter::OnRepState() {
 			}
 		}
 	} else {
+		playerController->SetViewTargetWithBlend(this, 0.0f, VTBlend_EaseIn);
+			
+		// SetActorHiddenInGame(false);
+		// GetMesh()->SetVisibility(true, true);
+		// FirstPersonMesh->SetVisibility(true, true);
+		// if (Hands) Hands->SetVisibility(true, true);
+		// if (Hands2) Hands2->SetVisibility(true, true);
+
+		SetLookInputEnabled(true);
+			
+		FInputModeGameOnly inputMode;
+		playerController->SetInputMode(inputMode);
+		
+		playerController->bShowMouseCursor = false;
+		playerController->SetShowMouseCursor(false);
+
+		if (paintBrushWidget) {
+			paintBrushWidget->RemoveFromParent();
+			paintBrushWidget = nullptr;
+		}
+		
 		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))  {
 	 		AYellPointAndPrayPlayerController* yellPlayerController = Cast<AYellPointAndPrayPlayerController>(playerController);
 	 		if (yellPlayerController) {
@@ -682,27 +704,6 @@ void AYellPointAndPrayCharacter::OnRepState() {
 	 				}
 	 			}
 	 		}
-
-			playerController->SetViewTargetWithBlend(this, 0.0f, VTBlend_EaseIn);
-			
-			SetActorHiddenInGame(false);
-			GetMesh()->SetVisibility(true, true);
-			FirstPersonMesh->SetVisibility(IsLocallyControlled(), true);
-			if (Hands) Hands->SetVisibility(true, true);
-			if (Hands2) Hands2->SetVisibility(true, true);
-
-			SetLookInputEnabled(true);
-			
-			FInputModeGameOnly inputMode;
-			playerController->SetInputMode(inputMode);
-		
-			playerController->bShowMouseCursor = false;
-			playerController->SetShowMouseCursor(false);
-
-			if (paintBrushWidget) {
-				paintBrushWidget->RemoveFromParent();
-				paintBrushWidget = nullptr;
-			}
 	 	}
 	}
 }

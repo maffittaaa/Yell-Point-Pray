@@ -87,9 +87,6 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UInputAction* DrawAction;
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-		UInputAction* CloseBoardAction;
-
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 		UInputAction* MouseRelease;
 		
 	public:
@@ -207,12 +204,6 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Player Controller")
 		APlayerController* playerController;
-
-		UFUNCTION(Server, Reliable)
-		void Server_SetCameraView(AActor* NewViewTarget, EGameStates NewState);
-
-		UFUNCTION()
-		void DelayedCameraReset();
 
 	protected:
 

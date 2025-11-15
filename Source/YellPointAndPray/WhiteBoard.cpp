@@ -122,7 +122,7 @@ void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D draw
 }
 
 
-void AWhiteBoard::CloseBoard() {
+void AWhiteBoard::CloseBoard_Implementation() {
 	UE_LOG(LogTemp, Warning, TEXT("Close Board"));
 	
 	if (closingWidget && closingWidget->IsInViewport()) {
