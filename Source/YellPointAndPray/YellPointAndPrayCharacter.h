@@ -152,7 +152,7 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		TSubclassOf<UUserWidget> paintBrushWidgetClass;
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-		TSoftObjectPtr<AWhiteBoard> whiteboard;
+		AWhiteBoard* whiteboard;
 
 		UPROPERTY(EditAnywhere, Category = "Whiteboard")
 		UTexture2D* whiteboardBrushTexture;

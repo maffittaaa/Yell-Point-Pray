@@ -12,9 +12,6 @@ AWhiteBoard::AWhiteBoard() {
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	meshComp->SetupAttachment(RootComponent);
 
-	cubeMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WhiteboardBehind"));
-	meshComp->SetupAttachment(RootComponent);
-
 	dynamicMaterialInstanceCanvas = nullptr;
 	dynamicMaterialInstanceBrush = nullptr;
 }

@@ -21,9 +21,6 @@ class YELLPOINTANDPRAY_API AWhiteBoard : public AActor, public IInteractable
 		UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* meshComp;
 
-		UPROPERTY(EditAnywhere, Category = "Whiteboard")
-		UStaticMeshComponent* cubeMeshComp;
-
 		UPROPERTY(EditAnywhere, Category = "WhiteboardRenderTarget")
 		UTextureRenderTarget2D* renderTarget2D;
 

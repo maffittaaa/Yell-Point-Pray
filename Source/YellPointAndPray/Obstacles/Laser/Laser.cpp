@@ -41,10 +41,10 @@ void ALaser::Reset_Implementation()
 
 void ALaser::SetLaserColors() {
 	if (niagaraLaser)
-		niagaraLaser->SetVariableLinearColor(FName("User.BeamColor"), FLinearColor(0.703f, 0.245f, 0.0f, 1.0f));
+		niagaraLaser->SetVariableLinearColor(FName("User.BeamColor"), FLinearColor(1.0f, 0.0f, 0.0f, 1.0f));
 
 	if (niagaraLaserImpact)
-		niagaraLaserImpact->SetVariableLinearColor(FName("User.Colour"), FLinearColor(0.703f, 0.245f, 0.0f, 1.0f));
+		niagaraLaserImpact->SetVariableLinearColor(FName("User.Colour"), FLinearColor(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 void ALaser::TouchingLaser(AYellPointAndPrayCharacter* character) {

@@ -799,7 +799,11 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 
 		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard") && enumVariable != InWhiteboard) {
 			enumVariable = InWhiteboard;
+
+			whiteboard = Cast<AWhiteBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AWhiteBoard::StaticClass()));
 			whiteboard = Cast<AWhiteBoard>(hitObject);
+
+			
 			
 			OnRepState();
 		}
@@ -831,6 +835,7 @@ void AYellPointAndPrayCharacter::Interact() {
 	
 		ForceNetUpdate();
 
+		whiteboard = Cast<AWhiteBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AWhiteBoard::StaticClass()));
 		if (whiteboard)
 			whiteboard->CloseBoard();
 		
@@ -880,6 +885,7 @@ void AYellPointAndPrayCharacter::Server_UpdateDrawingData_Implementation(FVector
 
 void AYellPointAndPrayCharacter::OnRep_DrawingData()
 {
+	whiteboard = Cast<AWhiteBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AWhiteBoard::StaticClass()));
 	if (whiteboard) {
 		UE_LOG(LogTemp, Warning, TEXT("Drawing?!: %d"), bReplicatedIsDrawing);
 		float whiteboardBrushSize = 10.0f;
@@ -931,6 +937,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 
 		AActor* hitActor = RV_Hit.GetActor();
 		if (bHit2) {
+			whiteboard = Cast<AWhiteBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AWhiteBoard::StaticClass()));
 			whiteboard = Cast<AWhiteBoard>(hitActor);
 		
 			if (whiteboard) {
