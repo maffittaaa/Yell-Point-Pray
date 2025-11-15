@@ -177,9 +177,8 @@ void AYPPCustomGameMode::StoreAllItemsInMap()
 
 void AYPPCustomGameMode::DeleteAllItemsInMap()
 {
-    TSubclassOf<APickableItem> ClassToFind = APickableItem::StaticClass();
     TArray<AActor*> FoundActors;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ClassToFind, FoundActors);
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), APickableItem::StaticClass(), FoundActors);
 
     for (AActor* Actor : FoundActors)
     {
@@ -259,12 +258,24 @@ void AYPPCustomGameMode::LoadLevel(FName LevelName)
                         {
                             if (AYPPCustomPlayerState* PlayerState = Cast<AYPPCustomPlayerState>(PC->PlayerState)) 
                             {
-                                CustomGameInstance->PlayerTravelling(YPPPlayerController->GetPawn()->GetClass(), PlayerState->PlayerType, PlayerState);
+                                if (AYellPointAndPrayCharacter* PlayerCharacter = Cast<AYellPointAndPrayCharacter>(PC->GetPawn()))
+                                {
+                                    // Store the current inventory for travel
+                                    TArray<FUInventoryStruct> CurrentInventory = PlayerCharacter->InventoryComponent->GetAllInventory();
 
-                                UE_LOG(LogTemp, Warning, TEXT("Travelling: PlayerState: %s"), *PlayerState->GetName());
-                                UE_LOG(LogTemp, Warning, TEXT("Travelling: PlayerType: %d"), PlayerState->PlayerType);
-                                UE_LOG(LogTemp, Warning, TEXT("Travelling: PlayerClass: %s"), *YPPPlayerController->GetPawn()->GetClass()->GetName());
-                                UE_LOG(LogTemp, Warning, TEXT("Travelling"));
+                                    // Store in GameInstance
+                                    CustomGameInstance->StorePlayerInventory(PlayerState, CurrentInventory);
+
+                                    UE_LOG(LogTemp, Warning, TEXT("Travelling: Character: %s"), *PlayerCharacter->GetName());
+                                    UE_LOG(LogTemp, Warning, TEXT("Travelling: PlayerType: %d"), PlayerState->PlayerType);
+
+                                    for (int i = 0; i < CurrentInventory.Num(); i++) 
+                                    {
+                                        UE_LOG(LogTemp, Warning, TEXT("Travelling: Inventory slot %i: %s"), i, *CurrentInventory[i].Name);
+                                    }
+
+                                    CustomGameInstance->PlayerTravelling(YPPPlayerController->GetPawn()->GetClass(), PlayerState->PlayerType, PlayerState, CurrentInventory);
+                                }
                             }
                         }
                     }
@@ -272,6 +283,7 @@ void AYPPCustomGameMode::LoadLevel(FName LevelName)
             }
         }
     }
+
     PlayersArray.Empty();
     GetWorld()->ServerTravel(TEXT("/Game/FirstPerson/Lvl_MainTest?listen"));
 }

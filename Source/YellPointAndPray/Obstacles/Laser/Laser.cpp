@@ -1,5 +1,8 @@
 #include "Obstacles/Laser/Laser.h"
 
+#include "NavigationPath.h"
+#include "NavigationSystem.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 ALaser::ALaser() {
@@ -45,7 +48,26 @@ void ALaser::SetLaserColors() {
 }
 
 void ALaser::TouchingLaser(AYellPointAndPrayCharacter* character) {
-	//implementation of the alert guards
+	UE_LOG(LogTemp, Warning, TEXT("Oh shit"));
+	UNavigationSystemV1* navigationSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGuard::StaticClass(), FoundActors);
+	for (auto& FoundActor : FoundActors)
+	{
+		if (!Cast<AGuard>(FoundActor))
+			break;
+		
+		FVector location = FoundActor->GetActorTransform().GetLocation();
+		FVector location2 = laserMesh->GetComponentLocation();
+		
+		UNavigationPath* navMeshPath = navigationSystem->FindPathToLocationSynchronously(GetWorld(), location, location2);
+		float length = navMeshPath->GetPathLength();
+		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), length);
+		if (length < 4000) {
+			UE_LOG(LogTemp, Warning, TEXT("Close Enough"));	
+			Cast<AGuard>(FoundActor)->Called(character->GetActorTransform().GetLocation());
+		}
+	}
 }
 
 void ALaser::SetLaserActive(bool bActive)

@@ -23,12 +23,15 @@ void UInventory::BeginPlay()
 
 void UInventory::StoreInitialInventory(TArray<FUInventoryStruct> InitialInventory)
 {
-	// InventorySlots = InitialInventory;
-	InitalInventorySlots = InitialInventory;
+	// Store a copy of the current inventory for travel
+	TravelInventory = InitialInventory;
+
+	UE_LOG(LogTemp, Warning, TEXT("Stored travel inventory with %d slots"), TravelInventory.Num());
 }
 
-void UInventory::RestoreInventoryWithInitalItems()
+void UInventory::RestoreInventoryWithTravelData(const TArray<FUInventoryStruct>& TravelData)
 {
+	// Clear current inventory
 	for (int i = 0; i < InventorySlots.Num(); i++)
 	{
 		if (InventorySlots[i].Item != nullptr)
@@ -37,11 +40,16 @@ void UInventory::RestoreInventoryWithInitalItems()
 			InventorySlots[i].Item->DetachFromActor(DetachRules);
 			InventorySlots[i].Item->Destroy();
 		}
-
 		ResetSlotToDefaultValue(i);
 	}
 
-	InventorySlots = InitalInventorySlots;
+	// Restore from travel data
+	for (int i = 0; i < TravelData.Num() && i < InventorySlots.Num(); i++)
+	{
+		InventorySlots[i] = TravelData[i];
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Restored inventory from travel data with %d slots"), TravelData.Num());
 }
 
 TArray<FUInventoryStruct> UInventory::GetAllInventory()
@@ -56,6 +64,7 @@ void UInventory::DeleteInventorySlot_Implementation(int SlotID)
 		UE_LOG(LogTemp, Warning, TEXT("No item to Delete")); 
 		return;
 	}
+
 	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
 	InventorySlots[SlotID].Item->DetachFromActor(DetachRules);
 	InventorySlots[SlotID].Item->Destroy();

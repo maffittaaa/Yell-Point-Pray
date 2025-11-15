@@ -55,7 +55,7 @@ void ARubberDuckPickable::CallGuard() {
 		UNavigationPath* NavPath = NavSys->FindPathToLocationSynchronously(GetWorld(), Loc, Loc2);
 		float da = NavPath->GetPathLength();
 		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), da);
-		if (da < 2000) {
+		if (da < 4000) {
 			UE_LOG(LogTemp, Warning, TEXT("Close Enough"));	
 
 			FVector duckLoc = GetActorTransform().GetLocation();

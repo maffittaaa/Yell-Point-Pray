@@ -53,6 +53,10 @@ public:
     
     void RestartGame();
 
+    void PlayerGotReady();
+    void PlayerCancelReady();
+    void EnterGame();
+
     void LoadLevel(FName LevelName);
 
     void AddPlayerAfterChangedMap(APawn* Pawn);

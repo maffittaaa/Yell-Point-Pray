@@ -2,7 +2,9 @@
 
 
 #include "Door.h"
+#include "Obstacles/Guard/Guard.h"
 #include <Net/UnrealNetwork.h>
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ADoor::ADoor()
@@ -22,6 +24,7 @@ ADoor::ADoor()
 	DoorNobMesh->SetupAttachment(DoorMeshComp);
 
 	bReplicates = true;
+
 }
 
 void ADoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -40,6 +43,16 @@ void ADoor::BeginPlay()
 {
 	Super::BeginPlay();
 	GetLockDoor();
+
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGuard::StaticClass(), FoundActors);
+	for (auto& FoundActor : FoundActors)
+	{
+		DoorMeshComp->MoveIgnoreActors.Add(FoundActor);
+		FrameMeshComp->MoveIgnoreActors.Add(FoundActor);
+		Mesh->MoveIgnoreActors.Add(FoundActor);
+		DoorNobMesh->MoveIgnoreActors.Add(FoundActor);
+	}
 }
 
 void ADoor::MulticastDoor_Implementation(float FinalYaw)

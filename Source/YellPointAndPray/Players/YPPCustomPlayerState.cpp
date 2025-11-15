@@ -5,6 +5,7 @@
 #include "Net/UnrealNetwork.h"
 #include <Kismet/GameplayStatics.h>
 #include "YPPCustomGameMode.h"
+#include "Players/YPPCustomGameMode.h"
 #include "YPPCustomGameInstance.h"
 
 AYPPCustomPlayerState::AYPPCustomPlayerState()
@@ -20,28 +21,43 @@ void AYPPCustomPlayerState::BeginPlay()
 	Super::BeginPlay();
 
 	if (!HasAuthority()) return;
-	
+
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYPPCustomPlayerState::ReplacePlayerPawn, 0.1f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYPPCustomPlayerState::ReplacePlayerPawn, 0.5f, false);
 }
 
 void AYPPCustomPlayerState::ReplacePlayerPawn()
 {
 	UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GetWorld()->GetGameInstance());
-	if (!CustomGameInstance) return;
+
+	if (!CustomGameInstance) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PS: CustomGameInstance is null"));
+		return;
+	} 
     
 	if (CustomGameInstance->GetPlayerType(this) != EPlayerType::None)
 	{
 		AController* PlayerController = GetPlayerController();
-		if (!PlayerController) return;
+
+		if (!PlayerController) 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("PS: PlayerController is null, PlayerType: %d"), CustomGameInstance->GetPlayerType(this));
+			return;
+		}
         
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = PlayerController;
+
+		AYPPCustomGameMode* CustomGameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
+
+		AActor* Start = CustomGameMode->ChoosePlayerStart(PlayerController);
+
+		FTransform SpawnTransform = Start ? Start->GetActorTransform() : FTransform::Identity;
         
 		APawn* NewPawn = GetWorld()->SpawnActor<APawn>(
 			CustomGameInstance->GetPlayerClass(this), 
-			FVector::ZeroVector, 
-			FRotator::ZeroRotator, 
+			SpawnTransform,
 			SpawnParams
 		);
         
@@ -50,15 +66,21 @@ void AYPPCustomPlayerState::ReplacePlayerPawn()
 			if (PlayerController->GetPawn())
 			{
 				PlayerController->GetPawn()->Destroy();
-				UE_LOG(LogTemp, Warning, TEXT("Destroying Current Pawn"));
+				UE_LOG(LogTemp, Warning, TEXT("PS: Destroying Current Pawn"));
 			}
 
 			PlayerController->Possess(NewPawn);
 			Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode())->AddPlayerAfterChangedMap(NewPawn);
 			
-			UE_LOG(LogTemp, Warning, TEXT("Has Player Possessing now"));
-		}			
+			UE_LOG(LogTemp, Warning, TEXT("PS: Has Player Possessing now, PlayerType: %d"), CustomGameInstance->GetPlayerType(this));
+		}
+		else 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("PS: Pawn is null"));
+		}
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("PS: IsHost: %d"), IsHost);
 }
 
 void AYPPCustomPlayerState::OnRep_PlayerType()
@@ -102,7 +124,7 @@ void AYPPCustomPlayerState::Tick(float DeltaTime)
 
 void AYPPCustomPlayerState::ChangeToLevel(FName LevelName)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Game is Starting"));
+	UE_LOG(LogTemp, Warning, TEXT("PS: Game is Starting"));
 
 	AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
 	if (GameMode)

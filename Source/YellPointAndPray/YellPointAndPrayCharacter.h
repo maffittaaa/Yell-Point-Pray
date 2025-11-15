@@ -39,6 +39,14 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* FirstPersonMesh;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* Hands;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* Hands2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* HandsPos;
+
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
@@ -79,9 +87,6 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UInputAction* DrawAction;
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-		UInputAction* CloseBoardAction;
-
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 		UInputAction* MouseRelease;
 		
 	public:
@@ -119,6 +124,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UUserWidget* GameOverWidget;
 
 		UPROPERTY()
+		UUserWidget* ReadyWidget;
+
+		UPROPERTY()
 		int TimesWidgetCreated = 0;
 
 		UPROPERTY()
@@ -132,6 +140,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf<UUserWidget> GameOverWidgetClass;
+
+		UPROPERTY(EditAnywhere, Category = "Components")
+		TSubclassOf<UUserWidget> ReadyWidgetClass;
 	
 		//Whiteboard interaction
 		UPROPERTY()
@@ -150,7 +161,7 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UMaterial* whiteboardBrushMaterial;
 
 		UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Camera")
-		TSoftObjectPtr<ACameraActor> whiteboardCamera;
+		TSoftObjectPtr<AActor> whiteboardCamera;
 
 		UPROPERTY(ReplicatedUsing = OnRep_DrawingData)
 		FVector2D replicatedMouseUV;
@@ -169,8 +180,6 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UFUNCTION(Server, Reliable)
 		void Server_UpdateDrawingData(FVector2D mouseUV, bool bIsDrawingNow);
 
-		// UFUNCTION()
-		// void ClosingBoard(const FInputActionValue& value);
 		//Whiteboard end of interaction
 
 		UPROPERTY(BlueprintReadOnly)
@@ -225,13 +234,16 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 		
 		UClass* HoldingItemClass = nullptr;
-
-
+	
 		UPROPERTY(ReplicatedUsing = OnRep_HoldingItem)
 		AActor* HoldingItem;
 
 		UFUNCTION()
 		void OnRep_HoldingItem();
+
+		void HandMovement(float DeltaTime);
+
+		float OriginalDiff;
 
 		UPROPERTY(Replicated)
 		bool ItemCreated = false;
@@ -263,6 +275,8 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
 		virtual void Reset_Implementation() override;
+
+		void RestoreTravelInventory();
 
 		virtual void Caught_Implementation() override;
 	

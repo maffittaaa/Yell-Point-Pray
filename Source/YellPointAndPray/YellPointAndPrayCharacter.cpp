@@ -23,8 +23,13 @@
 #include <Items/Treasure/TreasurePickable.h>
 #include <Players/YPPCustomGameMode.h>
 #include <UI/Menus/MenusLevelScript.h>
+#include <Server/LobbyLevelScript.h>
+
+#include "Players/YPPCustomGameInstance.h"
 
 using namespace std;
+
+#pragma optimize("", off)
 
 AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 {
@@ -48,6 +53,12 @@ AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 	FirstPersonCameraComponent->bEnableFirstPersonScale = true;
 	FirstPersonCameraComponent->FirstPersonFieldOfView = 70.0f;
 	FirstPersonCameraComponent->FirstPersonScale = 0.6f;
+
+	Hands = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hands Mesh"));
+	Hands2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hands2 Mesh"));
+	Hands2->SetupAttachment(Hands);
+	HandsPos = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hands Position"));
+	HandsPos->SetupAttachment(FirstPersonCameraComponent);
 
 	// configure the character comps
 	GetMesh()->SetOwnerNoSee(true);
@@ -109,13 +120,10 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(MouseRelease, ETriggerEvent::Completed, this, &AYellPointAndPrayCharacter::CallDuck);
 
 		//Drawing
-		// EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::CharacterStartDrawing);
 		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::CharacterDrawing);
 		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Completed, this, &AYellPointAndPrayCharacter::CharacterStopDrawing);
 		//GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, teste.IsBoundToObject(this) && teste.GetAction() != nullptr ? "yay bound properly!" : "oh noes failed to bind the draw :(");
-
-		// //Closing Board
-		// EnhancedInputComponent->BindAction(CloseBoardAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::ClosingBoard);
+		
 	}
 	else
 		UE_LOG(LogYellPointAndPray, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
@@ -123,6 +131,8 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 void AYellPointAndPrayCharacter::BeginPlay() {
 	Super::BeginPlay();
+	
+	enumVariable = InGame;
 
 	if (interactWidgetClass)
 		interactWidget = CreateWidget<UUserWidget>(GetWorld(), interactWidgetClass, FName("Interact"));
@@ -135,20 +145,64 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 
 	StartLocation = GetActorLocation();
 	StartRotation = GetActorTransform().GetRotation();
-	enumVariable = InGame;
-	InventoryComponent->StoreInitialInventory(InventoryComponent->GetAllInventory());
 
 	AYPPCustomPlayerState* CustomPlayerState = Cast<AYPPCustomPlayerState>(GetPlayerState());
 	
 	if (HasAuthority())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("We have a customplayerstate"));
-		
 		AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
 		if (GameMode)
 		{
 			GameMode->StoreAllItemsInMap();
 		}
+	}
+
+	FTimerHandle TimerHandle; 
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYellPointAndPrayCharacter::RestoreTravelInventory, 0.5f, false);
+
+	Hands2->SetWorldLocation(HandsPos->GetComponentLocation());
+	Hands2->SetWorldRotation(HandsPos->GetComponentRotation());
+	OriginalDiff = (FirstPersonCameraComponent->GetComponentLocation() - Hands2->GetComponentLocation()).Length();
+	
+	FString LevelName = GetWorld()->GetMapName();
+	LevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
+
+	if (LevelName == "Lvl_Lobby")
+	{
+		if (ReadyWidgetClass) 
+		{
+			ReadyWidget = CreateWidget<UUserWidget>(GetWorld(), ReadyWidgetClass, FName("Lobby"));
+			
+			ReadyWidget->AddToViewport();
+
+			UE_LOG(LogTemp, Warning, TEXT("Ready widget added to viewport"));
+
+			APlayerController* PC = Cast<APlayerController>(GetController());
+
+			UWorld* World = GetWorld();
+			if (World)
+			{
+				ALobbyLevelScript* LevelScript = Cast<ALobbyLevelScript>(World->GetLevelScriptActor());
+
+				if (LevelScript && PC)
+				{
+					LevelScript->SetLocalPlayerController(PC);
+					LevelScript->RegisterPlayerReadyWidget(ReadyWidget, false);
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Player: No World"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Player: No Ready widget class"));
+		}
+	}
+	else 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player: Current Level is %s"), *GetWorld()->GetMapName());
 	}
 }
 
@@ -160,12 +214,30 @@ void AYellPointAndPrayCharacter::Reset_Implementation()
 	if (HoldingItem != nullptr)
 	{
 		ServerDeleteItem();
-	}
-	
-	InventoryComponent->RestoreInventoryWithInitalItems();
+	}	
+	RestoreTravelInventory();
 	Client_HideGameOver();
-	
-	UE_LOG(LogTemp, Warning, TEXT("CHARACTER-specific reset called!"));
+
+	//UE_LOG(LogTemp, Warning, TEXT("CHARACTER-specific reset called!"));
+}
+
+void AYellPointAndPrayCharacter::RestoreTravelInventory()
+{
+	if (UGameInstance* GameInstance = GetWorld()->GetGameInstance())
+	{
+		if (UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GameInstance))
+		{
+			if (AYPPCustomPlayerState* CustomPlayerState = Cast<AYPPCustomPlayerState>(GetPlayerState()))
+			{
+				FPlayerInventoryInfo TravelInventory = CustomGameInstance->GetPlayerInventory(CustomPlayerState);
+				if (TravelInventory.InventorySlots.Num() > 0)
+				{
+					InventoryComponent->RestoreInventoryWithTravelData(TravelInventory.InventorySlots);
+					//UE_LOG(LogTemp, Warning, TEXT("Player: Restored travel inventory with %d slots"), TravelInventory.InventorySlots.Num());
+				}
+			}
+		}
+	}
 }
 
 void AYellPointAndPrayCharacter::AddTraceAndWidget() 
@@ -548,13 +620,19 @@ void AYellPointAndPrayCharacter::OnRepState() {
 	if (enumVariable == InWhiteboard)
 	{
 		float blendTime = 0.0f;
-		ACameraActor* camera = whiteboardCamera.LoadSynchronous();//to get the actual camera object
+		AActor* camera = whiteboardCamera.LoadSynchronous();//to get the actual camera object
 		
 		playerController->SetViewTargetWithBlend(camera, blendTime, VTBlend_EaseIn);
 		
-		UE_LOG(LogTemp, Warning, TEXT("Camera and movement locked"));
 		SetLookInputEnabled(false);
-		SetActorHiddenInGame(true);
+		//SetActorHiddenInGame(true);
+
+		UE_LOG(LogTemp, Warning, TEXT("Camera and movement locked"));
+
+		// GetMesh()->SetVisibility(false, true);
+		// FirstPersonMesh->SetVisibility(false, true);
+		// if (Hands) Hands->SetVisibility(false, true);
+		// if (Hands2) Hands2->SetVisibility(false, true);
 		
 		FInputModeGameAndUI inputMode;
 		inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
@@ -563,10 +641,12 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		
 		playerController->bShowMouseCursor = true;
 		playerController->SetShowMouseCursor(true);
+
+		// whiteboard->CloseWidget();
 		
 		UE_LOG(LogTemp, Warning, TEXT("Cursor visibility after set: %d"), playerController->bShowMouseCursor);
 		
-		paintBrushWidget = CreateWidget<UUserWidget>(GetWorld(), paintBrushWidgetClass, FName("PaintBrush"));
+		paintBrushWidget = CreateWidget<UUserWidget>(GetWorld(), paintBrushWidgetClass, FName("WPaintBrush"));
 		playerController->SetMouseCursorWidget(EMouseCursor::Type::Default ,paintBrushWidget);
 		
 		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer())) { //adding the map context for drawing
@@ -588,8 +668,28 @@ void AYellPointAndPrayCharacter::OnRepState() {
 				subsystem->RequestRebuildControlMappings();
 			}
 		}
-	}
-	else {
+	} else {
+		playerController->SetViewTargetWithBlend(this, 0.0f, VTBlend_EaseIn);
+			
+		// SetActorHiddenInGame(false);
+		// GetMesh()->SetVisibility(true, true);
+		// FirstPersonMesh->SetVisibility(true, true);
+		// if (Hands) Hands->SetVisibility(true, true);
+		// if (Hands2) Hands2->SetVisibility(true, true);
+
+		SetLookInputEnabled(true);
+			
+		FInputModeGameOnly inputMode;
+		playerController->SetInputMode(inputMode);
+		
+		playerController->bShowMouseCursor = false;
+		playerController->SetShowMouseCursor(false);
+
+		if (paintBrushWidget) {
+			paintBrushWidget->RemoveFromParent();
+			paintBrushWidget = nullptr;
+		}
+		
 		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))  {
 	 		AYellPointAndPrayPlayerController* yellPlayerController = Cast<AYellPointAndPrayPlayerController>(playerController);
 	 		if (yellPlayerController) {
@@ -599,24 +699,11 @@ void AYellPointAndPrayCharacter::OnRepState() {
 	 					
 	 					for (UInputMappingContext* DefaultContexts : yellPlayerController->DefaultMappingContexts){
 	 						if (DefaultContexts)
-	 							subsystem->AddMappingContext(DefaultContexts, 1);
+	 							subsystem->AddMappingContext(DefaultContexts, 2);
 	 					}
 	 				}
 	 			}
 	 		}
-
-			subsystem->RequestRebuildControlMappings();
-
-			// ACameraActor* camera = player camera again! (wait)
-			
-			SetLookInputEnabled(true);
-			SetActorHiddenInGame(false);
-
-			FInputModeGameOnly inputMode;
-			playerController->SetInputMode(inputMode);
-		
-			playerController->bShowMouseCursor = false;
-			playerController->SetShowMouseCursor(false);
 	 	}
 	}
 }
@@ -631,7 +718,6 @@ void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME(AYellPointAndPrayCharacter, DuckUsing);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, replicatedMouseUV);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, bReplicatedIsDrawing);
-	
 }
 
 void AYellPointAndPrayCharacter::Client_ShowGameOver_Implementation(bool State)
@@ -710,12 +796,13 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 			}
 		}
 
-		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard")) 
-		{
+		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard") && enumVariable != InWhiteboard) {
 			enumVariable = InWhiteboard;
+			whiteboard = Cast<AWhiteBoard>(hitObject);
+			
 			OnRepState();
 		}
-
+		
 		APickableItem* PickableItem = Cast<APickableItem>(hitObject);
 
 		if (PickableItem) 
@@ -735,6 +822,20 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 
 void AYellPointAndPrayCharacter::Interact() {
 	UE_LOG(LogTemp, Warning, TEXT("YOU CALLED INTERACT"));
+
+	if (enumVariable == InWhiteboard) {
+		UE_LOG(LogTemp, Warning, TEXT("Closing whiteboard"));
+		enumVariable = InGame;
+		OnRepState();
+	
+		ForceNetUpdate();
+
+		if (whiteboard)
+			whiteboard->CloseBoard();
+		
+		whiteboard = nullptr;
+		return;
+	}
 	
 	//Get vector to do the ray
 	FVector start;
@@ -868,6 +969,45 @@ void AYellPointAndPrayCharacter::Tick(float DeltaTime)
 
 	if (KnockGuardWidgetClass && InventoryComponent->GetSlotID(InventoryComponent->CurrentItemSelected) == 1)
 		AddKnockGuardWidget();
+
+	HandMovement(DeltaTime);
+
+}
+
+void AYellPointAndPrayCharacter::HandMovement(float DeltaTime)
+{
+	FVector TargetLocation = HandsPos->GetComponentLocation();
+	FVector CurrentLocation = Hands2->GetComponentLocation();
+	FVector Dir = TargetLocation - CurrentLocation;
+	FRotator CurrentRotation = Hands2->GetComponentRotation();
+	FRotator TargetRotation = HandsPos->GetComponentRotation();
+	FRotator Rot = TargetRotation - CurrentRotation;
+
+	if (Dir.Length() > 10) {
+		CurrentLocation += Dir.GetSafeNormal() * DeltaTime * 400;
+	}
+	else {
+		CurrentLocation = TargetLocation;
+	}
+
+	if (!Rot.IsNearlyZero(0.1f)) {
+		CurrentRotation += Rot.GetNormalized() * DeltaTime * 50;
+	}
+	else {
+		CurrentRotation = TargetRotation;
+	}
+
+	Hands2->SetWorldLocation(CurrentLocation);
+	Hands2->SetWorldRotation(CurrentRotation);
+
+
+	FVector ToBody = FirstPersonCameraComponent->GetComponentLocation() - Hands2->GetComponentLocation();
+	if (ToBody.Length() > OriginalDiff + 10) {
+		FVector Final = ToBody.GetSafeNormal();
+		Final *= ToBody.Length() - OriginalDiff;
+		Final += CurrentLocation;
+		Hands2->SetWorldLocation(Final);
+	}
 }
 
 //Cesar Stuff -----------------------------------------------------------------------
@@ -875,3 +1015,5 @@ void AYellPointAndPrayCharacter::Tick(float DeltaTime)
 void AYellPointAndPrayCharacter::OnItemAdded_Implementation(const FString& Name) {
 	UE_LOG(LogTemp, Warning, TEXT("Code Works im the best :D!"));
 }
+
+#pragma optimize("", on)
