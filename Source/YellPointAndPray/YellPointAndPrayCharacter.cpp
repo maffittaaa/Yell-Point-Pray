@@ -931,7 +931,7 @@ void AYellPointAndPrayCharacter::CharacterDrawing(const FInputActionValue& value
 			whiteboard = Cast<AWhiteBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AWhiteBoard::StaticClass()));
 			whiteboard = Cast<AWhiteBoard>(hitActor);
 		
-			if (whiteboard) {
+		 	if (whiteboard) {
 				float whiteboardBrushSize = 10.0f;
 				FVector2D UVCoordinates;
 				FVector LocalImpact = RV_Hit.GetComponent()->GetComponentTransform().InverseTransformPosition(RV_Hit.ImpactPoint);
