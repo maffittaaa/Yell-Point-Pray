@@ -69,6 +69,8 @@ AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 	GetCharacterMovement()->AirControl = 0.5f;
 
 	InventoryComponent = CreateDefaultSubobject<UInventory>(TEXT("Inventory"));
+	
+	cheatsComponent = CreateDefaultSubobject<UACCheats>(TEXT("Cheats"));
 
 	SetReplicates(true);
 	bReplicates = true;
@@ -665,12 +667,6 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		}
 	} else {
 		playerController->SetViewTargetWithBlend(this, 0.0f, VTBlend_EaseIn);
-			
-		// SetActorHiddenInGame(false);
-		// GetMesh()->SetVisibility(true, true);
-		// FirstPersonMesh->SetVisibility(true, true);
-		// if (Hands) Hands->SetVisibility(true, true);
-		// if (Hands2) Hands2->SetVisibility(true, true);
 
 		SetLookInputEnabled(true);
 			
@@ -971,6 +967,41 @@ void AYellPointAndPrayCharacter::Tick(float DeltaTime)
 
 	HandMovement(DeltaTime);
 
+	CheckForCheatsKeyPress();
+}
+
+void AYellPointAndPrayCharacter::CheckForCheatsKeyPress() {
+	playerController = GetWorld()->GetFirstPlayerController();
+	if (!playerController || !cheatsComponent)
+		return;
+
+	if (playerController->IsInputKeyDown(EKeys::U))
+	{
+		static bool bWasPressedLastFrame = false;
+		bool bIsPressed = playerController->IsInputKeyDown(EKeys::U);
+
+		if (bIsPressed && !bWasPressedLastFrame)
+			cheatsComponent->NotDetectedByGuard();
+	}
+		
+
+	if (playerController->IsInputKeyDown(EKeys::I))
+	{
+		static bool bWasPressedLastFrame = false;
+		bool bIsPressed = playerController->IsInputKeyDown(EKeys::I);
+
+		if (bIsPressed && !bWasPressedLastFrame)
+			cheatsComponent->TeleportToLaserRoom(this, FVector(-400.0f, -230.0f, 0.0f));
+	}
+	
+	if (playerController->IsInputKeyDown(EKeys::Y))
+	{
+		static bool bWasPressedLastFrame = false;
+		bool bIsPressed = playerController->IsInputKeyDown(EKeys::Y);
+
+		if (bIsPressed && !bWasPressedLastFrame)
+			cheatsComponent->TeleportToEletricalRoom(this, FVector(-2530.0f, -100.0f, 0.0f));
+	}
 }
 
 void AYellPointAndPrayCharacter::HandMovement(float DeltaTime)

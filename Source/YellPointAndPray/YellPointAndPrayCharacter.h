@@ -14,6 +14,7 @@
 #include "Items/RubberDuck/RubberDuckUsable.h"
 #include <Obstacles/Guard/Guard.h>
 #include "Blueprint/UserWidget.h"
+#include "Players/ACCheats.h"
 #include "YellPointAndPrayCharacter.generated.h"
 
 class UInputComponent;
@@ -179,7 +180,6 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		
 		UFUNCTION(Server, Reliable)
 		void Server_UpdateDrawingData(FVector2D mouseUV, bool bIsDrawingNow);
-
 		//Whiteboard end of interaction
 
 		UPROPERTY(BlueprintReadOnly)
@@ -202,9 +202,15 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UPROPERTY(ReplicatedUsing=OnRepState)
 		TEnumAsByte<EGameStates> enumVariable;
 
-		UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Player Controller")
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Controller")
 		APlayerController* playerController;
 
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Cheats")
+		class UACCheats* cheatsComponent;
+
+		UFUNCTION()
+		void CheckForCheatsKeyPress();
+	
 	protected:
 
 		/** Called from Input Actions for movement input */

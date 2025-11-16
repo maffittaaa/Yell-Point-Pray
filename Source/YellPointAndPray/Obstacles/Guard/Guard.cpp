@@ -135,7 +135,11 @@ void AGuard::Tick(float DeltaTime)
 	//SetActorRotation(NewRotation);
 	if (Seen == true) {
 		//UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %f"), CurrentSuspicion);
-
+		if (TargetPlayer) {
+			AYellPointAndPrayCharacter* playerCharacter = Cast<AYellPointAndPrayCharacter>(TargetPlayer);
+			if (playerCharacter && playerCharacter->cheatsComponent && playerCharacter->cheatsComponent->bNotDetectedByGuards)
+				return;
+		}
 		FVector Direction = TargetPlayer->GetActorLocation() - GetActorLocation();
 		FRotator NewRotation = FRotationMatrix::MakeFromX(Direction).Rotator();
 		SetActorRotation(NewRotation);
@@ -214,6 +218,19 @@ void AGuard::CloseDoors(float DeltaTime)
 
 void AGuard::SeenPlayer(APawn* Pawn) {
 	if (!HasAuthority()) return;
+
+	AYellPointAndPrayCharacter* playerCharacter = Cast<AYellPointAndPrayCharacter>(Pawn);
+	
+	if (!playerCharacter)
+		return;
+	if (!playerCharacter->cheatsComponent)
+		return;
+	
+	if (playerCharacter->cheatsComponent->bNotDetectedByGuards) {
+		UE_LOG(LogTemp, Warning, TEXT("Guard saw player but cheat is active - ignoring detection"));
+		return;
+	}
+	
  	//UE_LOG(LogTemp, Warning, TEXT("Saw Player!"));
 	TargetPlayer = Pawn;
 	LastSeenLocation = TargetPlayer->GetActorLocation();

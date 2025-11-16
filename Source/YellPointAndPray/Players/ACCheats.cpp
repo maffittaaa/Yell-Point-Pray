@@ -3,6 +3,8 @@
 
 #include "Players/ACCheats.h"
 
+#include "Net/UnrealNetwork.h"
+
 // Sets default values for this component's properties
 UACCheats::UACCheats()
 {
@@ -21,6 +23,45 @@ void UACCheats::BeginPlay()
 
 	// ...
 	
+}
+
+void UACCheats::TeleportToLaserRoom(AActor* character, FVector location) {
+	character->SetActorLocation(location);
+}
+
+void UACCheats::TeleportToEletricalRoom(AActor* character, FVector location) {
+	character->SetActorLocation(location);
+}
+
+void UACCheats::NotDetectedByGuard() {
+	bool bNewState = !bNotDetectedByGuards;
+
+	Server_SetNotDetectedByGuard(bNewState);
+
+	bNotDetectedByGuards = bNewState;
+
+	if (bNotDetectedByGuards) {
+		UE_LOG(LogTemp, Warning, TEXT("Cheat ON - guards don't see players"));
+	} else
+		UE_LOG(LogTemp, Warning, TEXT("Cheat OFF - guards see players"));
+}
+
+void UACCheats::Server_SetNotDetectedByGuard_Implementation(bool bNewState) {
+	bNotDetectedByGuards = bNewState;
+    
+	if (bNotDetectedByGuards) {
+		UE_LOG(LogTemp, Warning, TEXT("Cheat ON (server) - guards don't see players"));
+	} else
+		UE_LOG(LogTemp, Warning, TEXT("Cheat OFF (server) - guards see players"));
+}
+
+void UACCheats::OnRep_NotDetectedByGuards() {
+	UE_LOG(LogTemp, Warning, TEXT("Cheat state replicated: %hhd"), bNotDetectedByGuards);
+}
+
+void UACCheats::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UACCheats, bNotDetectedByGuards);
 }
 
 
