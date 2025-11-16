@@ -155,7 +155,7 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 
 	if (LevelName == "Lvl_Lobby")
 	{
-		
+		return;
 	}
 
 	if (HasAuthority())
