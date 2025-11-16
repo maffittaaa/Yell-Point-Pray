@@ -29,8 +29,6 @@
 
 using namespace std;
 
-#pragma optimize("", off)
-
 AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 {
 	// Set size for collision capsule
@@ -800,7 +798,7 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard") && enumVariable != InWhiteboard) {
 			enumVariable = InWhiteboard;
 
-			whiteboard = Cast<AWhiteBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AWhiteBoard::StaticClass()));
+			// whiteboard = Cast<AWhiteBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AWhiteBoard::StaticClass()));
 			whiteboard = Cast<AWhiteBoard>(hitObject);
 
 			
@@ -1023,5 +1021,3 @@ void AYellPointAndPrayCharacter::HandMovement(float DeltaTime)
 void AYellPointAndPrayCharacter::OnItemAdded_Implementation(const FString& Name) {
 	UE_LOG(LogTemp, Warning, TEXT("Code Works im the best :D!"));
 }
-
-#pragma optimize("", on)
