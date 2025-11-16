@@ -624,14 +624,8 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		playerController->SetViewTargetWithBlend(camera, blendTime, VTBlend_EaseIn);
 		
 		SetLookInputEnabled(false);
-		//SetActorHiddenInGame(true);
 
 		UE_LOG(LogTemp, Warning, TEXT("Camera and movement locked"));
-
-		// GetMesh()->SetVisibility(false, true);
-		// FirstPersonMesh->SetVisibility(false, true);
-		// if (Hands) Hands->SetVisibility(false, true);
-		// if (Hands2) Hands2->SetVisibility(false, true);
 		
 		FInputModeGameAndUI inputMode;
 		inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
@@ -640,6 +634,8 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		
 		playerController->bShowMouseCursor = true;
 		playerController->SetShowMouseCursor(true);
+
+		interactWidget->RemoveFromParent();
 
 		// whiteboard->CloseWidget();
 		
@@ -797,12 +793,7 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 
 		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard") && enumVariable != InWhiteboard) {
 			enumVariable = InWhiteboard;
-
-			// whiteboard = Cast<AWhiteBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AWhiteBoard::StaticClass()));
 			whiteboard = Cast<AWhiteBoard>(hitObject);
-
-			
-			
 			OnRepState();
 		}
 		
@@ -834,8 +825,10 @@ void AYellPointAndPrayCharacter::Interact() {
 		ForceNetUpdate();
 
 		whiteboard = Cast<AWhiteBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AWhiteBoard::StaticClass()));
-		if (whiteboard)
+		if (whiteboard) {
 			whiteboard->CloseBoard();
+			interactWidget->AddToViewport();
+		}
 		
 		whiteboard = nullptr;
 		return;
