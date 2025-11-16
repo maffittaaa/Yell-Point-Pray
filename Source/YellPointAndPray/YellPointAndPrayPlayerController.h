@@ -6,6 +6,7 @@
 #include <Server/EOSVoiceSubsystem.h>
 #include "GameFramework/PlayerController.h"
 #include <Server/MatchmakingSubsystem.h>
+#include <Players/YPPCustomPlayerState.h>
 #include "YellPointAndPrayPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -21,6 +22,8 @@ class YELLPOINTANDPRAY_API AYellPointAndPrayPlayerController : public APlayerCon
 {
 	GENERATED_BODY()
 	
+private:
+	EPlayerType StoredPlayerType = EPlayerType::None;
 public:
 
 	/** Constructor */
@@ -32,14 +35,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_OnBackToMainMenuClicked();
 
-	UFUNCTION(Server, Reliable)
-	void Server_OnReadyClicked();
+	void StorePlayerType(EPlayerType PlayerType);
 
-	UFUNCTION(Server, Reliable)
-	void Server_OnCancelClicked();
-
-	UFUNCTION(Server, Reliable)
-	void Server_OnEnterClicked();
+	EPlayerType GetPlayerType();
 
 	UFUNCTION(BlueprintCallable)
 	void OnSuccessfullyJoinedGameServer();

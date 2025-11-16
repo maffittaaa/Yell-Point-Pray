@@ -33,7 +33,7 @@ struct FPlayerInfo
 	GENERATED_BODY()
 
 	UPROPERTY()
-	AYPPCustomPlayerState* PlayerState = nullptr;
+	FUniqueNetIdRepl UniqueId;
 
 	UPROPERTY()
 	EPlayerType PlayerType = EPlayerType::None;
@@ -47,9 +47,10 @@ struct FPlayerInfo
 	UPROPERTY() // Add this
 	FPlayerInventoryInfo InventoryInfo;
 
-	FPlayerInfo() : PlayerState(nullptr), PlayerType(EPlayerType::None), PawnClass(nullptr), bIsHost(false) {}
-	FPlayerInfo(AYPPCustomPlayerState* InPlayerState, EPlayerType InPlayerType, TSubclassOf<APawn> InPawnClass, bool InIsHost, const FPlayerInventoryInfo& InInventoryInfo)
-		: PlayerState(InPlayerState), PlayerType(InPlayerType), PawnClass(InPawnClass), bIsHost(InIsHost), InventoryInfo(InInventoryInfo) {
+	FPlayerInfo() : UniqueId(FUniqueNetIdRepl()), PlayerType(EPlayerType::None), PawnClass(nullptr), bIsHost(false) {}
+
+	FPlayerInfo(const FUniqueNetIdRepl& NetId, EPlayerType NewPlayerType, TSubclassOf<APawn> NewPawnClass, bool IsHost, const FPlayerInventoryInfo& Inventory)
+		: UniqueId(NetId), PlayerType(NewPlayerType), PawnClass(NewPawnClass), bIsHost(IsHost), InventoryInfo(Inventory) {
 	}
 };
 
@@ -61,7 +62,7 @@ class YELLPOINTANDPRAY_API UYPPCustomGameInstance : public UGameInstance
 public:
 	void PlayerTravelling(TSubclassOf<APawn> NewPawnClass, EPlayerType NewPlayerType, AYPPCustomPlayerState* PlayerState, const FPlayerInventoryInfo& InventoryInfo);
 
-	void StorePlayerInventory(AYPPCustomPlayerState* PlayerState, const TArray<FUInventoryStruct>& Inventory);
+	void StorePlayerInventory(AYPPCustomPlayerState* PlayerState, TArray<FUInventoryStruct>& Inventory);
 
 	FPlayerInventoryInfo GetPlayerInventory(AYPPCustomPlayerState* PlayerState);
 
@@ -85,7 +86,9 @@ protected:
 
 	bool GoingUp = true;
 	
-	int GetPlayerIndex(AYPPCustomPlayerState* PlayerState);
+	int32 GetPlayerInfoIndexByUniqueId(const FUniqueNetIdRepl& UniqueId);
+
+	int32 GetPlayerIndex(AYPPCustomPlayerState* PlayerState);
 
 	virtual void Init() override;
 };

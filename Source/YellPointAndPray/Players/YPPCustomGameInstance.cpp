@@ -10,12 +10,32 @@ void UYPPCustomGameInstance::Init()
 
 void UYPPCustomGameInstance::PlayerTravelling(TSubclassOf<APawn> NewPawnClass, EPlayerType NewPlayerType, AYPPCustomPlayerState* NewPlayerState, const FPlayerInventoryInfo& InventoryInfo)
 {
-    if (!NewPawnClass) return;
+    if (!NewPawnClass || !NewPawnClass) return;
 
-    PlayerInfoArray.Add(FPlayerInfo(NewPlayerState, NewPlayerType, NewPawnClass, NewPlayerState->IsHost, InventoryInfo));
+
+
+    // Use the persistent Unique ID
+    FUniqueNetIdRepl PlayerNetId = NewPlayerState->GetUniqueId();
+
+    // Check if the player is already in the array (e.g., if they are re-traveling) and update, otherwise add
+    int32 Index = GetPlayerInfoIndexByUniqueId(PlayerNetId);
+
+    if (Index == INDEX_NONE)
+    {
+        // Add new player info using the Unique ID
+        PlayerInfoArray.Add(FPlayerInfo(PlayerNetId, NewPlayerType, NewPawnClass, NewPlayerState->IsHost, InventoryInfo));
+    }
+    else
+    {
+        // Update existing player info
+        PlayerInfoArray[Index] = FPlayerInfo(PlayerNetId, NewPlayerType, NewPawnClass, NewPlayerState->IsHost, InventoryInfo);
+    }
 
     DefaultClass = PlayerInfoArray[0].PawnClass;
     DefaultType = PlayerInfoArray[0].PlayerType;
+
+    FString UniqueIdString = PlayerNetId->ToString();
+    UE_LOG(LogTemp, Warning, TEXT("MI: Player Unique Net ID: %s"), *UniqueIdString);
 
     UE_LOG(LogTemp, Warning, TEXT("MI: New Player State was stored: %s"), *NewPlayerState->GetName());
     UE_LOG(LogTemp, Warning, TEXT("MI: New Player Class was stored: %s"), *NewPawnClass->GetName());
@@ -23,7 +43,7 @@ void UYPPCustomGameInstance::PlayerTravelling(TSubclassOf<APawn> NewPawnClass, E
     UE_LOG(LogTemp, Warning, TEXT("MI: Inventory slots stored: %d"), InventoryInfo.InventorySlots.Num());
 }
 
-void UYPPCustomGameInstance::StorePlayerInventory(AYPPCustomPlayerState* PlayerState, const TArray<FUInventoryStruct>& Inventory)
+void UYPPCustomGameInstance::StorePlayerInventory(AYPPCustomPlayerState* PlayerState, TArray<FUInventoryStruct>& Inventory)
 {
     int index = GetPlayerIndex(PlayerState);
     if (index != -1)
@@ -82,31 +102,20 @@ void UYPPCustomGameInstance::ClearPlayerInfoArray()
     PlayerInfoArray.Empty();
 }
 
-int UYPPCustomGameInstance::GetPlayerIndex(AYPPCustomPlayerState* PlayerState)
+int32 UYPPCustomGameInstance::GetPlayerInfoIndexByUniqueId(const FUniqueNetIdRepl& UniqueId)
 {
-    FString PlayerStateName = PlayerState->GetName();
-    TCHAR LastCharPlayer = PlayerStateName[PlayerStateName.Len() - 1];
-    int LastNumPlayer = FCString::Atoi(&LastCharPlayer);
-    
-    for (int i = 0; PlayerInfoArray.Num() > i; i++)
+    for (int32 i = 0; i < PlayerInfoArray.Num(); ++i)
     {
-        FString ListStateName = PlayerInfoArray[i].PlayerState->GetName();
-        TCHAR LastCharList = ListStateName[ListStateName.Len() - 1];
-
-        int Players = 3;
-        //if (!GoingUp)
-        //{
-        //    Players *= -1;
-        //}
-        
-        int LastNumList = FCString::Atoi(&LastCharList) + Players;
-
-        if (LastNumList == LastNumPlayer)
+        if (PlayerInfoArray[i].UniqueId.IsValid() && *PlayerInfoArray[i].UniqueId == *UniqueId)
         {
             return i;
-            break;
         }
     }
+    return INDEX_NONE;
+}
 
-    return -1;
+int32 UYPPCustomGameInstance::GetPlayerIndex(AYPPCustomPlayerState* PlayerState)
+{
+    if (!PlayerState) return INDEX_NONE;
+    return GetPlayerInfoIndexByUniqueId(PlayerState->GetUniqueId());
 }

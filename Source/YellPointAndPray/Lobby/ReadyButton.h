@@ -16,6 +16,7 @@ class YELLPOINTANDPRAY_API AReadyButton : public AComicallyLargeButton
 private:
 	AReadyButton();
 public:
+	UFUNCTION(BlueprintCallable)
 	virtual void Interact_Implementation(AActor* Interactor) override;
 
 	UFUNCTION(Server, Reliable, WithValidation)
