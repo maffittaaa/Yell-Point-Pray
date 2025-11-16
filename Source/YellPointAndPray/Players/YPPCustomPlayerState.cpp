@@ -45,6 +45,8 @@ void AYPPCustomPlayerState::ReplacePlayerPawn()
 			UE_LOG(LogTemp, Warning, TEXT("PS: PlayerController is null, PlayerType: %d"), CustomGameInstance->GetPlayerType(this));
 			return;
 		}
+
+		PlayerType = CustomGameInstance->GetPlayerType(this);
         
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = PlayerController;

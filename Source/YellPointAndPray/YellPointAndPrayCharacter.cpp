@@ -145,9 +145,19 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 
 	StartLocation = GetActorLocation();
 	StartRotation = GetActorTransform().GetRotation();
-
-	AYPPCustomPlayerState* CustomPlayerState = Cast<AYPPCustomPlayerState>(GetPlayerState());
 	
+	Hands2->SetWorldLocation(HandsPos->GetComponentLocation());
+	Hands2->SetWorldRotation(HandsPos->GetComponentRotation());
+	OriginalDiff = (FirstPersonCameraComponent->GetComponentLocation() - Hands2->GetComponentLocation()).Length();
+
+	FString LevelName = GetWorld()->GetMapName();
+	LevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
+
+	if (LevelName == "Lvl_Lobby")
+	{
+		
+	}
+
 	if (HasAuthority())
 	{
 		AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
@@ -156,13 +166,9 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 			GameMode->StoreAllItemsInMap();
 		}
 	}
-
+	
 	FTimerHandle TimerHandle; 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYellPointAndPrayCharacter::RestoreTravelInventory, 0.5f, false);
-
-	Hands2->SetWorldLocation(HandsPos->GetComponentLocation());
-	Hands2->SetWorldRotation(HandsPos->GetComponentRotation());
-	OriginalDiff = (FirstPersonCameraComponent->GetComponentLocation() - Hands2->GetComponentLocation()).Length();
 }
 
 void AYellPointAndPrayCharacter::Reset_Implementation()
@@ -195,24 +201,6 @@ void AYellPointAndPrayCharacter::RestoreTravelInventory()
 				{
 					InventoryComponent->RestoreInventoryWithTravelData(TravelInventory.InventorySlots);
 					//UE_LOG(LogTemp, Warning, TEXT("Player: Restored travel inventory with %d slots"), TravelInventory.InventorySlots.Num());
-				}
-				
-				if (APlayerController* PC = CustomPlayerState->GetPlayerController()) 
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Controller: %s"), *PC->GetName());
-					if (AYellPointAndPrayPlayerController* PlayerController = Cast<AYellPointAndPrayPlayerController>(PC))
-					{
-						UE_LOG(LogTemp, Warning, TEXT("PlayerController: %s"), *PlayerController->GetName());
-						if (PlayerController->GetPlayerType() == EPlayerType::None)
-						{
-							PlayerController->StorePlayerType(CustomPlayerState->PlayerType);
-							UE_LOG(LogTemp, Warning, TEXT("PlayerType Stored: %d"), CustomPlayerState->PlayerType);
-						}
-						else 
-						{
-							UE_LOG(LogTemp, Warning, TEXT("PlayerType Already exists: %d"), PlayerController->GetPlayerType());
-						}
-					}
 				}
 			}
 		}
@@ -832,6 +820,8 @@ void AYellPointAndPrayCharacter::Interact() {
 
 void AYellPointAndPrayCharacter::Caught_Implementation() 
 {
+	if (!HasAuthority()) return;
+
 	AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
 
 	if (GameMode) {

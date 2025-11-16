@@ -12,8 +12,6 @@ void UYPPCustomGameInstance::PlayerTravelling(TSubclassOf<APawn> NewPawnClass, E
 {
     if (!NewPawnClass || !NewPawnClass) return;
 
-
-
     // Use the persistent Unique ID
     FUniqueNetIdRepl PlayerNetId = NewPlayerState->GetUniqueId();
 

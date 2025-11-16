@@ -218,10 +218,12 @@ void AYPPCustomGameMode::RestoreAllItemsInMap()
 
 void AYPPCustomGameMode::RestartGame()
 {
-    if (!HasAuthority())
+    if (!HasAuthority() || GameRestarting)
     {
         return;
     }
+
+    GameRestarting = true;
 
     UE_LOG(LogTemp, Warning, TEXT("Restarstiiing"));
 
@@ -236,6 +238,37 @@ void AYPPCustomGameMode::RestartGame()
     {
         IReset::Execute_Reset(Actor);
     }
+
+    UE_LOG(LogTemp, Warning, TEXT("Finished"));
+    GameRestarting = false;
+}
+
+void AYPPCustomGameMode::BackToMainMenu()
+{
+    if (!HasAuthority() || GameRestarting)
+    {
+        return;
+    }
+
+    GameRestarting = true;
+
+    UE_LOG(LogTemp, Warning, TEXT("GoingToLobby"));
+
+    TArray<AActor*> Resetables;
+
+    // Get all actors that implement the UReset interface
+    UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UReset::StaticClass(), Resetables);
+
+    RestoreAllItemsInMap();
+
+    for (auto& Actor : Resetables)
+    {
+        IReset::Execute_Reset(Actor);
+    }
+
+    LoadLevel("Lvl_Lobby");
+
+    GameRestarting = false;
 }
 
 void AYPPCustomGameMode::PlayerGotReady() 
@@ -305,5 +338,7 @@ void AYPPCustomGameMode::LoadLevel(FName LevelName)
     }
 
     PlayersArray.Empty();
-    GetWorld()->ServerTravel(TEXT("/Game/FirstPerson/Lvl_MainTest?listen"));
+    FString LevelNameString = LevelName.ToString();
+    FString TravelURL = FString::Printf(TEXT("/Game/FirstPerson/%s?listen"), *LevelNameString);
+    GetWorld()->ServerTravel(TravelURL);
 }

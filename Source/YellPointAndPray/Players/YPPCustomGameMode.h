@@ -43,6 +43,8 @@ private:
 
     int PlayersReady = 0;
 
+    bool GameRestarting = false;
+
     AYPPCustomGameMode();
 public:
     TArray<FPickableItemData> InitialItemsSpawned;
@@ -55,7 +57,8 @@ public:
     void GameOver(bool State);
     
     void RestartGame();
-
+    void BackToMainMenu();
+    
     int GetPlayersReady();
     void PlayerGotReady();
     void PlayerCancelReady();

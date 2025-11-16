@@ -117,6 +117,16 @@ void AYellPointAndPrayPlayerController::Server_OnBackToMainMenuClicked_Implement
 {
 	UE_LOG(LogTemp, Log, TEXT("Back to Main Menu in the Server"));
 
+	AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
+
+	if (GameMode)
+	{
+		GameMode->BackToMainMenu();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("No GameMode Found"));
+	}
 }
 
 void AYellPointAndPrayPlayerController::Server_OnRestartClicked_Implementation()
@@ -136,13 +146,3 @@ void AYellPointAndPrayPlayerController::Server_OnRestartClicked_Implementation()
 }
 
 //LOBBY
-
-void AYellPointAndPrayPlayerController::StorePlayerType(EPlayerType PlayerType)
-{
-	
-}	
-
-EPlayerType AYellPointAndPrayPlayerController::GetPlayerType() 
-{
-	return StoredPlayerType;
-}
