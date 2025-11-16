@@ -791,7 +791,7 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 			}
 		}
 
-		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard") && enumVariable != InWhiteboard) {
+		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard")) {
 			enumVariable = InWhiteboard;
 			whiteboard = Cast<AWhiteBoard>(hitObject);
 			OnRepState();
