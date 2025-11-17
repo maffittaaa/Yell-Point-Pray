@@ -200,7 +200,10 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		void AddKnockGuardWidget();
 
 		UPROPERTY(ReplicatedUsing=OnRepState)
-		TEnumAsByte<EGameStates> enumVariable;
+		TEnumAsByte<EGameStates> enumVariable = InGame;
+
+		UFUNCTION(Server, Reliable)
+		void Server_SetEnumVariable(EGameStates gameState);
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Controller")
 		APlayerController* playerController;

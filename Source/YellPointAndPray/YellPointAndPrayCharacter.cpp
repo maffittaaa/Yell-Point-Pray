@@ -131,8 +131,6 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 void AYellPointAndPrayCharacter::BeginPlay() {
 	Super::BeginPlay();
-	
-	enumVariable = InGame;
 
 	if (interactWidgetClass)
 		interactWidget = CreateWidget<UUserWidget>(GetWorld(), interactWidgetClass, FName("Interact"));
@@ -655,8 +653,10 @@ void AYellPointAndPrayCharacter::OnRepState() {
 	 					subsystem->RemoveMappingContext(drawingContext);
 	 					
 	 					for (UInputMappingContext* DefaultContexts : yellPlayerController->DefaultMappingContexts){
-	 						if (DefaultContexts)
+	 						if (DefaultContexts) {
+	 							UE_LOG(LogTemp, Warning, TEXT("default context: %s"), *DefaultContexts->GetName());
 	 							subsystem->AddMappingContext(DefaultContexts, 2);
+	 						}
 	 					}
 	 				}
 	 			}
@@ -753,8 +753,8 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 			}
 		}
 
-		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard")) {
-			enumVariable = InWhiteboard;
+		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard") && !enumVariable == InWhiteboard) {
+			Server_SetEnumVariable(InWhiteboard);
 			whiteboard = Cast<AWhiteBoard>(hitObject);
 			OnRepState();
 		}
@@ -776,11 +776,16 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 	}
 }
 
+void AYellPointAndPrayCharacter::Server_SetEnumVariable_Implementation(EGameStates gameState) {
+	enumVariable = gameState;
+}
+
 void AYellPointAndPrayCharacter::Interact() {
 	UE_LOG(LogTemp, Warning, TEXT("YOU CALLED INTERACT"));
 
 	if (enumVariable == InWhiteboard) {
 		UE_LOG(LogTemp, Warning, TEXT("Closing whiteboard"));
+		Server_SetEnumVariable(InGame);
 		enumVariable = InGame;
 		OnRepState();
 	
