@@ -178,6 +178,7 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 			GameMode->StoreAllItemsInMap();
 		}
 	}
+
 	
 	FTimerHandle TimerHandle; 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYellPointAndPrayCharacter::RestoreTravelInventory, 0.5f, false);
@@ -372,6 +373,7 @@ void AYellPointAndPrayCharacter::DoMove(float Right, float Forward)
 		// pass the move inputs
 		AddMovementInput(GetActorRightVector(), Right);
 		AddMovementInput(GetActorForwardVector(), Forward);
+		Server_ResetAnimation();
 	}
 }
 
@@ -956,9 +958,9 @@ void AYellPointAndPrayCharacter::TeleportToElectricalRoom() {
 }
 
 void AYellPointAndPrayCharacter::PlayAnimationThumbsUp() {
+	bIsPlayingAnimation = true;
 	if (FirstPersonMesh && emoteAnimationThumbsUp)
 		FirstPersonMesh->PlayAnimation(emoteAnimationThumbsUp, false);
-	
 	if (GetMesh() && emoteAnimationThumbsUp)
 		GetMesh()->PlayAnimation(emoteAnimationThumbsUp, false);
 	
@@ -967,6 +969,7 @@ void AYellPointAndPrayCharacter::PlayAnimationThumbsUp() {
 }
 
 void AYellPointAndPrayCharacter::PlayAnimationStop() {
+	bIsPlayingAnimation = true;
 	if (FirstPersonMesh && emoteAnimationStop)
 		FirstPersonMesh->PlayAnimation(emoteAnimationStop, false);
 	
@@ -978,7 +981,7 @@ void AYellPointAndPrayCharacter::PlayAnimationStop() {
 }
 
 void AYellPointAndPrayCharacter::PlayAnimationPoint() {
-
+	bIsPlayingAnimation = true;
 	if (FirstPersonMesh && emoteAnimationPoint)
 		FirstPersonMesh->PlayAnimation(emoteAnimationPoint, false);
 
@@ -990,7 +993,7 @@ void AYellPointAndPrayCharacter::PlayAnimationPoint() {
 }
 
 void AYellPointAndPrayCharacter::PlayAnimationNo() {
-
+	bIsPlayingAnimation = true;
 	if (FirstPersonMesh && emoteAnimationNo)
 		FirstPersonMesh->PlayAnimation(emoteAnimationNo, false);
 
@@ -1008,11 +1011,11 @@ void AYellPointAndPrayCharacter::Server_PlayAnimation_Implementation(UAnimationA
 	bIsPlayingAnimation = true;
 	
 	if (FirstPersonMesh && animation)
-		FirstPersonMesh->PlayAnimation(animation, false);
+		FirstPersonMesh->PlayAnimation(animation, true);
 	
 	if (GetMesh() && animation)
 		GetMesh()->PlayAnimation(animation, false);
-
+	
 	ForceNetUpdate();
 }
 
@@ -1026,6 +1029,20 @@ void AYellPointAndPrayCharacter::OnRep_CurrentAnimation() {
 				GetMesh()->PlayAnimation(currentAnimation, false);
 		}
 	}
+}
+
+void AYellPointAndPrayCharacter::Server_ResetAnimation_Implementation() {
+	bIsPlayingAnimation = false;
+	currentAnimation = nullptr;
+	
+	if (FirstPersonMesh) {
+		FirstPersonMesh->Stop();
+		FirstPersonMesh->InitAnim(true);
+	}
+
+	if (GetMesh())
+		GetMesh()->Stop();
+
 }
 
 void AYellPointAndPrayCharacter::Tick(float DeltaTime) 

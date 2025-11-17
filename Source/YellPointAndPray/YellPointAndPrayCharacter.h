@@ -170,6 +170,12 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UFUNCTION(Server, Reliable)
 		void Server_PlayAnimation(UAnimationAsset* Animation);
 
+		UFUNCTION(Server, Reliable)
+		void Server_ResetAnimation();
+
+		UPROPERTY(Replicated)
+		UAnimInstance* initialAnim;
+
 		UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "CurrentGuard")
 		AActor* KnockableActor = nullptr;
 
