@@ -43,6 +43,9 @@ void AUsableLockPick::UseReal_Implementation(AActor* User, UWorld* World)
     FCollisionQueryParams params;
     params.AddIgnoredActor(Player);
 
+    // ray
+    FColor lineColor = FColor::Red;
+    DrawDebugLine(World, start, end, lineColor, true, -1, 0, 1.0f);
 
     if (World->LineTraceSingleByChannel(hit, start, end, ECC_Visibility, params)) {
         if (AActor* hitObject = hit.GetActor()) {

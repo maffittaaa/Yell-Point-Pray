@@ -1,24 +1,24 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Items/LockPick/UsableLockPick.h"
+#include "Items/Keys/KeyUsable.h"
 #include "Door.h"
 #include "DrawDebugHelpers.h"
 #include "YellPointAndPrayCharacter.h"
 
-AUsableLockPick::AUsableLockPick()
+AKeyUsable::AKeyUsable()
 {
-	Name = "LockPick Usable";
-	ID = 3;
+    Name = "Key Usable";
+    ID = 6;
 }
 
-void AUsableLockPick::Use_Implementation(AActor* User)
+void AKeyUsable::Use_Implementation(AActor* User)
 {
     if (!HasAuthority()) return;
     UseReal(User, GetWorld());
 }
 
-void AUsableLockPick::UseReal_Implementation(AActor* User, UWorld* World)
+void AKeyUsable::UseReal_Implementation(AActor* User, UWorld* World)
 {
     UE_LOG(LogTemp, Warning, TEXT("LockPick Used CLIENTSIDE!"));
 
@@ -42,7 +42,6 @@ void AUsableLockPick::UseReal_Implementation(AActor* User, UWorld* World)
     FHitResult hit;
     FCollisionQueryParams params;
     params.AddIgnoredActor(Player);
-
 
     if (World->LineTraceSingleByChannel(hit, start, end, ECC_Visibility, params)) {
         if (AActor* hitObject = hit.GetActor()) {

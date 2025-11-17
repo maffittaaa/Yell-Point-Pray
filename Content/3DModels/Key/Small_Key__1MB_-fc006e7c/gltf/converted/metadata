@@ -1,0 +1,122 @@
+{
+	"assetNamespace": "fab",
+	"listing":
+	{
+		"averageRating": 0,
+		"createdAt": "",
+		"description": "<p>A small key that is used an any situation. </p>\n<p>Handcrafted with references from the internet to help aid me create this model.</p>\n<p>Created with Blender and substance painter</p>\n<p>518 Polys\n512x512 texture size</p>",
+		"isAiForbidden": false,
+		"isAiGenerated": false,
+		"lastUpdatedAt": "2025-02-24T11:42:58.909291Z",
+		"listingType": "3d-model",
+		"media": "https://media.fab.com/image_previews/gallery_images/98559d61-0420-40fd-bfe0-d2055a5a8d6d/1226b3c0-506c-452f-921b-75a9c6be2b4a.jpeg",
+		"publishedAt": "2024-10-04T07:03:01.825268Z",
+		"reviewCount": 0,
+		"thumbnail": "https://media.fab.com/image_previews/gallery_images/163fd2b3-516d-4d8e-98de-44d3753f68ea/e302683a-c38a-4208-91ac-73024e69aadd.jpeg",
+		"title": "Small Key (1MB)",
+		"uid": "fc006e7c-271a-4e2d-a4bb-579d974b0d5b",
+		"updatedAt": "",
+		"user":
+		{
+			"coverImageUrl": "",
+			"profileImageUrl": "https://cdn1.epicgames.com/fab/seller/o-5fewhxcvrlzxkwt76r5stu4hygcsj7/profile/a6157499.png",
+			"sellerName": "Zillious",
+			"uid": "162ec61a-0af0-4701-920b-d0c1d1badd7d"
+		},
+		"tags": [
+			{
+				"name": "Small",
+				"slug": "small",
+				"uid": "1216efbc-030f-444f-a23a-09355000fd28"
+			},
+			{
+				"name": "Blender",
+				"slug": "blender",
+				"uid": "141666cf-0a09-4718-85fa-f0d54884a525"
+			},
+			{
+				"name": "Lowpoly",
+				"slug": "lowpoly",
+				"uid": "451806dc-649e-43b7-9c2e-a54485de14b6"
+			},
+			{
+				"name": "Key",
+				"slug": "key",
+				"uid": "487789c1-616e-413e-99e6-16646896e0a9"
+			},
+			{
+				"name": "Metal",
+				"slug": "metal",
+				"uid": "55165238-19a2-4184-85f1-e8650bd2a38d"
+			},
+			{
+				"name": "Decoration",
+				"slug": "decoration",
+				"uid": "5824ee7b-342c-4305-a2e8-f9a8a7f41c99"
+			},
+			{
+				"name": "House",
+				"slug": "house",
+				"uid": "6596d504-e433-42e9-a760-b829827af869"
+			},
+			{
+				"name": "Basic",
+				"slug": "basic",
+				"uid": "daa3f831-b0d8-4ca2-8b9b-4d5d5ea16c72"
+			}
+		],
+		"category":
+		{
+			"name": "Furniture & Fixtures",
+			"path": "furniture-fixtures",
+			"slug": "furniture-fixtures",
+			"uid": "3da1d2bd-49b4-4bc5-90e5-d31dadec3bd0"
+		},
+		"assetFormats": [
+			{
+				"assetFormatType":
+				{
+					"name": "FBX",
+					"groupName": "3D Exchange Formats",
+					"code": "fbx",
+					"icon": "cube",
+					"extensions": [
+						"fbx"
+					]
+				}
+			},
+			{
+				"assetFormatType":
+				{
+					"name": "Converted Files",
+					"groupName": "",
+					"code": "converted-files",
+					"icon": "cube",
+					"extensions": [
+						"gltf",
+						"glb",
+						"usdz"
+					]
+				}
+			}
+		],
+		"_PluginMetas":
+		{
+			"apiDataVersion": "0.0.1",
+			"entitlementUid": "a8cd8b57-d269-4d77-8c0d-78fb288915c6",
+			"cacheSize": 0,
+			"downloaded": []
+		}
+	},
+	"target": "",
+	"quality": "",
+	"format": "gltf",
+	"fileId": "1a082cec-f1be-4ad2-90d1-806985e48546",
+	"platformIncluded": "",
+	"distributionPointBaseUrls": [],
+	"distributionMethod": "",
+	"entitlementUid": "a8cd8b57-d269-4d77-8c0d-78fb288915c6",
+	"invertedNormal": false,
+	"isConverted": true,
+	"isQuixel": false
+}
