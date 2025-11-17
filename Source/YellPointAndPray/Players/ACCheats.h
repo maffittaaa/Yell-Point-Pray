@@ -22,11 +22,11 @@ public:
 	UFUNCTION()
 	void NotDetectedByGuard();
 
-	UFUNCTION()
-	void TeleportToLaserRoom(AActor* character, FVector location);
+	UFUNCTION(Server, Reliable)
+	void Server_TeleportToLaserRoom(AActor* character, FVector location);
 
-	UFUNCTION()
-	void TeleportToEletricalRoom(AActor* character, FVector location);
+	UFUNCTION(Server, Reliable)
+	void Server_TeleportToEletricalRoom(AActor* character, FVector location);
 
 	// UFUNCTION()
 	// void SpawnMoreItems();

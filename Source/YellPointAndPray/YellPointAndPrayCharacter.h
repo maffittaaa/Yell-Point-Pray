@@ -89,6 +89,15 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 		UInputAction* MouseRelease;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		UInputAction* TurnOffDetectionAction;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		UInputAction* TeleportToLaserRoomAction;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		UInputAction* TeleportToElectricalRoomAction;
 		
 	public:
 		FInputModeGameOnly PreviousInputMode;
@@ -108,6 +117,10 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		void Duck();
 		void StopDuck();
+
+		void TurnOffDetection();
+		void TeleportToLaserRoom();
+		void TeleportToElectricalRoom();
 
 		UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "CurrentGuard")
 		AActor* KnockableActor = nullptr;
@@ -211,9 +224,6 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Cheats")
 		class UACCheats* cheatsComponent;
 
-		UFUNCTION()
-		void CheckForCheatsKeyPress();
-	
 	protected:
 
 		/** Called from Input Actions for movement input */

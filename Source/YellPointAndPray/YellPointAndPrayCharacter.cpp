@@ -123,7 +123,15 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::CharacterDrawing);
 		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Completed, this, &AYellPointAndPrayCharacter::CharacterStopDrawing);
 		//GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, teste.IsBoundToObject(this) && teste.GetAction() != nullptr ? "yay bound properly!" : "oh noes failed to bind the draw :(");
-		
+
+		//turnOffDetectionFromGuards
+		EnhancedInputComponent->BindAction(TurnOffDetectionAction, ETriggerEvent::Started, this , &AYellPointAndPrayCharacter::TurnOffDetection);
+
+		//TeleportToLaserRoom
+		EnhancedInputComponent->BindAction(TeleportToLaserRoomAction, ETriggerEvent::Started, this , &AYellPointAndPrayCharacter::TeleportToLaserRoom);
+
+		//TeleportToElectricalRoom
+		EnhancedInputComponent->BindAction(TeleportToElectricalRoomAction, ETriggerEvent::Started, this , &AYellPointAndPrayCharacter::TeleportToElectricalRoom);
 	}
 	else
 		UE_LOG(LogYellPointAndPray, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
@@ -939,41 +947,25 @@ void AYellPointAndPrayCharacter::Tick(float DeltaTime)
 		AddKnockGuardWidget();
 
 	HandMovement(DeltaTime);
-
-	CheckForCheatsKeyPress();
 }
 
-void AYellPointAndPrayCharacter::CheckForCheatsKeyPress() {
-	playerController = GetWorld()->GetFirstPlayerController();
-	if (!playerController || !cheatsComponent)
-		return;
-
-	if (playerController->IsInputKeyDown(EKeys::U))
-	{
-		static bool bWasPressedLastFrame = false;
-		bool bIsPressed = playerController->IsInputKeyDown(EKeys::U);
-
-		if (bIsPressed && !bWasPressedLastFrame)
-			cheatsComponent->NotDetectedByGuard();
+void AYellPointAndPrayCharacter::TurnOffDetection() {
+	cheatsComponent->NotDetectedByGuard();
+}
+void AYellPointAndPrayCharacter::TeleportToLaserRoom() {
+	APlayerController* pController = Cast<APlayerController>(GetController());
+	if (pController) {
+		pController->SetPause(true);
+		cheatsComponent->Server_TeleportToLaserRoom(this, FVector(-400.0f, -230.0f, 0.0f));
+		pController->SetPause(false);
 	}
-		
-
-	if (playerController->IsInputKeyDown(EKeys::I))
-	{
-		static bool bWasPressedLastFrame = false;
-		bool bIsPressed = playerController->IsInputKeyDown(EKeys::I);
-
-		if (bIsPressed && !bWasPressedLastFrame)
-			cheatsComponent->TeleportToLaserRoom(this, FVector(-400.0f, -230.0f, 0.0f));
-	}
-	
-	if (playerController->IsInputKeyDown(EKeys::Y))
-	{
-		static bool bWasPressedLastFrame = false;
-		bool bIsPressed = playerController->IsInputKeyDown(EKeys::Y);
-
-		if (bIsPressed && !bWasPressedLastFrame)
-			cheatsComponent->TeleportToEletricalRoom(this, FVector(-2530.0f, -100.0f, 0.0f));
+}
+void AYellPointAndPrayCharacter::TeleportToElectricalRoom() {
+	APlayerController* pController = Cast<APlayerController>(GetController());
+	if (pController) {
+		pController->SetPause(true);
+		cheatsComponent->Server_TeleportToEletricalRoom(this, FVector(-2530.0f, -100.0f, 0.0f));
+		pController->SetPause(false);
 	}
 }
 

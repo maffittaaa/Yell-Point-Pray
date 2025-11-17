@@ -1,36 +1,20 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Players/ACCheats.h"
-
 #include "Net/UnrealNetwork.h"
 
-// Sets default values for this component's properties
-UACCheats::UACCheats()
-{
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
+UACCheats::UACCheats() {
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
-
-// Called when the game starts
-void UACCheats::BeginPlay()
-{
+void UACCheats::BeginPlay() {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
-void UACCheats::TeleportToLaserRoom(AActor* character, FVector location) {
-	character->SetActorLocation(location);
+void UACCheats::Server_TeleportToLaserRoom_Implementation(AActor* character, FVector location) {
+	character->TeleportTo(location, FRotator(0,0,0));
 }
 
-void UACCheats::TeleportToEletricalRoom(AActor* character, FVector location) {
-	character->SetActorLocation(location);
+void UACCheats::Server_TeleportToEletricalRoom_Implementation(AActor* character, FVector location) {
+	character->TeleportTo(location, FRotator(0,0,0));
 }
 
 void UACCheats::NotDetectedByGuard() {
@@ -64,12 +48,7 @@ void UACCheats::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	DOREPLIFETIME(UACCheats, bNotDetectedByGuards);
 }
 
-
-// Called every frame
-void UACCheats::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
+void UACCheats::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
