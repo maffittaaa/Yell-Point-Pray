@@ -953,20 +953,10 @@ void AYellPointAndPrayCharacter::TurnOffDetection() {
 	cheatsComponent->NotDetectedByGuard();
 }
 void AYellPointAndPrayCharacter::TeleportToLaserRoom() {
-	APlayerController* pController = Cast<APlayerController>(GetController());
-	if (pController) {
-		pController->SetPause(true);
-		cheatsComponent->Server_TeleportToLaserRoom(this, FVector(-400.0f, -230.0f, 0.0f));
-		pController->SetPause(false);
-	}
+	cheatsComponent->Server_TeleportToLaserRoom(this, FVector(-400.0f, -230.0f, 0.0f));
 }
 void AYellPointAndPrayCharacter::TeleportToElectricalRoom() {
-	APlayerController* pController = Cast<APlayerController>(GetController());
-	if (pController) {
-		pController->SetPause(true);
-		cheatsComponent->Server_TeleportToEletricalRoom(this, FVector(-2530.0f, -100.0f, 0.0f));
-		pController->SetPause(false);
-	}
+	cheatsComponent->Server_TeleportToEletricalRoom(this, FVector(-2530.0f, -100.0f, 0.0f));
 }
 
 void AYellPointAndPrayCharacter::HandMovement(float DeltaTime)
