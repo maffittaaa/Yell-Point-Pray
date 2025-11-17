@@ -132,6 +132,12 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		//TeleportToElectricalRoom
 		EnhancedInputComponent->BindAction(TeleportToElectricalRoomAction, ETriggerEvent::Started, this , &AYellPointAndPrayCharacter::TeleportToElectricalRoom);
+
+		//Emotes
+		EnhancedInputComponent->BindAction(EmoteThumbsUp, ETriggerEvent::Started, this , &AYellPointAndPrayCharacter::PlayAnimationThumbsUp);
+		EnhancedInputComponent->BindAction(EmoteStop, ETriggerEvent::Started, this , &AYellPointAndPrayCharacter::PlayAnimationStop);
+		EnhancedInputComponent->BindAction(EmotePoint, ETriggerEvent::Started, this , &AYellPointAndPrayCharacter::PlayAnimationPoint);
+		EnhancedInputComponent->BindAction(EmoteNo, ETriggerEvent::Started, this , &AYellPointAndPrayCharacter::PlayAnimationNo);
 	}
 	else
 		UE_LOG(LogYellPointAndPray, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
@@ -683,6 +689,8 @@ void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME(AYellPointAndPrayCharacter, DuckUsing);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, replicatedMouseUV);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, bReplicatedIsDrawing);
+	DOREPLIFETIME(AYellPointAndPrayCharacter, currentAnimation);
+	DOREPLIFETIME(AYellPointAndPrayCharacter, bIsPlayingAnimation);
 }
 
 void AYellPointAndPrayCharacter::Client_ShowGameOver_Implementation(bool State)
@@ -937,6 +945,89 @@ void AYellPointAndPrayCharacter::CharacterStopDrawing(const FInputActionValue& v
 	UE_LOG(LogTemp, Warning, TEXT("Stopped drawing"));
 }
 
+void AYellPointAndPrayCharacter::TurnOffDetection() {
+	cheatsComponent->NotDetectedByGuard();
+}
+void AYellPointAndPrayCharacter::TeleportToLaserRoom() {
+	cheatsComponent->Server_TeleportToLaserRoom(this, FVector(-400.0f, -230.0f, 0.0f));
+}
+void AYellPointAndPrayCharacter::TeleportToElectricalRoom() {
+	cheatsComponent->Server_TeleportToEletricalRoom(this, FVector(-2530.0f, -100.0f, 0.0f));
+}
+
+void AYellPointAndPrayCharacter::PlayAnimationThumbsUp() {
+	if (FirstPersonMesh && emoteAnimationThumbsUp)
+		FirstPersonMesh->PlayAnimation(emoteAnimationThumbsUp, false);
+	
+	if (GetMesh() && emoteAnimationThumbsUp)
+		GetMesh()->PlayAnimation(emoteAnimationThumbsUp, false);
+	
+	if (GetNetMode() != NM_Standalone)
+		Server_PlayAnimation(emoteAnimationThumbsUp);
+}
+
+void AYellPointAndPrayCharacter::PlayAnimationStop() {
+	if (FirstPersonMesh && emoteAnimationStop)
+		FirstPersonMesh->PlayAnimation(emoteAnimationStop, false);
+	
+	if (GetMesh() && emoteAnimationStop)
+		GetMesh()->PlayAnimation(emoteAnimationStop, false);
+
+	if (GetNetMode() != NM_Standalone)
+		Server_PlayAnimation(emoteAnimationStop);
+}
+
+void AYellPointAndPrayCharacter::PlayAnimationPoint() {
+
+	if (FirstPersonMesh && emoteAnimationPoint)
+		FirstPersonMesh->PlayAnimation(emoteAnimationPoint, false);
+
+	if (GetMesh() && emoteAnimationPoint)
+		GetMesh()->PlayAnimation(emoteAnimationPoint, false);
+
+	if (GetNetMode() != NM_Standalone)
+		Server_PlayAnimation(emoteAnimationPoint);
+}
+
+void AYellPointAndPrayCharacter::PlayAnimationNo() {
+
+	if (FirstPersonMesh && emoteAnimationNo)
+		FirstPersonMesh->PlayAnimation(emoteAnimationNo, false);
+
+	if (GetMesh() && emoteAnimationNo)
+		GetMesh()->PlayAnimation(emoteAnimationNo, false);
+
+	if (GetNetMode() != NM_Standalone)
+		Server_PlayAnimation(emoteAnimationNo);
+}
+
+void AYellPointAndPrayCharacter::Server_PlayAnimation_Implementation(UAnimationAsset* animation) {
+	if (!HasAuthority()) return;
+    
+	currentAnimation = animation;
+	bIsPlayingAnimation = true;
+	
+	if (FirstPersonMesh && animation)
+		FirstPersonMesh->PlayAnimation(animation, false);
+	
+	if (GetMesh() && animation)
+		GetMesh()->PlayAnimation(animation, false);
+
+	ForceNetUpdate();
+}
+
+void AYellPointAndPrayCharacter::OnRep_CurrentAnimation() {
+	if (currentAnimation && bIsPlayingAnimation) {
+		if (!IsLocallyControlled()) {
+			if (FirstPersonMesh)
+				FirstPersonMesh->PlayAnimation(currentAnimation, false);
+			
+			if (GetMesh())
+				GetMesh()->PlayAnimation(currentAnimation, false);
+		}
+	}
+}
+
 void AYellPointAndPrayCharacter::Tick(float DeltaTime) 
 {
 	Super::Tick(DeltaTime);
@@ -947,16 +1038,6 @@ void AYellPointAndPrayCharacter::Tick(float DeltaTime)
 		AddKnockGuardWidget();
 
 	HandMovement(DeltaTime);
-}
-
-void AYellPointAndPrayCharacter::TurnOffDetection() {
-	cheatsComponent->NotDetectedByGuard();
-}
-void AYellPointAndPrayCharacter::TeleportToLaserRoom() {
-	cheatsComponent->Server_TeleportToLaserRoom(this, FVector(-400.0f, -230.0f, 0.0f));
-}
-void AYellPointAndPrayCharacter::TeleportToElectricalRoom() {
-	cheatsComponent->Server_TeleportToEletricalRoom(this, FVector(-2530.0f, -100.0f, 0.0f));
 }
 
 void AYellPointAndPrayCharacter::HandMovement(float DeltaTime)
