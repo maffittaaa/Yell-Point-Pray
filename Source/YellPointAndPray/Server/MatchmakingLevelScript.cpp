@@ -80,7 +80,7 @@ void AMatchmakingLevelScript::OnHostRequested(int32 Port) {
 	// Called when server accepted our host request
 	if (APlayerController* PC = GetWorld()->GetFirstPlayerController()) 
 	{
-		FString Cmd = FString::Printf(TEXT("open Lvl_MainTest?listen"));
+		FString Cmd = FString::Printf(TEXT("open Lvl_Lobby?listen"));
 		PC->ConsoleCommand(*Cmd);
 	}
 }
