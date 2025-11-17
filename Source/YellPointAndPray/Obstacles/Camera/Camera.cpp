@@ -71,12 +71,14 @@ void ACamera::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
 void ACamera::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
 	if (OtherActor->GetClass()->ImplementsInterface(UCaughtable::StaticClass())) {
-		UE_LOG(LogTemp, Warning, TEXT("I LEFT"));
-		PlayersNotSeenList.Add(OtherActor, *(PlayersSeenList.Find(OtherActor)));
-		PlayersSeenList.Remove(OtherActor);
-		AmountOfPlayers--;
-		if (AmountOfPlayers < 0)
-			AmountOfPlayers = 0;
+		if (PlayersSeenList.Contains(OtherActor)) {
+			UE_LOG(LogTemp, Warning, TEXT("I LEFT"));
+			PlayersNotSeenList.Add(OtherActor, *(PlayersSeenList.Find(OtherActor)));
+			PlayersSeenList.Remove(OtherActor);
+			AmountOfPlayers--;
+			if (AmountOfPlayers < 0)
+				AmountOfPlayers = 0;
+		}
 	}
 }
 
