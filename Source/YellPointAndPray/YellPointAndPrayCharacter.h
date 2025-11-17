@@ -98,6 +98,18 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 		UInputAction* TeleportToElectricalRoomAction;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		UInputAction* EmoteThumbsUp;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		UInputAction* EmoteStop;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		UInputAction* EmotePoint;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		UInputAction* EmoteNo;
 		
 	public:
 		FInputModeGameOnly PreviousInputMode;
@@ -121,6 +133,42 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		void TurnOffDetection();
 		void TeleportToLaserRoom();
 		void TeleportToElectricalRoom();
+
+		UFUNCTION()
+		void PlayAnimationThumbsUp();
+
+		UFUNCTION()
+		void PlayAnimationStop();
+
+		UFUNCTION()
+		void PlayAnimationPoint();
+	
+		UFUNCTION()
+		void PlayAnimationNo();
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Emotes")
+		UAnimationAsset* emoteAnimationThumbsUp;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Emotes")
+		UAnimationAsset* emoteAnimationStop;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Emotes")
+		UAnimationAsset* emoteAnimationPoint;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Emotes")
+		UAnimationAsset* emoteAnimationNo;
+
+		UPROPERTY(ReplicatedUsing = OnRep_CurrentAnimation)
+		UAnimationAsset* currentAnimation;
+
+		UPROPERTY(Replicated)
+		bool bIsPlayingAnimation = false;
+
+		UFUNCTION()
+		void OnRep_CurrentAnimation();
+
+		UFUNCTION(Server, Reliable)
+		void Server_PlayAnimation(UAnimationAsset* Animation);
 
 		UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "CurrentGuard")
 		AActor* KnockableActor = nullptr;
