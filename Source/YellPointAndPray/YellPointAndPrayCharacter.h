@@ -397,6 +397,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UFUNCTION(Server, Reliable)
 		void GetDuck(ARubberDuckUsable* Duck);
 
+		UFUNCTION(Server, Reliable)
+		void Server_Caugth();
+
 		//Cesar Stuff -----------------------------------------
 		virtual  void OnItemAdded_Implementation(const FString& Name) override;
 };

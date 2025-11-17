@@ -901,6 +901,22 @@ void AYellPointAndPrayCharacter::Caught_Implementation()
 {
 	if (!HasAuthority()) return;
 
+	Server_Caugth();
+
+	//AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
+
+	//if (GameMode) {
+	//	UE_LOG(LogTemp, Warning, TEXT("Called Caught Game Over"));
+	//	GameMode->GameOver(false);
+	//}
+
+	//UE_LOG(LogTemp, Warning, TEXT("YOU GOT CAUGHT NOOB L"));
+}
+
+void AYellPointAndPrayCharacter::Server_Caugth_Implementation()
+{
+	if (!HasAuthority()) return;
+
 	AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
 
 	if (GameMode) {
