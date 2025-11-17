@@ -372,7 +372,7 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		void Drop();
 
 		UFUNCTION(Server, Reliable)
-		void ServerOnItemDroped(int SlotID, FVector start, FRotator dir);
+		void ServerOnItemDroped(int SlotID, FVector HitPoint, FVector SpacePoint);
 
 		UFUNCTION(Server, Reliable)
 		void ServerInteract(AActor* hitObject, AYellPointAndPrayCharacter* character);

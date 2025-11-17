@@ -1,0 +1,11 @@
+Model Information:
+* title:	Lockpick
+* source:	https://sketchfab.com/3d-models/lockpick-6dcc818f92d648ccba8479b35cca980d
+* author:	Builder (https://sketchfab.com/overseerover12)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Lockpick" (https://sketchfab.com/3d-models/lockpick-6dcc818f92d648ccba8479b35cca980d) by Builder (https://sketchfab.com/overseerover12) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

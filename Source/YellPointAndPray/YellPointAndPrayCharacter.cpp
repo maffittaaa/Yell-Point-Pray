@@ -405,9 +405,29 @@ void AYellPointAndPrayCharacter::ThrowDuck_Implementation(ARubberDuckUsable* Duc
 	FVector start;
 	FRotator dir;
 	GetController()->GetPlayerViewPoint(start, dir);
+
+	FVector end = start + (dir.Vector() * 150);
+
+	ECollisionChannel traceChannel = ECC_Visibility;
+	FCollisionQueryParams RV_TraceParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), false, this);
+	RV_TraceParams.bTraceComplex = false;
+	RV_TraceParams.bReturnPhysicalMaterial = false;
+	RV_TraceParams.AddIgnoredActor(this);
+
+	bool hitted = GetWorld()->LineTraceSingleByChannel(
+		RV_Hit,
+		start,
+		end,
+		traceChannel,
+		RV_TraceParams
+	);
+
+	FVector_NetQuantize HitPoint = RV_Hit.ImpactPoint;
+	FVector HitPointVector = HitPoint;
+
 	if (InventoryComponent->GetSlotID(ItemSelect) != -1)
 	{
-			if (InventoryComponent->GetSlotObj(ItemSelect)->Obj->IsChildOf(APickableItem::StaticClass()))
+		if (InventoryComponent->GetSlotObj(ItemSelect)->Obj->IsChildOf(APickableItem::StaticClass()))
 		{
 			APickableItem* PickableItem = Cast<APickableItem>(InventoryComponent->GetSlotObj(ItemSelect)->Obj->GetDefaultObject());
 
@@ -415,7 +435,15 @@ void AYellPointAndPrayCharacter::ThrowDuck_Implementation(ARubberDuckUsable* Duc
 
 			if (NewHoldingItemClass)
 			{
-				FVector NewPosition = start + (dir.Vector() * 150);
+				FVector NewPosition;
+				if (HitPointVector != FVector::Zero())
+				{
+					NewPosition = HitPointVector;
+				}
+				else
+				{
+					NewPosition = end;
+				}
 				DuckUsing->Throw(this, GetWorld(), NewHoldingItemClass, NewPosition, dir);
 			}
 		}
@@ -444,12 +472,31 @@ void AYellPointAndPrayCharacter::Drop()
 	FRotator dir;
 	GetController()->GetPlayerViewPoint(start, dir);
 
-	ServerOnItemDroped(InventoryComponent->CurrentItemSelected, start, dir);
+	FVector end = start + (dir.Vector() * 150);
+
+	ECollisionChannel traceChannel = ECC_Visibility;
+	FCollisionQueryParams RV_TraceParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), false, this);
+	RV_TraceParams.bTraceComplex = false;
+	RV_TraceParams.bReturnPhysicalMaterial = false;
+	RV_TraceParams.AddIgnoredActor(this);
+
+	bool hitted = GetWorld()->LineTraceSingleByChannel(
+		RV_Hit,
+		start,
+		end,
+		traceChannel,
+		RV_TraceParams
+	);
+
+	FVector_NetQuantize hitPoint = RV_Hit.ImpactPoint;
+
+	ServerOnItemDroped(InventoryComponent->CurrentItemSelected, hitPoint, end);
+
 	InventoryComponent->DeleteInventorySlot(InventoryComponent->CurrentItemSelected);
 	this->ServerDeleteItem();
 }
 
-void AYellPointAndPrayCharacter::ServerOnItemDroped_Implementation(int SlotID, FVector start, FRotator dir)
+void AYellPointAndPrayCharacter::ServerOnItemDroped_Implementation(int SlotID, FVector HitPoint, FVector SpacePoint)
 {
 	if (!HasAuthority()) return;
 
@@ -463,7 +510,16 @@ void AYellPointAndPrayCharacter::ServerOnItemDroped_Implementation(int SlotID, F
 
 			if (NewHoldingItemClass)
 			{
-				FVector NewPosition = start + (dir.Vector() * 150);
+				//FVector NewPosition = start + (dir.Vector() * 150);
+				FVector NewPosition;
+				if (HitPoint != FVector::Zero()) 
+				{
+					NewPosition = HitPoint;
+				}
+				else 
+				{
+					NewPosition = SpacePoint;
+				}
 				FActorSpawnParameters SpawnParams;
 				GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, NewPosition, FRotator::ZeroRotator, SpawnParams);
 			}
