@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Builders/ConeBuilder.h"
 #include "Components/BoxComponent.h"
 #include "Containers/Map.h"
 #include "GameFramework/Actor.h"

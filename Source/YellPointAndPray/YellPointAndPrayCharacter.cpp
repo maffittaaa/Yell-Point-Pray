@@ -71,8 +71,7 @@ AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 	InventoryComponent = CreateDefaultSubobject<UInventory>(TEXT("Inventory"));
 	
 	cheatsComponent = CreateDefaultSubobject<UACCheats>(TEXT("Cheats"));
-
-	SetReplicates(true);
+	
 	bReplicates = true;
 	//Cesar Stuff -------------------------------------------------------
 
@@ -122,7 +121,6 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		//Drawing
 		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AYellPointAndPrayCharacter::CharacterDrawing);
 		EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Completed, this, &AYellPointAndPrayCharacter::CharacterStopDrawing);
-		//GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, teste.IsBoundToObject(this) && teste.GetAction() != nullptr ? "yay bound properly!" : "oh noes failed to bind the draw :(");
 
 		//turnOffDetectionFromGuards
 		EnhancedInputComponent->BindAction(TurnOffDetectionAction, ETriggerEvent::Started, this , &AYellPointAndPrayCharacter::TurnOffDetection);

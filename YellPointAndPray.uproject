@@ -56,5 +56,8 @@
 			"Name": "GeometryScripting",
 			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"Windows"
 	]
 }
