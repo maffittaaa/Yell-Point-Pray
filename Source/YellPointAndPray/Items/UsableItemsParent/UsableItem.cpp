@@ -14,8 +14,7 @@ AUsableItem::AUsableItem()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshHoldingItem"));
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	Mesh->SetupAttachment(RootComponent);
-
-	SetReplicates(true);
+	
 	bReplicates = true;
 	bAlwaysRelevant = true;
 }

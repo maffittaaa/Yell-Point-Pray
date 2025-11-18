@@ -15,8 +15,7 @@ AFlashlightUsable::AFlashlightUsable()
     Light = CreateDefaultSubobject<USpotLightComponent>(TEXT("Light"));
     Light->SetupAttachment(Mesh);
     Light->SetVisibility(bIsLightOn);
-
-    SetReplicates(true);
+    
     bReplicates = true;
 }
 

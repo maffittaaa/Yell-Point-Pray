@@ -12,7 +12,6 @@ AReadyButton::AReadyButton()
     PrimaryActorTick.bCanEverTick = true;
 
     bReplicates = true;
-    SetReplicates(true);
 }
 
 void AReadyButton::Interact_Implementation(AActor* Interactor)

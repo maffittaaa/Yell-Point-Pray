@@ -22,7 +22,6 @@ AComicallyLargeButton::AComicallyLargeButton()
 	SuportButtonMesh->SetupAttachment(BaseButtonMesh);
 
 	bReplicates = true;
-	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
