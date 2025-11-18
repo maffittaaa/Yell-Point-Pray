@@ -14,17 +14,17 @@
 void UEOSVoiceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
     Super::Initialize(Collection);
-    InitializeEOS();
+    //InitializeEOS();
 }
 
 void UEOSVoiceSubsystem::Deinitialize()
 {
-    LeaveVoiceRoom();
+    //LeaveVoiceRoom();
 
-    if (EOSPlatformHandle)
-    {
-        EOS_Platform_Release(EOSPlatformHandle);
-    }
+    //if (EOSPlatformHandle)
+    //{
+    //    EOS_Platform_Release(EOSPlatformHandle);
+    //}
 
     Super::Deinitialize();
 }
@@ -124,7 +124,7 @@ void UEOSVoiceSubsystem::InitializeEOS()
 
 void UEOSVoiceSubsystem::TestEOS()
 {
-    UE_LOG(LogTemp, Warning, TEXT("=== EOS Voice Subsystem Test ==="));
+    /*UE_LOG(LogTemp, Warning, TEXT("=== EOS Voice Subsystem Test ==="));
 
     if (EOSPlatformHandle)
     {
@@ -154,12 +154,12 @@ void UEOSVoiceSubsystem::TestEOS()
         UE_LOG(LogTemp, Error, TEXT("EOS Platform Handle: INVALID"));
     }
 
-    UE_LOG(LogTemp, Warning, TEXT("=== End EOS Test ==="));
+    UE_LOG(LogTemp, Warning, TEXT("=== End EOS Test ==="));*/
 }
 
 void UEOSVoiceSubsystem::JoinVoiceRoom(const FString& RoomName)
 {
-    if (!EOSRTCHandle) return;
+    /*if (!EOSRTCHandle) return;
 
     CurrentRoomName = RoomName;
 
@@ -169,12 +169,12 @@ void UEOSVoiceSubsystem::JoinVoiceRoom(const FString& RoomName)
     JoinOptions.RoomName = TCHAR_TO_UTF8(*RoomName);
     JoinOptions.ClientBaseUrl = nullptr;
 
-    EOS_RTC_JoinRoom(EOSRTCHandle, &JoinOptions, this, OnRTCJoinRoomCompleteFn);
+    EOS_RTC_JoinRoom(EOSRTCHandle, &JoinOptions, this, OnRTCJoinRoomCompleteFn);*/
 }
 
 void UEOSVoiceSubsystem::LeaveVoiceRoom()
 {
-    if (!EOSRTCHandle || CurrentRoomName.IsEmpty()) return;
+    /*if (!EOSRTCHandle || CurrentRoomName.IsEmpty()) return;
 
     EOS_RTC_LeaveRoomOptions LeaveOptions = {};
     LeaveOptions.ApiVersion = EOS_RTC_LEAVEROOM_API_LATEST;
@@ -182,24 +182,24 @@ void UEOSVoiceSubsystem::LeaveVoiceRoom()
     LeaveOptions.RoomName = TCHAR_TO_UTF8(*CurrentRoomName);
 
     EOS_RTC_LeaveRoom(EOSRTCHandle, &LeaveOptions, nullptr, nullptr);
-    CurrentRoomName = "";
+    CurrentRoomName = "";*/
 }
 
 void UEOSVoiceSubsystem::SetLocalPlayerPosition(const FVector& Position)
 {
-    LocalPlayerPosition = Position;
-    UpdateProximityVolumes();
+    /*LocalPlayerPosition = Position;
+    UpdateProximityVolumes();*/
 }
 
 void UEOSVoiceSubsystem::UpdatePlayerPosition(const FString& PlayerId, const FVector& Position)
 {
-    PlayerPositions.Add(PlayerId, Position);
-    UpdateProximityVolumes();
+    //PlayerPositions.Add(PlayerId, Position);
+    //UpdateProximityVolumes();
 }
 
 void UEOSVoiceSubsystem::UpdateProximityVolumes()
 {
-    for (const auto& PlayerPair : PlayerPositions)
+    /*for (const auto& PlayerPair : PlayerPositions)
     {
         const FString& PlayerId = PlayerPair.Key;
         const FVector& PlayerPos = PlayerPair.Value;
@@ -214,52 +214,52 @@ void UEOSVoiceSubsystem::UpdateProximityVolumes()
         }
 
         SetPlayerVolume(PlayerId, Volume);
-    }
+    }*/
 }
 
 void UEOSVoiceSubsystem::SetPlayerVolume(const FString& PlayerId, float Volume)
 {
-    if (!EOSRTCHandle || CurrentRoomName.IsEmpty()) return;
+    //if (!EOSRTCHandle || CurrentRoomName.IsEmpty()) return;
 
-    if (EOS_ProductUserId* RemoteUserId = PlayerIdToProductUserId.Find(PlayerId))
-    {
-        // Enable/disable audio reception based on volume
-        EOS_RTCAudio_UpdateReceivingOptions UpdateOptions = {};
-        UpdateOptions.ApiVersion = EOS_RTCAUDIO_UPDATERECEIVING_API_LATEST;
-        UpdateOptions.LocalUserId = LocalUserProductId;
-        UpdateOptions.RoomName = TCHAR_TO_UTF8(*CurrentRoomName);
-        UpdateOptions.ParticipantId = *RemoteUserId;
-        UpdateOptions.bAudioEnabled = (Volume > 0.0f) ? EOS_TRUE : EOS_FALSE;
+    //if (EOS_ProductUserId* RemoteUserId = PlayerIdToProductUserId.Find(PlayerId))
+    //{
+    //    // Enable/disable audio reception based on volume
+    //    EOS_RTCAudio_UpdateReceivingOptions UpdateOptions = {};
+    //    UpdateOptions.ApiVersion = EOS_RTCAUDIO_UPDATERECEIVING_API_LATEST;
+    //    UpdateOptions.LocalUserId = LocalUserProductId;
+    //    UpdateOptions.RoomName = TCHAR_TO_UTF8(*CurrentRoomName);
+    //    UpdateOptions.ParticipantId = *RemoteUserId;
+    //    UpdateOptions.bAudioEnabled = (Volume > 0.0f) ? EOS_TRUE : EOS_FALSE;
 
-        EOS_RTCAudio_UpdateReceiving(EOSAudioHandle, &UpdateOptions, nullptr, nullptr);
+    //    EOS_RTCAudio_UpdateReceiving(EOSAudioHandle, &UpdateOptions, nullptr, nullptr);
 
-        // Set volume level (0-100)
-        EOS_RTCAudio_UpdateParticipantVolumeOptions VolumeOptions = {};
-        VolumeOptions.ApiVersion = EOS_RTCAUDIO_UPDATEPARTICIPANTVOLUME_API_LATEST;
-        VolumeOptions.LocalUserId = LocalUserProductId;
-        VolumeOptions.RoomName = TCHAR_TO_UTF8(*CurrentRoomName);
-        VolumeOptions.ParticipantId = *RemoteUserId;
-        VolumeOptions.Volume = (int32_t)(Volume * 100.0f);
+    //    // Set volume level (0-100)
+    //    EOS_RTCAudio_UpdateParticipantVolumeOptions VolumeOptions = {};
+    //    VolumeOptions.ApiVersion = EOS_RTCAUDIO_UPDATEPARTICIPANTVOLUME_API_LATEST;
+    //    VolumeOptions.LocalUserId = LocalUserProductId;
+    //    VolumeOptions.RoomName = TCHAR_TO_UTF8(*CurrentRoomName);
+    //    VolumeOptions.ParticipantId = *RemoteUserId;
+    //    VolumeOptions.Volume = (int32_t)(Volume * 100.0f);
 
-        EOS_RTCAudio_UpdateParticipantVolume(EOSAudioHandle, &VolumeOptions, nullptr, nullptr);
-    }
+    //    EOS_RTCAudio_UpdateParticipantVolume(EOSAudioHandle, &VolumeOptions, nullptr, nullptr);
+    //}
 }
 
 void UEOSVoiceSubsystem::OnRTCJoinRoomComplete(const EOS_RTC_JoinRoomCallbackInfo* Data)
 {
-    if (Data->ResultCode == EOS_EResult::EOS_Success)
+    /*if (Data->ResultCode == EOS_EResult::EOS_Success)
     {
         UE_LOG(LogTemp, Warning, TEXT("Successfully joined EOS voice room: %s"), *CurrentRoomName);
     }
     else
     {
         UE_LOG(LogTemp, Error, TEXT("Failed to join EOS voice room: %d"), Data->ResultCode);
-    }
+    }*/
 }
 
 void UEOSVoiceSubsystem::LoginToEOS()
 {
-    EOS_HConnect ConnectHandle = EOS_Platform_GetConnectInterface(EOSPlatformHandle);
+    /*EOS_HConnect ConnectHandle = EOS_Platform_GetConnectInterface(EOSPlatformHandle);
 
     EOS_Connect_Credentials Credentials = {};
     Credentials.ApiVersion = EOS_CONNECT_CREDENTIALS_API_LATEST;
@@ -281,14 +281,14 @@ void UEOSVoiceSubsystem::LoginToEOS()
         {
             UE_LOG(LogTemp, Error, TEXT("EOS Login Failed: %d"), Data->ResultCode);
         }
-        });
+        });*/
 }
 
 void UEOSVoiceSubsystem::OnRTCJoinRoomCompleteFn(const EOS_RTC_JoinRoomCallbackInfo* Data)
 {
-    if (Data->ClientData)
+    /*if (Data->ClientData)
     {
         UEOSVoiceSubsystem* VoiceSubsystem = (UEOSVoiceSubsystem*)Data->ClientData;
         VoiceSubsystem->OnRTCJoinRoomComplete(Data);
-    }
+    }*/
 }
