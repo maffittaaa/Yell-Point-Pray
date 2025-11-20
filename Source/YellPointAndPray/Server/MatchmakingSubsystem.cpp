@@ -19,7 +19,7 @@ void UMatchmakingSubsystem::Deinitialize() {
 void UMatchmakingSubsystem::ConnectToMatchmakingServer() {
 	if (ClientRunnable) return; // already running
 
-	FString ServerIP = TEXT("10.208.206.231");
+	FString ServerIP = TEXT("68.221.16.153");
 
 	ClientRunnable = new FTCPClientRunnable(this, ServerIP);
 	UE_LOG(LogTemp, Warning, TEXT("ConnectToMatchmakingServer to %s"), *ServerIP);
