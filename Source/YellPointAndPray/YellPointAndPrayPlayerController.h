@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include <Server/EOSVoiceSubsystem.h>
 #include "GameFramework/PlayerController.h"
 #include <Server/MatchmakingSubsystem.h>
 #include <Players/YPPCustomPlayerState.h>
@@ -34,16 +33,6 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_OnBackToMainMenuClicked();
-
-	void StorePlayerType(EPlayerType PlayerType);
-
-	EPlayerType GetPlayerType();
-
-	UFUNCTION(BlueprintCallable)
-	void OnSuccessfullyJoinedGameServer();
-
-	UFUNCTION(BlueprintCallable)
-	void OnPlayerJoinedGame(const FString& PlayerId, const FVector& Position);
 
 	/** Input Mapping Contexts */
 	UPROPERTY(EditAnywhere, Category="Input|Input Mappings")
