@@ -67,48 +67,9 @@ void AYellPointAndPrayPlayerController::SetupInputComponent()
 	}
 }
 
-void AYellPointAndPrayPlayerController::OnSuccessfullyJoinedGameServer()
-{
-	UEOSVoiceSubsystem* VoiceSubsystem = GetGameInstance()->GetSubsystem<UEOSVoiceSubsystem>();
-	if (VoiceSubsystem)
-	{
-		// Get the current server info from your matchmaking system
-		UMatchmakingSubsystem* MatchSubsystem = GetGameInstance()->GetSubsystem<UMatchmakingSubsystem>();
-		if (MatchSubsystem && MatchSubsystem->GetSessions().Num() > 0)
-		{
-			// Use the first session or find the current one
-			FMatchSessionInfo CurrentSession = MatchSubsystem->GetSessions()[0];
-			FString VoiceRoomName = FString::Printf(TEXT("Game_%s_%d"), *CurrentSession.ServerIp, CurrentSession.ServerPort);
-			VoiceSubsystem->JoinVoiceRoom(VoiceRoomName);
-		}
-		else
-		{
-			// Fallback: use a simple room name
-			FString VoiceRoomName = TEXT("DefaultVoiceRoom");
-			VoiceSubsystem->JoinVoiceRoom(VoiceRoomName);
-		}
-	}
-}
-
 void AYellPointAndPrayPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// Update voice proximity
-	UEOSVoiceSubsystem* VoiceSubsystem = GetGameInstance()->GetSubsystem<UEOSVoiceSubsystem>();
-	if (VoiceSubsystem && GetPawn())
-	{
-		VoiceSubsystem->SetLocalPlayerPosition(GetPawn()->GetActorLocation());
-	}
-}
-
-void AYellPointAndPrayPlayerController::OnPlayerJoinedGame(const FString& PlayerId, const FVector& Position)
-{
-	UEOSVoiceSubsystem* VoiceSubsystem = GetGameInstance()->GetSubsystem<UEOSVoiceSubsystem>();
-	if (VoiceSubsystem)
-	{
-		VoiceSubsystem->UpdatePlayerPosition(PlayerId, Position);
-	}
 }
 
 //GAMEOVERWIDGET

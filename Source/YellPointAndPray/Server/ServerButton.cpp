@@ -22,12 +22,6 @@ void UServerButton::OnClick()
             UE_LOG(LogTemp, Warning, TEXT("Connecting to %s:%d"), *SessionInfo.ServerIp, SessionInfo.ServerPort);
             FString Cmd = FString::Printf(TEXT("open %s:%d"), *SessionInfo.ServerIp, SessionInfo.ServerPort);
             PC->ConsoleCommand(*Cmd);
-
-            // ADD THIS: Trigger voice chat after connection
-            if (AYellPointAndPrayPlayerController* MyPC = Cast<AYellPointAndPrayPlayerController>(PC))
-            {
-                MyPC->OnSuccessfullyJoinedGameServer();
-            }
         }
     }
 }
