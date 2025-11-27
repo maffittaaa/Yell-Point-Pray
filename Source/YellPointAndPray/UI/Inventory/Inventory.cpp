@@ -120,6 +120,7 @@ void UInventory::SetInventory(APickableItem* Item)
 					InventorySlots[i].ID = UsableItem->ID;
 					InventorySlots[i].Name = UsableItem->Name;
 					InventorySlots[i].PreviewImage = UsableItem->PreviewImage;
+					InventorySlots[i].KeyID = UsableItem->KeyID;
 				}
 				else
 				{
@@ -147,6 +148,11 @@ AUsableItem* UInventory::GetSlotObj(int SlotID)
 int UInventory::GetSlotID(int SlotID)
 {
 	return InventorySlots[SlotID].ID;
+}
+
+int UInventory::GetSlotKeyID(int SlotID)
+{
+	return InventorySlots[SlotID].KeyID;
 }
 
 FString UInventory::GetSlotName(int SlotID)

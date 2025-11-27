@@ -24,6 +24,7 @@
 #include <Players/YPPCustomGameMode.h>
 #include <UI/Menus/MenusLevelScript.h>
 #include <Lobby/LobbyLevelScript.h>
+#include "Items/Keys/KeyPickable.h"
 
 #include "Players/YPPCustomGameInstance.h"
 
@@ -519,6 +520,19 @@ void AYellPointAndPrayCharacter::ServerOnItemDroped_Implementation(int SlotID, F
 					NewPosition = SpacePoint;
 				}
 				FActorSpawnParameters SpawnParams;
+				if (AKeyPickable* key = Cast<AKeyPickable>(NewHoldingItemClass))
+				{
+					key->KeyID = InventoryComponent->GetSlotKeyID(SlotID);
+
+					GetWorld()->SpawnActor<AActor>(key->GetClass(), NewPosition, FRotator::ZeroRotator, SpawnParams);
+					return;
+				}
+				else 
+				{
+					UE_LOG(LogTemp, Warning, TEXT("No Key"));
+					UE_LOG(LogTemp, Warning, TEXT("Key Class %s"), *NewHoldingItemClass->GetName());
+				}
+
 				GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, NewPosition, FRotator::ZeroRotator, SpawnParams);
 			}
 		}

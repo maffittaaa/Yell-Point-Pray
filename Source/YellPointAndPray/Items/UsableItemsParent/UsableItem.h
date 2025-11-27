@@ -19,6 +19,9 @@ public:
 	UPROPERTY()
 	int ID = 0;
 
+	UPROPERTY()
+	int KeyID = -1;
+
 	FString Name = "DefaultItemName";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PreviewImage")
