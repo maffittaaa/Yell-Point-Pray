@@ -17,4 +17,7 @@ class YELLPOINTANDPRAY_API AKeyPickable : public APickableItem
 private:
 	AKeyPickable();
 	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	int KeyID = -1;
 };

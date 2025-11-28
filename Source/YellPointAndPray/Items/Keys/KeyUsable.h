@@ -17,10 +17,14 @@ class YELLPOINTANDPRAY_API AKeyUsable : public AUsableItem
 private:
 	AKeyUsable();
 public:
+	UPROPERTY(Replicated)
+	int KeyID = -1;
 
 	virtual void Use_Implementation(AActor* User) override;
 
 
 	UFUNCTION(Server, Reliable)
 	void UseReal(AActor* User, UWorld* World);
+
+	void BeginPlay();
 };

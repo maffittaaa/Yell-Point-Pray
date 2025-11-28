@@ -25,6 +25,7 @@
 #include <UI/Menus/MenusLevelScript.h>
 #include <Lobby/LobbyLevelScript.h>
 #include "Items/Keys/KeyPickable.h"
+#include "Items/Keys/KeyUsable.h"
 
 #include "Players/YPPCustomGameInstance.h"
 
@@ -520,11 +521,12 @@ void AYellPointAndPrayCharacter::ServerOnItemDroped_Implementation(int SlotID, F
 					NewPosition = SpacePoint;
 				}
 				FActorSpawnParameters SpawnParams;
-				if (AKeyPickable* key = Cast<AKeyPickable>(NewHoldingItemClass))
+				if (Cast<AKeyPickable>(PickableItem))
 				{
-					key->KeyID = InventoryComponent->GetSlotKeyID(SlotID);
+					AActor* Key = GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, NewPosition, FRotator::ZeroRotator, SpawnParams);
 
-					GetWorld()->SpawnActor<AActor>(key->GetClass(), NewPosition, FRotator::ZeroRotator, SpawnParams);
+					Cast<AKeyPickable>(Key)->KeyID = InventoryComponent->GetSlotKeyID(SlotID);
+					UE_LOG(LogTemp, Warning, TEXT("KeyID AAAAAAAAAAAAAset to: %d"), Cast<AKeyPickable>(Key)->KeyID);
 					return;
 				}
 				else 
@@ -586,6 +588,12 @@ void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 				SpawnParams.Instigator = Cast<APawn>(this);
 
 				HoldingItem = GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+
+				if (AKeyUsable* KeyItem = Cast<AKeyUsable>(HoldingItem))
+				{
+					KeyItem->KeyID = InventoryComponent->GetSlotKeyID(SlotID);
+					UE_LOG(LogTemp, Warning, TEXT("KeyID set to: %d"), Cast<AKeyUsable>(HoldingItem)->KeyID);
+				}
 
 				if (HoldingItem)
 				{

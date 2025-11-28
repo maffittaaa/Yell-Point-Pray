@@ -1,6 +1,8 @@
 #include "Inventory.h"
 #include <string>
 #include <Net/UnrealNetwork.h>
+#include "Items/Keys/KeyUsable.h"
+#include "Items/Keys/KeyPickable.h"
 
 
 using namespace std;
@@ -120,7 +122,9 @@ void UInventory::SetInventory(APickableItem* Item)
 					InventorySlots[i].ID = UsableItem->ID;
 					InventorySlots[i].Name = UsableItem->Name;
 					InventorySlots[i].PreviewImage = UsableItem->PreviewImage;
-					InventorySlots[i].KeyID = UsableItem->KeyID;
+					if (AKeyPickable* UsableKey = Cast<AKeyPickable>(Item)) {
+						InventorySlots[i].KeyID = UsableKey->KeyID;
+					}
 				}
 				else
 				{

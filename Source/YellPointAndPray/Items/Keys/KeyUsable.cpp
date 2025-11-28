@@ -5,6 +5,7 @@
 #include "Door.h"
 #include "DrawDebugHelpers.h"
 #include "YellPointAndPrayCharacter.h"
+#include <Net/UnrealNetwork.h>
 
 AKeyUsable::AKeyUsable()
 {
@@ -16,6 +17,13 @@ void AKeyUsable::Use_Implementation(AActor* User)
 {
     if (!HasAuthority()) return;
     UseReal(User, GetWorld());
+}
+
+void AKeyUsable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(AKeyUsable, KeyID);
 }
 
 void AKeyUsable::UseReal_Implementation(AActor* User, UWorld* World)
@@ -55,4 +63,10 @@ void AKeyUsable::UseReal_Implementation(AActor* User, UWorld* World)
             }
         }
     }
+}
+
+void AKeyUsable::BeginPlay()
+{
+    Super::BeginPlay();
+    UE_LOG(LogTemp, Warning, TEXT("BeginPlay KeyID = %d"), KeyID);
 }
