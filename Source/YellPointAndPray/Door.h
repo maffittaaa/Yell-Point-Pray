@@ -44,6 +44,9 @@ protected:
 	UPROPERTY(EditAnywhere, Replicated)
 	bool isInitiallyLocked;
 
+	UPROPERTY(EditAnywhere)
+	int DoorID = -1;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -63,6 +66,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void UnlockDoor();
+
+	UFUNCTION(Server, Reliable)
+	void KeyUnlockDoor(int KeyID);
 
 	UFUNCTION(Server, Reliable)
 	void LockDoor();

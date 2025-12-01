@@ -141,6 +141,13 @@ void ADoor::UnlockDoor_Implementation() {
 	Locked = false;
 }
 
+void ADoor::KeyUnlockDoor_Implementation(int KeyID) {
+	if (KeyID == DoorID) {
+		UE_LOG(LogTemp, Warning, TEXT("Door Unlocked."));
+		Locked = false;
+	}
+}
+
 void ADoor::Reset_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Door reset called!"));

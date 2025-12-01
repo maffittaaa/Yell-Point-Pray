@@ -39,11 +39,6 @@ void AKeyUsable::UseReal_Implementation(AActor* User, UWorld* World)
 
     Player->GetController()->GetPlayerViewPoint(start, dir);
 
-    UE_LOG(LogTemp, Warning, TEXT("LockPick Controller: %s | Role: %s | World: %s"),
-        *Player->GetController()->GetName(),
-        *UEnum::GetValueAsString(GetLocalRole()),
-        *Player->GetWorld()->GetName());
-
     FVector end = start + (dir.Vector() * 300);
 
     // Not hit player
@@ -58,7 +53,7 @@ void AKeyUsable::UseReal_Implementation(AActor* User, UWorld* World)
                 ADoor* Door = Cast<ADoor>(hitObject);
                 if (Door)
                 {
-                    Door->UnlockDoor();
+                    Door->KeyUnlockDoor(KeyID);
                 }
             }
         }
