@@ -3,6 +3,7 @@
 #include "PickableItem.h"
 #include "GameFramework/Character.h"
 #include <Kismet/GameplayStatics.h>
+#include <CesarClass/InventoryEventQueueSubsystem.h>
 
 // Sets default values
 APickableItem::APickableItem()
@@ -68,11 +69,23 @@ void APickableItem::RemoveObserver_Implementation(const TScriptInterface<IInvent
 
 void APickableItem::NotifyObservers_Implementation(const FString& ItemName)
 {
-    for (auto& Observer : Observers)
+    if (UWorld* World = GetWorld())
     {
-        if (Observer.GetObject())
+        if (UGameInstance* GI = World->GetGameInstance())
         {
-            IInventoryObserver::Execute_OnItemAdded(Observer.GetObject(), ItemName);
+            UInventoryEventQueueSubsystem* Queue = GI->GetSubsystem<UInventoryEventQueueSubsystem>();
+
+            for (auto& Observer : Observers)
+            {
+                if (Observer.GetObject())
+                {
+                    FInventoryEvent Event;
+                    Event.Observer = Observer;
+                    Event.ItemName = ItemName;
+
+                    Queue->EnqueueEvent(Event);
+                }
+            }
         }
     }
 }
