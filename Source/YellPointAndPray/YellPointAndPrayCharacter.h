@@ -15,6 +15,7 @@
 #include <Obstacles/Guard/Guard.h>
 #include "Blueprint/UserWidget.h"
 #include "Players/ACCheats.h"
+#include "Components/AudioComponent.h"
 #include "YellPointAndPrayCharacter.generated.h"
 
 class UInputComponent;
@@ -51,6 +52,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UAudioComponent* FartAudioPlayer;
 
 	protected:
 
@@ -111,7 +115,16 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 		UInputAction* EmoteNo;
 		
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<USoundWave*> KebabFartSoundsList;
+
+		bool KebabEffect = false;
+
 	public:
+		void ChangeKebabEffect(bool state);
+
+		void PlayKebabEffect();
+
 		FInputModeGameOnly PreviousInputMode;
 
 		AYellPointAndPrayCharacter();

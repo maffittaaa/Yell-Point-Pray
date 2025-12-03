@@ -1,0 +1,11 @@
+Model Information:
+* title:	30Days3D - Day 1 - Doner Kebab
+* source:	https://sketchfab.com/3d-models/30days3d-day-1-doner-kebab-ff4869fdc1014a87bd1401d1c4ad9460
+* author:	smokefumus (https://sketchfab.com/smokefumus)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "30Days3D - Day 1 - Doner Kebab" (https://sketchfab.com/3d-models/30days3d-day-1-doner-kebab-ff4869fdc1014a87bd1401d1c4ad9460) by smokefumus (https://sketchfab.com/smokefumus) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

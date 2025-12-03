@@ -75,6 +75,9 @@ AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 	cheatsComponent = CreateDefaultSubobject<UACCheats>(TEXT("Cheats"));
 	
 	bReplicates = true;
+
+	FartAudioPlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("FartAudioPlayer"));
+
 	//Cesar Stuff -------------------------------------------------------
 
 	TArray<AActor*> FoundActors;
@@ -1147,6 +1150,36 @@ void AYellPointAndPrayCharacter::Tick(float DeltaTime)
 		AddKnockGuardWidget();
 
 	HandMovement(DeltaTime);
+
+	if (KebabEffect)
+	{
+		PlayKebabEffect();
+		ChangeKebabEffect(false);
+		InventoryComponent->DeleteInventorySlot(InventoryComponent->CurrentItemSelected);
+		this->ServerDeleteItem();
+	}
+}
+
+void AYellPointAndPrayCharacter::ChangeKebabEffect(bool state)
+{
+	KebabEffect = state;
+}
+
+void AYellPointAndPrayCharacter::PlayKebabEffect()
+{
+	//Get random time
+	int32 RandTime = FMath::RandRange(1, 2);
+	//Get random fart
+	int32 RandSound = FMath::RandRange(0, 4);
+
+	UE_LOG(LogTemp, Warning, TEXT("RandTime: %d"), RandTime);
+	UE_LOG(LogTemp, Warning, TEXT("RandSound: %d"), RandSound);
+
+	FartAudioPlayer->Sound = KebabFartSoundsList[RandSound];
+	FartAudioPlayer->Play();
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYellPointAndPrayCharacter::PlayKebabEffect, RandTime, true);
 }
 
 void AYellPointAndPrayCharacter::HandMovement(float DeltaTime)
