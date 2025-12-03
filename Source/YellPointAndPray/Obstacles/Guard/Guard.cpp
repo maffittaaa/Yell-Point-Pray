@@ -97,14 +97,17 @@ void AGuard::Tick(float DeltaTime)
 		if (CurrentPoint)
 		{
 			float Distance = FVector::Dist(GetActorLocation(), CurrentPoint->GetActorLocation());
-			if (Distance < 100.f)
+			if (Distance < 170.f)
 			{
-				if (CurrentWaypoint == Waypoints.Num() - 1) {
+				if (Loop) {
+					if (CurrentWaypoint == Waypoints.Num() - 1 || CurrentWaypoint + Looper < 0) {
+						Looper *= -1;
+					}
+				}
+				else if (CurrentWaypoint == Waypoints.Num() - 1) {
 					CurrentWaypoint = 0;
 				}
-				else {
-					CurrentWaypoint++;
-				}
+				CurrentWaypoint += Looper;
 				Patrol();
 			}
 		}

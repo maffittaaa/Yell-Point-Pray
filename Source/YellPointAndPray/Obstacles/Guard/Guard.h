@@ -20,6 +20,7 @@ public:
 	// Sets default values for this character's properties
 	AGuard();
 
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -39,6 +40,10 @@ protected:
 	bool Suspicious = false;
 	UPROPERTY(Replicated, VisibleAnywhere)
 	bool Seen = false;
+
+	UPROPERTY(EditAnywhere)
+	bool Loop = false;
+	int Looper = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Suspicious Mark")
 	UStaticMeshComponent* suspiciousMark;

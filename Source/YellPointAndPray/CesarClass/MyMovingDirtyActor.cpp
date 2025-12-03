@@ -13,10 +13,6 @@ void AMyMovingDirtyActor::BeginPlay()
     Super::BeginPlay();
     TargetLocation = GetActorLocation();
     SetTargetLocation(FVector(1000, 0, 0));
-    SetTargetLocation(FVector(-1000, 0, 0));
-    SetTargetLocation(FVector(-1000, 0, 0));
-    SetTargetLocation(FVector(-1000, 0, 0));
-    SetTargetLocation(FVector(-1000, 0, 0));
 }
 
 void AMyMovingDirtyActor::Tick(float DeltaTime)
