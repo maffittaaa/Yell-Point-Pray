@@ -15,7 +15,7 @@ call :log "========================================"
 call :log "Log file: %BUILD_LOG%"
 
 REM Set the Unreal Engine path (modify this to match your UE installation)
-set UE_ENGINE_PATH=C:\EpicDiogo\Engine
+set UE_ENGINE_PATH=C:\UnrealBuild\Engine
 set UAT_PATH=%UE_ENGINE_PATH%\Build\BatchFiles\RunUAT.bat
 
 REM Check if UAT exists
@@ -27,7 +27,7 @@ if not exist "%UAT_PATH%" (
 
 REM Set project details
 set PROJECT_DIR=%~dp0
-set PROJECT_FILE=%PROJECT_DIR%ExampleProject.uproject
+set PROJECT_FILE=%PROJECT_DIR%YellPointAndPray.uproject
 set OUTPUT_DIR=%PROJECT_DIR%PackagedServer
 
 REM Check if project file exists
@@ -47,8 +47,8 @@ REM Choose build config (can be changed via argument)
 set BUILD_CONFIG=Shipping
 set PLATFORM=Linux
 set EnvoirmentPlatform=Win64
-set TARGET=ExampleProjectServer
-set MAP=Lvl_ThirdPerson
+set TARGET=YellPointAndPrayServer
+set MAP=/Game/FirstPerson/Lvl_Lobby
 
 call :log ""
 call :log "==============================="
@@ -93,7 +93,7 @@ call :log ""
 call :log "========================================"
 call :log "Build completed successfully!"
 call :log "Output Path: %OUTPUT_DIR%"
-call :log "Executable:  %OUTPUT_DIR%\WindowsServer\BattleBumpersServer.exe"
+call :log "Executable:  %OUTPUT_DIR%\WindowsServer\YellPointAndPray.exe"
 call :log "Log saved to: %BUILD_LOG%"
 call :log "========================================"
 
@@ -101,7 +101,7 @@ echo.
 echo ========================================
 echo Build completed successfully!
 echo Output Path: %OUTPUT_DIR%
-echo Executable:  %OUTPUT_DIR%\WindowsServer\BattleBumpersServer.exe
+echo Executable:  %OUTPUT_DIR%\WindowsServer\YellPointAndPray.exe
 echo Log saved to: %BUILD_LOG%
 echo ========================================
 pause
