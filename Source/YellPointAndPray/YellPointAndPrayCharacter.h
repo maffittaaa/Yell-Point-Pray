@@ -119,11 +119,12 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		TArray<USoundWave*> KebabFartSoundsList;
 
 		bool KebabEffect = false;
-
+		FTimerHandle KebabTimerHandle;
 	public:
 		void ChangeKebabEffect(bool state);
-
 		void PlayKebabEffect();
+		void CallGuard();
+
 
 		FInputModeGameOnly PreviousInputMode;
 

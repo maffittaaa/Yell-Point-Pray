@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Items/KebabUsable.h"
+#include "Items/Kebab/KebabUsable.h"
 #include <YellPointAndPrayCharacter.h>
 
 AKebabUsable::AKebabUsable() {

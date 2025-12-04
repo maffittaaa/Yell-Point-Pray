@@ -28,6 +28,8 @@
 #include "Items/Keys/KeyUsable.h"
 
 #include "Players/YPPCustomGameInstance.h"
+#include <NavigationSystem.h>
+#include "NavigationPath.h"
 
 using namespace std;
 
@@ -196,6 +198,10 @@ void AYellPointAndPrayCharacter::Reset_Implementation()
 	{
 		ServerDeleteItem();
 	}	
+
+	KebabEffect = false;
+	GetWorld()->GetTimerManager().ClearTimer(KebabTimerHandle);
+
 	RestoreTravelInventory();
 	Client_HideGameOver();
 
@@ -1150,36 +1156,68 @@ void AYellPointAndPrayCharacter::Tick(float DeltaTime)
 		AddKnockGuardWidget();
 
 	HandMovement(DeltaTime);
-
-	if (KebabEffect)
-	{
-		PlayKebabEffect();
-		ChangeKebabEffect(false);
-		InventoryComponent->DeleteInventorySlot(InventoryComponent->CurrentItemSelected);
-		this->ServerDeleteItem();
-	}
 }
 
 void AYellPointAndPrayCharacter::ChangeKebabEffect(bool state)
 {
 	KebabEffect = state;
+	InventoryComponent->DeleteInventorySlot(InventoryComponent->CurrentItemSelected);
+	this->ServerDeleteItem();
+
+	//Get random time
+	int32 RandTime = FMath::RandRange(0, 120);
+	UE_LOG(LogTemp, Warning, TEXT("FirstRandTime: %d"), RandTime);
+
+	FTimerHandle NewTimerHandle;
+	KebabTimerHandle = NewTimerHandle;
+
+	GetWorld()->GetTimerManager().SetTimer(KebabTimerHandle, this, &AYellPointAndPrayCharacter::PlayKebabEffect, RandTime, false);
 }
 
 void AYellPointAndPrayCharacter::PlayKebabEffect()
 {
+	if (!KebabEffect || !KebabTimerHandle.IsValid()) { UE_LOG(LogTemp, Warning, TEXT("KEBAB EFFECT ENDED OR TIMER ISN'T VALID"));  return;}
+
 	//Get random time
-	int32 RandTime = FMath::RandRange(1, 2);
+	int32 RandTime = FMath::RandRange(0, 120);
 	//Get random fart
 	int32 RandSound = FMath::RandRange(0, 4);
 
 	UE_LOG(LogTemp, Warning, TEXT("RandTime: %d"), RandTime);
 	UE_LOG(LogTemp, Warning, TEXT("RandSound: %d"), RandSound);
+	
+	GetWorld()->GetTimerManager().SetTimer(KebabTimerHandle, this, &AYellPointAndPrayCharacter::PlayKebabEffect, RandTime, false);
 
 	FartAudioPlayer->Sound = KebabFartSoundsList[RandSound];
 	FartAudioPlayer->Play();
+	CallGuard();
+}
 
-	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYellPointAndPrayCharacter::PlayKebabEffect, RandTime, true);
+void AYellPointAndPrayCharacter::CallGuard() {
+	UE_LOG(LogTemp, Warning, TEXT("Fart Fart Bitch"));
+	UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld());
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGuard::StaticClass(), FoundActors);
+	for (auto& FoundActor : FoundActors)
+	{
+		if (!Cast<AGuard>(FoundActor))
+			break;
+
+		FVector Loc = FoundActor->GetActorTransform().GetLocation();
+
+		//		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), Loc.X);
+
+		FVector Loc2 = GetMesh()->GetComponentLocation();
+
+		UNavigationPath* NavPath = NavSys->FindPathToLocationSynchronously(GetWorld(), Loc, Loc2);
+		float da = NavPath->GetPathLength();
+		if (da < 4000) {
+			UE_LOG(LogTemp, Warning, TEXT("Close Enough"));
+
+			FVector duckLoc = GetActorTransform().GetLocation();
+			Cast<AGuard>(FoundActor)->Called(duckLoc);
+		}
+	}
 }
 
 void AYellPointAndPrayCharacter::HandMovement(float DeltaTime)
