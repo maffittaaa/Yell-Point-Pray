@@ -339,6 +339,6 @@ void AYPPCustomGameMode::LoadLevel(FName LevelName)
 
     PlayersArray.Empty();
     FString LevelNameString = LevelName.ToString();
-    FString TravelURL = FString::Printf(TEXT("/Game/FirstPerson/%s?listen"), *LevelNameString);
+    FString TravelURL = FString::Printf(TEXT("/Game/FirstPerson/%s"), *LevelNameString);
     GetWorld()->ServerTravel(TravelURL);
 }
