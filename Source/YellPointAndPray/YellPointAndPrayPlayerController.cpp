@@ -10,6 +10,8 @@
 #include "YellPointAndPray.h"
 #include "Widgets/Input/SVirtualJoystick.h"
 #include <Players/YPPCustomGameMode.h>
+#include "EnhancedInputComponent.h"
+
 
 AYellPointAndPrayPlayerController::AYellPointAndPrayPlayerController()
 {
@@ -65,7 +67,13 @@ void AYellPointAndPrayPlayerController::SetupInputComponent()
 			}
 		}
 	}
+
+	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+		EnhancedInput->BindAction(LeftClickAction, ETriggerEvent::Started, this,&AYellPointAndPrayPlayerController::SendClickToWidget);
+	}
 }
+
 
 void AYellPointAndPrayPlayerController::Tick(float DeltaTime)
 {
@@ -104,6 +112,37 @@ void AYellPointAndPrayPlayerController::Server_OnRestartClicked_Implementation()
 	{
 		UE_LOG(LogTemp, Error, TEXT("No GameMode Found"));
 	}
+}
+
+void AYellPointAndPrayPlayerController::StartMinigame_Implementation(TSubclassOf<AActor> MiniGameActorClass, UWorld* World, AActor* User1, ADoor* Door) {
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	widget = World->SpawnActor<ALockPickMiniGame>(MiniGameActorClass, SpawnParams);
+	widget->DoorOpening = Door;
+	widget->Owner = this;
+	User = User1;
+	Cast<AYellPointAndPrayCharacter>(User)->SetMovementInputEnabled(false);
+	Cast<AYellPointAndPrayCharacter>(User)->SetLookInputEnabled(false);
+	Cast<AYellPointAndPrayCharacter>(User)->SetUseActive(false);
+}
+
+void AYellPointAndPrayPlayerController::SendClickToWidget()
+{
+	if (widget) {
+		widget->OnClick(User);
+		widget = nullptr;
+		User = nullptr;
+	}
+}
+
+void AYellPointAndPrayPlayerController::Unlock(ADoor* Door)
+{
+	UnlockReal(Door);
+}
+
+void AYellPointAndPrayPlayerController::UnlockReal_Implementation(ADoor* Door)
+{
+	Door->UnlockDoor();
 }
 
 //LOBBY

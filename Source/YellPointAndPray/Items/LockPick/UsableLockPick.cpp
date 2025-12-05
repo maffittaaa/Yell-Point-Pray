@@ -5,6 +5,8 @@
 #include "Door.h"
 #include "DrawDebugHelpers.h"
 #include "YellPointAndPrayCharacter.h"
+#include "Items/LockPick/LockPickMiniGame.h"
+#include <Kismet/GameplayStatics.h>
 
 AUsableLockPick::AUsableLockPick()
 {
@@ -15,10 +17,10 @@ AUsableLockPick::AUsableLockPick()
 void AUsableLockPick::Use_Implementation(AActor* User)
 {
     if (!HasAuthority()) return;
-    UseReal(User, GetWorld());
+    UseReal(User, GetWorld(), Cast<AYellPointAndPrayPlayerController>(Cast<AYellPointAndPrayCharacter>(User)->GetController()));
 }
 
-void AUsableLockPick::UseReal_Implementation(AActor* User, UWorld* World)
+void AUsableLockPick::UseReal_Implementation(AActor* User, UWorld* World, AYellPointAndPrayPlayerController* PlayerController)
 {
     UE_LOG(LogTemp, Warning, TEXT("LockPick Used CLIENTSIDE!"));
 
@@ -51,7 +53,8 @@ void AUsableLockPick::UseReal_Implementation(AActor* User, UWorld* World)
                 ADoor* Door = Cast<ADoor>(hitObject);
                 if (Door)
                 {
-                    Door->UnlockDoor();
+                    //Door->UnlockDoor();
+                    PlayerController->StartMinigame(MiniGameActorClass, World, User, Door);
                 }
             }
         }
