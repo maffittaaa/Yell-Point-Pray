@@ -365,6 +365,10 @@ void AYellPointAndPrayCharacter::SetLookInputEnabled(bool bEnabled){
 	bLookInputEnabled = bEnabled;
 }
 
+void AYellPointAndPrayCharacter::SetUseActive(bool state) {
+	UseActive = state;
+}
+
 void AYellPointAndPrayCharacter::DoAim(float Yaw, float Pitch)
 {
 	if (GetController())
@@ -477,7 +481,10 @@ void AYellPointAndPrayCharacter::CallDuck()
 }
 
 void AYellPointAndPrayCharacter::Drop() 
-{	FVector start;
+{	
+	if (!UseActive) return;
+
+	FVector start;
 	FRotator dir;
 	GetController()->GetPlayerViewPoint(start, dir);
 
@@ -552,6 +559,8 @@ void AYellPointAndPrayCharacter::ServerOnItemDroped_Implementation(int SlotID, F
 
 void AYellPointAndPrayCharacter::Use()
 {
+	if (!UseActive) return;
+
 	if (InventoryComponent->GetSlotID(InventoryComponent->CurrentItemSelected) != -1)
 	{
 		FString name = InventoryComponent->GetSlotName(InventoryComponent->CurrentItemSelected);

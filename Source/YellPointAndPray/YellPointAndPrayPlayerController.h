@@ -6,6 +6,9 @@
 #include "GameFramework/PlayerController.h"
 #include <Server/MatchmakingSubsystem.h>
 #include <Players/YPPCustomPlayerState.h>
+#include <Items/LockPick/LockPickMiniGame.h>
+#include "InputAction.h"
+#include "Door.h"
 #include "YellPointAndPrayPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -23,10 +26,22 @@ class YELLPOINTANDPRAY_API AYellPointAndPrayPlayerController : public APlayerCon
 	
 private:
 	EPlayerType StoredPlayerType = EPlayerType::None;
+
 public:
 
 	/** Constructor */
 	AYellPointAndPrayPlayerController();
+
+	void SendClickToWidget();
+
+	void Unlock(ADoor* Door);
+
+	UFUNCTION(Server, Reliable)
+	void UnlockReal(ADoor* Door);
+
+	ALockPickMiniGame* widget;
+
+	AActor* User;
 
 	UFUNCTION(Server, Reliable)
 	void Server_OnRestartClicked();
@@ -42,6 +57,11 @@ public:
 	UPROPERTY(EditAnywhere, Category="Input|Input Mappings")
 	TArray<UInputMappingContext*> DefaultMappingContexts;
 
+	UFUNCTION(Client, Reliable)
+	void StartMinigame(TSubclassOf<AActor> MiniGameActorClass, UWorld* World, AActor* User1, ADoor* Door);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UInputAction* LeftClickAction;
 protected:
 	/** Input Mapping Contexts */
 	UPROPERTY(EditAnywhere, Category="Input|Input Mappings")

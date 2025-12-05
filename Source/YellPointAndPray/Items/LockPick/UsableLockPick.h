@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Items/UsableItemsParent/UsableItem.h"
+#include "YellPointAndPrayPlayerController.h"
 #include "UsableLockPick.generated.h"
 
 /**
@@ -21,5 +22,8 @@ public:
 
 
 		UFUNCTION(Server, Reliable)
-		void UseReal(AActor* User, UWorld* World);
+		void UseReal(AActor* User, UWorld* World, AYellPointAndPrayPlayerController* PlayerController);
+
+		UPROPERTY(EditAnywhere)
+		TSubclassOf<AActor> MiniGameActorClass;
 };

@@ -120,7 +120,12 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		bool KebabEffect = false;
 		FTimerHandle KebabTimerHandle;
+
+		bool UseActive = true;
+
 	public:
+		void SetUseActive(bool Active);
+
 		void ChangeKebabEffect(bool state);
 		void PlayKebabEffect();
 		void CallGuard();
