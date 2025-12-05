@@ -51,8 +51,9 @@ void UMatchmakingSubsystem::HandleServerMessage(const FString& ServerMessage) {
 		TArray<FString> Parts;
 		ServerMessage.ParseIntoArray(Parts, TEXT("|"), true);
 		if (Parts.Num() > 1) {
-			int32 Port = FCString::Atoi(*Parts[1]);
-			OnHostRequested.Broadcast(Port);
+			int32 Port = FCString::Atoi(*Parts[3]);
+			FString Address = Parts[2];
+			OnHostRequested.Broadcast(Address, Port);
 		}
 	}
 }

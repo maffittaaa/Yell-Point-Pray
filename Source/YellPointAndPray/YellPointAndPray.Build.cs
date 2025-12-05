@@ -31,14 +31,11 @@ public class YellPointAndPray : ModuleRules
 			"OnlineSubsystemEOS",
             //"OnlineSubsystemEOSVoice",
 			"OnlineSubsystemEOSPlus",
-			"GeometryScriptingCore",
 			"GeometryFramework",
-			"DynamicMesh",
 			"MeshDescription",
 			"StaticMeshDescription",
 			"GeometryCore",
 			"ModelingComponents",
-			"MeshModelingToolsExp"
         });
 
 

@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{8E260513-46DA-1953-F814-F890A285B055}",
+	"EngineAssociation": "{86A9EDE3-4C1E-8A1C-49C6-FEB2DF38DDE4}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -50,10 +50,6 @@
 		},
 		{
 			"Name": "OnlineServicesEOS",
-			"Enabled": true
-		},
-		{
-			"Name": "GeometryScripting",
 			"Enabled": true
 		}
 	],

@@ -1,0 +1,142 @@
+{
+	"assetNamespace": "fab",
+	"listing":
+	{
+		"averageRating": 0,
+		"createdAt": "",
+		"description": "<p>Brick for your game &amp; animations projects.</p>\n<p>Feel free to contact us via email <a target=\"_blank\" rel=\"noopener noreferrer nofollow\">studiokasit@gmail.com</a>\"&gt;<a target=\"_self\" rel=\"noopener noreferrer nofollow\">studiokasit@gmail.com</a></p>\n<p>VR / AR / Low-poly / Game ready / Brick  / PBR /</p>",
+		"isAiForbidden": true,
+		"isAiGenerated": false,
+		"lastUpdatedAt": "2025-02-24T12:37:38.004539Z",
+		"listingType": "3d-model",
+		"media": "https://media.fab.com/image_previews/gallery_images/dcad76f2-1840-48f7-b8c2-e16f90f6b48f/74115d93-0935-4ac5-8be8-7653c05e1cf3.jpeg",
+		"publishedAt": "2024-12-31T14:27:20.653580Z",
+		"reviewCount": 0,
+		"thumbnail": "https://media.fab.com/image_previews/gallery_images/2f7ece88-91a4-46e1-bef5-fcccd2f76ceb/3ecd9e3e-481c-41b8-b968-772d21fc5ac1.jpeg",
+		"title": "Brick PBR",
+		"uid": "aee30b42-fcc1-489a-ab9a-797fcf31da4b",
+		"updatedAt": "",
+		"user":
+		{
+			"coverImageUrl": "https://cdn1.epicgames.com/fab/seller/o-d2dtaez26alm8w6m77r4qhjkppantv/cover/884af255.jpg",
+			"profileImageUrl": "https://cdn1.epicgames.com/fab/seller/o-d2dtaez26alm8w6m77r4qhjkppantv/profile/aa0177bf.jpg",
+			"sellerName": "KasitStudio",
+			"uid": "79f992ff-9d79-4f92-819d-c32ffdde606d"
+		},
+		"tags": [
+			{
+				"name": "Fps",
+				"slug": "fps",
+				"uid": "14fc2ff6-5e86-46c6-a1f1-668f1de87697"
+			},
+			{
+				"name": "Photogrammetry",
+				"slug": "photogrammetry",
+				"uid": "39435048-f16b-4977-b62b-82ff5ca8c38e"
+			},
+			{
+				"name": "Lowpoly",
+				"slug": "lowpoly",
+				"uid": "451806dc-649e-43b7-9c2e-a54485de14b6"
+			},
+			{
+				"name": "Shooter",
+				"slug": "shooter",
+				"uid": "4a366c91-86b0-4b87-9483-ef9cb35dbea1"
+			},
+			{
+				"name": "Thirdperson",
+				"slug": "thirdperson",
+				"uid": "7d171a28-07d9-47d5-b501-bc255947b530"
+			},
+			{
+				"name": "Wreck",
+				"slug": "wreck",
+				"uid": "92345805-4f68-4763-a231-aa6714f8bb85"
+			},
+			{
+				"name": "Realistic",
+				"slug": "realistic",
+				"uid": "93b0d3f1-a96c-4d68-9d44-69a313519e32"
+			},
+			{
+				"name": "Problem",
+				"slug": "problem",
+				"uid": "9a6d92a2-2f64-4a0e-8124-973df85d11a2"
+			},
+			{
+				"name": "Brick",
+				"slug": "brick",
+				"uid": "b02f6883-1a6c-4d28-9621-d9632153a704"
+			},
+			{
+				"name": "Rubble",
+				"slug": "rubble",
+				"uid": "b0fadbd6-0d5b-49a1-a9b1-29b06be6d181"
+			},
+			{
+				"name": "Ruin",
+				"slug": "ruin",
+				"uid": "d6f49c13-b481-4dd6-b32f-fef96826ab6c"
+			},
+			{
+				"name": "Debris",
+				"slug": "debris",
+				"uid": "e130b2cf-e5e2-4999-931a-1b82b4c69ee9"
+			}
+		],
+		"category":
+		{
+			"name": "Buildings & Architecture",
+			"path": "buildings-architecture",
+			"slug": "buildings-architecture",
+			"uid": "eec3bdd5-ba7a-45a8-b15d-67462b9630f6"
+		},
+		"assetFormats": [
+			{
+				"assetFormatType":
+				{
+					"name": "FBX",
+					"groupName": "3D Exchange Formats",
+					"code": "fbx",
+					"icon": "cube",
+					"extensions": [
+						"fbx"
+					]
+				}
+			},
+			{
+				"assetFormatType":
+				{
+					"name": "Converted Files",
+					"groupName": "",
+					"code": "converted-files",
+					"icon": "cube",
+					"extensions": [
+						"gltf",
+						"glb",
+						"usdz"
+					]
+				}
+			}
+		],
+		"_PluginMetas":
+		{
+			"apiDataVersion": "0.0.1",
+			"entitlementUid": "7d2d99c6-88ca-42ee-90f1-cb44b1d089f0",
+			"cacheSize": 0,
+			"downloaded": []
+		}
+	},
+	"target": "diskExport",
+	"quality": "",
+	"format": "gltf",
+	"fileId": "b9f2125d-6df6-4fc4-9d63-5e635e27ab17",
+	"platformIncluded": "",
+	"distributionPointBaseUrls": [],
+	"distributionMethod": "",
+	"entitlementUid": "7d2d99c6-88ca-42ee-90f1-cb44b1d089f0",
+	"invertedNormal": false,
+	"isConverted": true,
+	"isQuixel": false
+}

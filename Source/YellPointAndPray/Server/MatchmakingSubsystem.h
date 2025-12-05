@@ -8,7 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSessionsUpdated, const TArray<FMatchSessionInfo>&, Sessions);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHostRequested, int32, Port);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHostRequested,FString, Adress, int32, Port);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnConnectionStatusChanged, bool, bIsConnected);
 

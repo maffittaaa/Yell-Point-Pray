@@ -22,7 +22,7 @@ void AYellPointAndPrayPlayerController::BeginPlay()
 	Super::BeginPlay();
 	
 	// only spawn touch controls on local player controllers
-	if (SVirtualJoystick::ShouldDisplayTouchInterface() && IsLocalPlayerController())
+	if (IsLocalPlayerController() && SVirtualJoystick::ShouldDisplayTouchInterface())
 	{
 		// spawn the mobile controls widget
 		MobileControlsWidget = CreateWidget<UUserWidget>(this, MobileControlsWidgetClass);

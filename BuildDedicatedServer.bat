@@ -15,7 +15,7 @@ call :log "========================================"
 call :log "Log file: %BUILD_LOG%"
 
 REM Set the Unreal Engine path (modify this to match your UE installation)
-set UE_ENGINE_PATH=C:\UnrealBuild\Engine
+set UE_ENGINE_PATH=C:\UnrealBuildReal\UnrealEngine5.6\Engine
 set UAT_PATH=%UE_ENGINE_PATH%\Build\BatchFiles\RunUAT.bat
 
 REM Check if UAT exists

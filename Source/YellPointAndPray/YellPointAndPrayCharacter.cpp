@@ -821,7 +821,7 @@ void AYellPointAndPrayCharacter::Client_HideGameOver_Implementation()
 
 	if (GameOverWidget && GameOverWidget->IsInViewport())
 	{
-		GameOverWidget->RemoveFromViewport();
+		GameOverWidget->RemoveFromParent();
 		UE_LOG(LogTemp, Warning, TEXT("Game Over widget hideen to viewport"));
 
 		APlayerController* PC = Cast<APlayerController>(GetController());
@@ -856,7 +856,7 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 			}
 		}
 
-		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard") && !enumVariable == InWhiteboard) {
+		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard") && !(enumVariable == InWhiteboard)) {
 			Server_SetEnumVariable(InWhiteboard);
 			whiteboard = Cast<AWhiteBoard>(hitObject);
 			OnRepState();

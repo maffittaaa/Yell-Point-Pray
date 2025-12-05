@@ -8,7 +8,7 @@ public class YellPointAndPrayEditorTarget : TargetRules
 	public YellPointAndPrayEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V6;
+		DefaultBuildSettings = BuildSettingsVersion.V5;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_6;
 		ExtraModuleNames.Add("YellPointAndPray");
 	}

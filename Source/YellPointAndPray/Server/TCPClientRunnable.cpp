@@ -7,12 +7,12 @@
 #include <Interfaces/IPv4/IPv4Address.h>
 
 FTCPClientRunnable::FTCPClientRunnable(UMatchmakingSubsystem* InOwner, const FString& ServerIP)
-	: Thread(nullptr)
+	:MatchmakingServerIP(ServerIP) // Store the IP
+	, Thread(nullptr)
 	, Socket(nullptr)
 	, bRun(true)
 	, bConnected(false)
 	, OwnerSubsystem(InOwner)
-	, MatchmakingServerIP(ServerIP)  // Store the IP
 {
 	Thread = FRunnableThread::Create(this, TEXT("FTCPClientRunnable"), 0, TPri_Normal);
 }
