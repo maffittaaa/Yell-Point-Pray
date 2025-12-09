@@ -124,11 +124,10 @@ void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D draw
 
 void AWhiteBoard::CloseBoard_Implementation() {
 	UE_LOG(LogTemp, Warning, TEXT("Close Board"));
-	
-	// if (closingWidget && closingWidget->IsInViewport()) {
-	// 	closingWidget->RemoveFromParent();
-	// 	closingWidget = nullptr;
-	// }
+}
+
+void AWhiteBoard::ClearBoard_Implementation() {
+	UE_LOG(LogTemp, Warning, TEXT("Clear Board"));
 }
 
 void AWhiteBoard::Tick(float DeltaTime) {

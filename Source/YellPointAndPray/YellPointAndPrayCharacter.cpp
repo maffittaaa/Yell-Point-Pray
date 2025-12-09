@@ -30,6 +30,8 @@
 #include "Players/YPPCustomGameInstance.h"
 #include <NavigationSystem.h>
 #include "NavigationPath.h"
+#include "Engine/TextureRenderTarget2D.h"
+#include "Kismet/KismetRenderingLibrary.h"
 
 using namespace std;
 
@@ -727,7 +729,7 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		
 		clearBoardWidget = CreateWidget<UUserWidget>(GetWorld(), clearBoardWidgetClass, FName("WClearBoard"));
 
-		if (UButton* ClearButton = Cast<UButton>(closingBoardWidget->GetWidgetFromName(TEXT("ClearButton")))) {
+		if (UButton* ClearButton = Cast<UButton>(clearBoardWidget->GetWidgetFromName(TEXT("ClearButton")))) {
 			ClearButton->OnClicked.AddDynamic(this, &AYellPointAndPrayCharacter::OnClearButtonClicked);
 		}
 		
@@ -794,7 +796,18 @@ void AYellPointAndPrayCharacter::OnRepState() {
 }
 
 void AYellPointAndPrayCharacter::OnClearButtonClicked() {
+	whiteboard = Cast<AWhiteBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AWhiteBoard::StaticClass()));
+
+	if (whiteboard) {
+		whiteboard->ClearBoard();
+		UKismetRenderingLibrary::ClearRenderTarget2D(GetWorld(), whiteboard->renderTarget2D, FLinearColor::White);
 	
+		if (whiteboard->canvasTexture) {
+			whiteboard->InitializeBackground();
+		}
+		
+		whiteboard->dynamicMaterialInstanceBrush->ClearParameterValues();
+	}
 }
 
 void AYellPointAndPrayCharacter::OnCloseButtonClicked() {
