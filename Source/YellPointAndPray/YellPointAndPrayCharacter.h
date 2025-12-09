@@ -235,9 +235,27 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UPROPERTY()
 		UUserWidget* paintBrushWidget;
 
+		UPROPERTY()
+		UUserWidget* closingBoardWidget;
+
+		UPROPERTY()
+		UUserWidget* clearBoardWidget;
+
 		UPROPERTY(EditAnywhere, Category = "Components")
 		TSubclassOf<UUserWidget> paintBrushWidgetClass;
 
+		UPROPERTY(EditAnywhere, Category = "Components")
+		TSubclassOf<UUserWidget> closingBoardWidgetClass;
+
+		UPROPERTY(EditAnywhere, Category = "Components")
+		TSubclassOf<UUserWidget> clearBoardWidgetClass;
+	
+		UFUNCTION()
+		void OnCloseButtonClicked();
+	
+		UFUNCTION()
+		void OnClearButtonClicked();
+	
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 		AWhiteBoard* whiteboard;
 

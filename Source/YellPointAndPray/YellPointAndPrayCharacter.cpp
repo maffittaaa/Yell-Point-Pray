@@ -719,6 +719,20 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		
 		paintBrushWidget = CreateWidget<UUserWidget>(GetWorld(), paintBrushWidgetClass, FName("WPaintBrush"));
 		playerController->SetMouseCursorWidget(EMouseCursor::Type::Default ,paintBrushWidget);
+		closingBoardWidget = CreateWidget<UUserWidget>(GetWorld(), closingBoardWidgetClass, FName("WClosingBoard"));
+		
+		if (UButton* CloseButton = Cast<UButton>(closingBoardWidget->GetWidgetFromName(TEXT("CloseButton")))) {
+			CloseButton->OnClicked.AddDynamic(this, &AYellPointAndPrayCharacter::OnCloseButtonClicked);
+		}
+		
+		clearBoardWidget = CreateWidget<UUserWidget>(GetWorld(), clearBoardWidgetClass, FName("WClearBoard"));
+
+		if (UButton* ClearButton = Cast<UButton>(closingBoardWidget->GetWidgetFromName(TEXT("ClearButton")))) {
+			ClearButton->OnClicked.AddDynamic(this, &AYellPointAndPrayCharacter::OnClearButtonClicked);
+		}
+		
+		closingBoardWidget->AddToViewport();
+		clearBoardWidget->AddToViewport();
 		
 		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer())) { //adding the map context for drawing
 			AYellPointAndPrayPlayerController* yellPlayerController = Cast<AYellPointAndPrayPlayerController>(playerController);
@@ -750,9 +764,13 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		playerController->bShowMouseCursor = false;
 		playerController->SetShowMouseCursor(false);
 
-		if (paintBrushWidget) {
+		if (paintBrushWidget && closingBoardWidget && clearBoardWidget) {
 			paintBrushWidget->RemoveFromParent();
+			closingBoardWidget->RemoveFromParent();
+			clearBoardWidget->RemoveFromParent();
 			paintBrushWidget = nullptr;
+			closingBoardWidget = nullptr;
+			clearBoardWidget = nullptr;
 		}
 		
 		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))  {
@@ -773,6 +791,27 @@ void AYellPointAndPrayCharacter::OnRepState() {
 	 		}
 	 	}
 	}
+}
+
+void AYellPointAndPrayCharacter::OnClearButtonClicked() {
+	
+}
+
+void AYellPointAndPrayCharacter::OnCloseButtonClicked() {
+	UE_LOG(LogTemp, Warning, TEXT("Closing whiteboard"));
+	Server_SetEnumVariable(InGame);
+	enumVariable = InGame;
+	OnRepState();
+	
+	ForceNetUpdate();
+
+	whiteboard = Cast<AWhiteBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AWhiteBoard::StaticClass()));
+	if (whiteboard) {
+		whiteboard->CloseBoard();
+		interactWidget->AddToViewport();
+	}
+		
+	whiteboard = nullptr;
 }
 
 void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
