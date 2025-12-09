@@ -3,6 +3,7 @@
 #include "Components/Button.h"
 #include "Engine/Canvas.h"
 #include "Kismet/KismetRenderingLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 AWhiteBoard::AWhiteBoard() {
 	PrimaryActorTick.bCanEverTick = true;
@@ -120,7 +121,6 @@ void AWhiteBoard::Draw(UTexture2D* brushTexture, float brushSize, FVector2D draw
 	
 	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, context);
 }
-
 
 void AWhiteBoard::CloseBoard_Implementation() {
 	UE_LOG(LogTemp, Warning, TEXT("Close Board"));

@@ -256,6 +256,7 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UFUNCTION()
 		void OnClearButtonClicked();
 	
+	
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 		AWhiteBoard* whiteboard;
 
@@ -429,8 +430,16 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		void CallDuck();
 
-		public:
+		UPROPERTY(ReplicatedUsing = OnRep_ClearBoard)
+		bool bClearBoard = false;
 
+		UFUNCTION()
+		void OnRep_ClearBoard();
+
+		UFUNCTION(Server, Reliable)
+		void Server_ClearBoard(bool bClear);
+
+	public:
 		UFUNCTION(Server, Reliable)
 		void GetDuck(ARubberDuckUsable* Duck);
 

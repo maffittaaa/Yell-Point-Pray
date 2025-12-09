@@ -799,15 +799,23 @@ void AYellPointAndPrayCharacter::OnClearButtonClicked() {
 	whiteboard = Cast<AWhiteBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AWhiteBoard::StaticClass()));
 
 	if (whiteboard) {
-		whiteboard->ClearBoard();
-		UKismetRenderingLibrary::ClearRenderTarget2D(GetWorld(), whiteboard->renderTarget2D, FLinearColor::White);
-	
-		if (whiteboard->canvasTexture) {
-			whiteboard->InitializeBackground();
-		}
-		
-		whiteboard->dynamicMaterialInstanceBrush->ClearParameterValues();
+		Server_ClearBoard(true);
 	}
+}
+
+void AYellPointAndPrayCharacter::OnRep_ClearBoard() {
+	if (bClearBoard && whiteboard->renderTarget2D) {
+		UKismetRenderingLibrary::ClearRenderTarget2D(GetWorld(), whiteboard->renderTarget2D, FLinearColor::White);
+        
+		if (whiteboard->canvasTexture)
+			whiteboard->InitializeBackground();
+		
+		bClearBoard = false;
+	}
+}
+
+void AYellPointAndPrayCharacter::Server_ClearBoard_Implementation(bool bClear) {
+	bClearBoard = bClear;
 }
 
 void AYellPointAndPrayCharacter::OnCloseButtonClicked() {
@@ -839,6 +847,7 @@ void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME(AYellPointAndPrayCharacter, bReplicatedIsDrawing);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, currentAnimation);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, bIsPlayingAnimation);
+	DOREPLIFETIME(AYellPointAndPrayCharacter, bClearBoard);
 }
 
 void AYellPointAndPrayCharacter::Client_ShowGameOver_Implementation(bool State)
