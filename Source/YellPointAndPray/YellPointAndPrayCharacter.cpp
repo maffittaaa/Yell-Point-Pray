@@ -723,15 +723,13 @@ void AYellPointAndPrayCharacter::OnRepState() {
 		playerController->SetMouseCursorWidget(EMouseCursor::Type::Default ,paintBrushWidget);
 		closingBoardWidget = CreateWidget<UUserWidget>(GetWorld(), closingBoardWidgetClass, FName("WClosingBoard"));
 		
-		if (UButton* CloseButton = Cast<UButton>(closingBoardWidget->GetWidgetFromName(TEXT("CloseButton")))) {
-			CloseButton->OnClicked.AddDynamic(this, &AYellPointAndPrayCharacter::OnCloseButtonClicked);
-		}
+		if (UButton* closeButton = Cast<UButton>(closingBoardWidget->GetWidgetFromName(TEXT("CloseButton"))))
+			closeButton->OnClicked.AddDynamic(this, &AYellPointAndPrayCharacter::OnCloseButtonClicked);
 		
 		clearBoardWidget = CreateWidget<UUserWidget>(GetWorld(), clearBoardWidgetClass, FName("WClearBoard"));
 
-		if (UButton* ClearButton = Cast<UButton>(clearBoardWidget->GetWidgetFromName(TEXT("ClearButton")))) {
-			ClearButton->OnClicked.AddDynamic(this, &AYellPointAndPrayCharacter::OnClearButtonClicked);
-		}
+		if (UButton* clearButton = Cast<UButton>(clearBoardWidget->GetWidgetFromName(TEXT("ClearButton"))))
+			clearButton->OnClicked.AddDynamic(this, &AYellPointAndPrayCharacter::OnClearButtonClicked);
 		
 		closingBoardWidget->AddToViewport();
 		clearBoardWidget->AddToViewport();
@@ -799,12 +797,38 @@ void AYellPointAndPrayCharacter::OnClearButtonClicked() {
 	whiteboard = Cast<AWhiteBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AWhiteBoard::StaticClass()));
 
 	if (whiteboard) {
-		Server_ClearBoard(true);
+		confirmationWidget= CreateWidget<UUserWidget>(GetWorld(), confirmationWidgetClass, FName("WConfirmation"));
+		clearBoardWidget->RemoveFromParent();
+
+		if (UButton* confirmationButton = Cast<UButton>(confirmationWidget->GetWidgetFromName(TEXT("ConfirmationButton"))))
+			confirmationButton->OnClicked.AddDynamic(this, &AYellPointAndPrayCharacter::OnConfirmationButtonClicked);
+
+		if (UButton* refuseButton = Cast<UButton>(confirmationWidget->GetWidgetFromName(TEXT("RefuseButton"))))
+			refuseButton->OnClicked.AddDynamic(this, &AYellPointAndPrayCharacter::OnRefuseButtonClicked);
+		
+		confirmationWidget->AddToViewport();
 	}
+}
+
+void AYellPointAndPrayCharacter::OnConfirmationButtonClicked() {
+	whiteboard = Cast<AWhiteBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AWhiteBoard::StaticClass()));
+	if (whiteboard)
+		Server_ClearBoard(true);
+	confirmationWidget->RemoveFromParent();
+	clearBoardWidget->AddToViewport();
+}
+
+void AYellPointAndPrayCharacter::OnRefuseButtonClicked() {
+	whiteboard = Cast<AWhiteBoard>(UGameplayStatics::GetActorOfClass(GetWorld(), AWhiteBoard::StaticClass()));
+	if (whiteboard)
+		Server_ClearBoard(false);
+	confirmationWidget->RemoveFromParent();
+	clearBoardWidget->AddToViewport();
 }
 
 void AYellPointAndPrayCharacter::OnRep_ClearBoard() {
 	if (bClearBoard && whiteboard->renderTarget2D) {
+		
 		UKismetRenderingLibrary::ClearRenderTarget2D(GetWorld(), whiteboard->renderTarget2D, FLinearColor::White);
         
 		if (whiteboard->canvasTexture)
