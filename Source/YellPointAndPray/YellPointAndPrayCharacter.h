@@ -36,10 +36,10 @@ UENUM(BlueprintType, Category = "Animation")
 enum EAnimationState : uint8
 {
 	Idle,
-	Emote1,
-	Emote2,
-	Emote3,
-	Emote4,
+	ThumbsUp,
+	Stop,
+	No,
+	Pointing,
 	Emote5,
 	Emote6
 };
@@ -114,6 +114,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 		UInputAction* TeleportToElectricalRoomAction;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		UInputAction* EmoteWheelAction;
 
 		//Animation State
 		UPROPERTY(ReplicatedUsing = OnRepAnimationState, BlueprintReadWrite, Category = "Animations")
@@ -289,9 +292,21 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Cheats")
 		class UACCheats* cheatsComponent;
 
-		//animation
+		//Animations and Emote Wheel
 		UFUNCTION()
 		void OnRepAnimationState();
+
+		UFUNCTION()
+		void TurnOnEmoteWheel();
+
+		UFUNCTION()
+		void TurnOffEmoteWheel();
+
+		UPROPERTY()
+		UUserWidget* emoteWheelWidget;
+
+		UPROPERTY(EditAnywhere, Category = "Animations")
+		TSubclassOf<UUserWidget> emoteWheelWidgetClass;
 
 	protected:
 
