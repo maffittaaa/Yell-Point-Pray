@@ -139,12 +139,6 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		//TeleportToElectricalRoom
 		EnhancedInputComponent->BindAction(TeleportToElectricalRoomAction, ETriggerEvent::Started, this , &AYellPointAndPrayCharacter::TeleportToElectricalRoom);
-
-		//Emotes
-		EnhancedInputComponent->BindAction(EmoteThumbsUp, ETriggerEvent::Started, this , &AYellPointAndPrayCharacter::PlayAnimationThumbsUp);
-		EnhancedInputComponent->BindAction(EmoteStop, ETriggerEvent::Started, this , &AYellPointAndPrayCharacter::PlayAnimationStop);
-		EnhancedInputComponent->BindAction(EmotePoint, ETriggerEvent::Started, this , &AYellPointAndPrayCharacter::PlayAnimationPoint);
-		EnhancedInputComponent->BindAction(EmoteNo, ETriggerEvent::Started, this , &AYellPointAndPrayCharacter::PlayAnimationNo);
 	}
 	else
 		UE_LOG(LogYellPointAndPray, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
@@ -388,7 +382,6 @@ void AYellPointAndPrayCharacter::DoMove(float Right, float Forward)
 		// pass the move inputs
 		AddMovementInput(GetActorRightVector(), Right);
 		AddMovementInput(GetActorForwardVector(), Forward);
-		Server_ResetAnimation();
 	}
 }
 
@@ -412,6 +405,10 @@ void AYellPointAndPrayCharacter::Duck() {
 void AYellPointAndPrayCharacter::StopDuck() {
 	// signal the character to stop crouching
 	ACharacter::UnCrouch(false);
+}
+
+void AYellPointAndPrayCharacter::OnRepAnimationState() {
+	
 }
 
 void AYellPointAndPrayCharacter::ThrowDuck_Implementation(ARubberDuckUsable* Ducksent, int ItemSelect)
@@ -869,8 +866,6 @@ void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME(AYellPointAndPrayCharacter, DuckUsing);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, replicatedMouseUV);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, bReplicatedIsDrawing);
-	DOREPLIFETIME(AYellPointAndPrayCharacter, currentAnimation);
-	DOREPLIFETIME(AYellPointAndPrayCharacter, bIsPlayingAnimation);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, bClearBoard);
 }
 
@@ -1150,94 +1145,6 @@ void AYellPointAndPrayCharacter::TeleportToLaserRoom() {
 }
 void AYellPointAndPrayCharacter::TeleportToElectricalRoom() {
 	cheatsComponent->Server_TeleportToEletricalRoom(this, FVector(-2530.0f, -100.0f, 0.0f));
-}
-
-void AYellPointAndPrayCharacter::PlayAnimationThumbsUp() {
-	bIsPlayingAnimation = true;
-	if (FirstPersonMesh && emoteAnimationThumbsUp)
-		FirstPersonMesh->PlayAnimation(emoteAnimationThumbsUp, false);
-	if (GetMesh() && emoteAnimationThumbsUp)
-		GetMesh()->PlayAnimation(emoteAnimationThumbsUp, false);
-	
-	if (GetNetMode() != NM_Standalone)
-		Server_PlayAnimation(emoteAnimationThumbsUp);
-}
-
-void AYellPointAndPrayCharacter::PlayAnimationStop() {
-	bIsPlayingAnimation = true;
-	if (FirstPersonMesh && emoteAnimationStop)
-		FirstPersonMesh->PlayAnimation(emoteAnimationStop, false);
-	
-	if (GetMesh() && emoteAnimationStop)
-		GetMesh()->PlayAnimation(emoteAnimationStop, false);
-
-	if (GetNetMode() != NM_Standalone)
-		Server_PlayAnimation(emoteAnimationStop);
-}
-
-void AYellPointAndPrayCharacter::PlayAnimationPoint() {
-	bIsPlayingAnimation = true;
-	if (FirstPersonMesh && emoteAnimationPoint)
-		FirstPersonMesh->PlayAnimation(emoteAnimationPoint, false);
-
-	if (GetMesh() && emoteAnimationPoint)
-		GetMesh()->PlayAnimation(emoteAnimationPoint, false);
-
-	if (GetNetMode() != NM_Standalone)
-		Server_PlayAnimation(emoteAnimationPoint);
-}
-
-void AYellPointAndPrayCharacter::PlayAnimationNo() {
-	bIsPlayingAnimation = true;
-	if (FirstPersonMesh && emoteAnimationNo)
-		FirstPersonMesh->PlayAnimation(emoteAnimationNo, false);
-
-	if (GetMesh() && emoteAnimationNo)
-		GetMesh()->PlayAnimation(emoteAnimationNo, false);
-
-	if (GetNetMode() != NM_Standalone)
-		Server_PlayAnimation(emoteAnimationNo);
-}
-
-void AYellPointAndPrayCharacter::Server_PlayAnimation_Implementation(UAnimationAsset* animation) {
-	if (!HasAuthority()) return;
-    
-	currentAnimation = animation;
-	bIsPlayingAnimation = true;
-	
-	if (FirstPersonMesh && animation)
-		FirstPersonMesh->PlayAnimation(animation, true);
-	
-	if (GetMesh() && animation)
-		GetMesh()->PlayAnimation(animation, false);
-	
-	ForceNetUpdate();
-}
-
-void AYellPointAndPrayCharacter::OnRep_CurrentAnimation() {
-	if (currentAnimation && bIsPlayingAnimation) {
-		if (!IsLocallyControlled()) {
-			if (FirstPersonMesh)
-				FirstPersonMesh->PlayAnimation(currentAnimation, false);
-			
-			if (GetMesh())
-				GetMesh()->PlayAnimation(currentAnimation, false);
-		}
-	}
-}
-
-void AYellPointAndPrayCharacter::Server_ResetAnimation_Implementation() {
-	bIsPlayingAnimation = false;
-	currentAnimation = nullptr;
-	
-	if (FirstPersonMesh) {
-		FirstPersonMesh->Stop();
-		FirstPersonMesh->InitAnim(true);
-	}
-
-	if (GetMesh())
-		GetMesh()->Stop();
-
 }
 
 void AYellPointAndPrayCharacter::Tick(float DeltaTime) 

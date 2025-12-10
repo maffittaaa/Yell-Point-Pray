@@ -32,6 +32,18 @@ enum EGameStates {
 	InGame,
 };
 
+UENUM(BlueprintType, Category = "Animation")
+enum EAnimationState : uint8
+{
+	Idle,
+	Emote1,
+	Emote2,
+	Emote3,
+	Emote4,
+	Emote5,
+	Emote6
+};
+
 UCLASS(abstract)
 class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public IInventoryObserver, public IReset
 {
@@ -103,17 +115,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 		UInputAction* TeleportToElectricalRoomAction;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-		UInputAction* EmoteThumbsUp;
-
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-		UInputAction* EmoteStop;
-
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-		UInputAction* EmotePoint;
-
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-		UInputAction* EmoteNo;
+		//Animation State
+		UPROPERTY(ReplicatedUsing = OnRepAnimationState, BlueprintReadWrite, Category = "Animations")
+		TEnumAsByte<EAnimationState> animationState = Idle;
 		
 		UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<USoundWave*> KebabFartSoundsList;
@@ -152,48 +156,6 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		void TurnOffDetection();
 		void TeleportToLaserRoom();
 		void TeleportToElectricalRoom();
-
-		UFUNCTION()
-		void PlayAnimationThumbsUp();
-
-		UFUNCTION()
-		void PlayAnimationStop();
-
-		UFUNCTION()
-		void PlayAnimationPoint();
-	
-		UFUNCTION()
-		void PlayAnimationNo();
-
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Emotes")
-		UAnimationAsset* emoteAnimationThumbsUp;
-
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Emotes")
-		UAnimationAsset* emoteAnimationStop;
-
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Emotes")
-		UAnimationAsset* emoteAnimationPoint;
-
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Emotes")
-		UAnimationAsset* emoteAnimationNo;
-
-		UPROPERTY(ReplicatedUsing = OnRep_CurrentAnimation)
-		UAnimationAsset* currentAnimation;
-
-		UPROPERTY(Replicated)
-		bool bIsPlayingAnimation = false;
-
-		UFUNCTION()
-		void OnRep_CurrentAnimation();
-
-		UFUNCTION(Server, Reliable)
-		void Server_PlayAnimation(UAnimationAsset* Animation);
-
-		UFUNCTION(Server, Reliable)
-		void Server_ResetAnimation();
-
-		UPROPERTY(Replicated)
-		UAnimInstance* initialAnim;
 
 		UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "CurrentGuard")
 		AActor* KnockableActor = nullptr;
@@ -326,6 +288,10 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Cheats")
 		class UACCheats* cheatsComponent;
+
+		//animation
+		UFUNCTION()
+		void OnRepAnimationState();
 
 	protected:
 
