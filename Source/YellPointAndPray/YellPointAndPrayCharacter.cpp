@@ -139,6 +139,11 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		//TeleportToElectricalRoom
 		EnhancedInputComponent->BindAction(TeleportToElectricalRoomAction, ETriggerEvent::Started, this , &AYellPointAndPrayCharacter::TeleportToElectricalRoom);
+
+		//EmoteWheel
+		EnhancedInputComponent->BindAction(EmoteWheelAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::TurnOnEmoteWheel);
+		EnhancedInputComponent->BindAction(EmoteWheelAction, ETriggerEvent::Completed, this, &AYellPointAndPrayCharacter::TurnOffEmoteWheel);
+		
 	}
 	else
 		UE_LOG(LogYellPointAndPray, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
@@ -409,6 +414,35 @@ void AYellPointAndPrayCharacter::StopDuck() {
 
 void AYellPointAndPrayCharacter::OnRepAnimationState() {
 	
+}
+
+void AYellPointAndPrayCharacter::TurnOnEmoteWheel(){
+	emoteWheelWidget = CreateWidget<UUserWidget>(GetWorld(), emoteWheelWidgetClass, FName("WEmoteWheelMenu"));
+	emoteWheelWidget->AddToViewport();
+	
+	playerController = Cast<APlayerController>(GetController());
+	if (!playerController) return;
+
+	FInputModeGameAndUI inputMode;
+	inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	inputMode.SetHideCursorDuringCapture(false);
+	playerController->SetInputMode(inputMode);
+
+	playerController->bShowMouseCursor = true;
+	playerController->SetShowMouseCursor(true);
+}
+
+void AYellPointAndPrayCharacter::TurnOffEmoteWheel() {
+	emoteWheelWidget->RemoveFromParent();
+
+	playerController = Cast<APlayerController>(GetController());
+	if (!playerController) return;
+
+	FInputModeGameOnly inputMode;
+	playerController->SetInputMode(inputMode);
+
+	playerController->bShowMouseCursor = false;
+	playerController->SetShowMouseCursor(false);
 }
 
 void AYellPointAndPrayCharacter::ThrowDuck_Implementation(ARubberDuckUsable* Ducksent, int ItemSelect)
