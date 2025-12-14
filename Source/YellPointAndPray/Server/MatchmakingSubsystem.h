@@ -10,7 +10,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSessionsUpdated, const TArray<FMa
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHostRequested,FString, Adress, int32, Port);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnConnectionStatusChanged, bool, bIsConnected);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMatchmakingOnConnectionStatusChanged, bool, bIsConnected);
 
 class FTCPClientRunnable;
 
@@ -43,7 +43,7 @@ public:
 	FOnHostRequested OnHostRequested;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnConnectionStatusChanged OnConnectionStatusChanged;
+	FMatchmakingOnConnectionStatusChanged OnConnectionStatusChanged;
 	// Called by the runnable on the game thread
 	void HandleServerMessage(const FString& ServerMessage);
 

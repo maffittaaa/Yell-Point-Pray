@@ -9,6 +9,7 @@
 #include <Items/LockPick/LockPickMiniGame.h>
 #include "InputAction.h"
 #include "Door.h"
+#include <Server/VoiceChatComponent.h>
 #include "YellPointAndPrayPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -28,6 +29,19 @@ private:
 	EPlayerType StoredPlayerType = EPlayerType::None;
 
 public:
+	//VOICE CHAT
+	void InitializeVoiceChat();
+
+	/** Server RPC: Request voice credentials for main channel */
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_RequestVoiceCredentials(const FString& ProductUserId);
+
+	/** Client RPC: Receive voice credentials from server */
+	UFUNCTION(Client, Reliable)
+	void Client_ReceiveVoiceCredentials(const FString& ChannelName, const FString& Token);
+
+	FString PendingChannelName;
+	FString PendingToken;
 
 	/** Constructor */
 	AYellPointAndPrayPlayerController();
@@ -63,6 +77,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* LeftClickAction;
 protected:
+	//VOICE CHAT
+	UVoiceChatComponent* VoiceComp;
+
 	/** Input Mapping Contexts */
 	UPROPERTY(EditAnywhere, Category="Input|Input Mappings")
 	TArray<UInputMappingContext*> MobileExcludedMappingContexts;

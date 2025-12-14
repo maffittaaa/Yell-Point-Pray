@@ -23,22 +23,23 @@ public class YellPointAndPray : ModuleRules
             "Sockets",          
             "Networking",
             "NavigationSystem",
+			"OnlineSubsystem",
+			"OnlineSubsystemUtils",
+			"OnlineSubsystemEOS",
+			"OnlineServicesInterface",
+			"OnlineServicesEOS",
+			"VoiceChat",
+			"EOSVoiceChat"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] {
-			"VoiceChat",
 			"EOSSDK",
-			"OnlineSubsystemEOS",
-            //"OnlineSubsystemEOSVoice",
-			"OnlineSubsystemEOSPlus",
 			"GeometryFramework",
 			"MeshDescription",
 			"StaticMeshDescription",
 			"GeometryCore",
 			"ModelingComponents",
         });
-
-
 
         PublicIncludePaths.AddRange(new string[] {
 			"YellPointAndPray",

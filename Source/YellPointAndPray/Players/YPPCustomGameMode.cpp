@@ -20,7 +20,97 @@ AYPPCustomGameMode::AYPPCustomGameMode()
     //DefaultPawnClass = AYPPBlindCharacter::StaticClass();
     bUseSeamlessTravel = true;
     bPauseable = false;
+	VoiceRoomManager = nullptr;
 }
+
+//START VOICE CHAT IMPLEMENTATION
+
+void AYPPCustomGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+    Super::InitGame(MapName, Options, ErrorMessage);
+
+    // Initialize voice manager on server
+    if (HasAuthority())
+    {
+        InitializeVoiceManager();
+    }
+}
+
+void AYPPCustomGameMode::InitializeVoiceManager()
+{
+    if (!HasAuthority() || VoiceRoomManager)
+    {
+        return;
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("[GameMode] Initializing Voice Room Manager..."));
+
+    // Spawn voice room manager
+    VoiceRoomManager = GetWorld()->SpawnActor<AVoiceRoomManager>();
+    if (VoiceRoomManager)
+    {
+        // Bind to credentials ready event
+        VoiceRoomManager->OnVoiceCredentialsReady.AddDynamic(this, &AYPPCustomGameMode::OnVoiceCredentialsReady);
+        UE_LOG(LogTemp, Log, TEXT("[GameMode] Voice Room Manager initialized"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("[GameMode] Failed to spawn Voice Room Manager"));
+    }
+}
+
+void AYPPCustomGameMode::RequestVoiceCredentialsForPlayer(APlayerController* PlayerController, const FString& ProductUserId)
+{
+    if (!HasAuthority() || !VoiceRoomManager || !PlayerController)
+    {
+        UE_LOG(LogTemp, Error, TEXT("[GameMode] Cannot request voice credentials - invalid state"));
+        return;
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("[GameMode] Requesting voice credentials for player %s (ProductUserId: %s)"),
+        *PlayerController->GetName(), *ProductUserId);
+
+    // Store player controller for when credentials are ready
+    PendingVoiceRequests.Add(ProductUserId, PlayerController);
+
+    // Request credentials from voice room manager
+    VoiceRoomManager->AutoAssignMainChannel(ProductUserId, MainVoiceChannelName);
+}
+
+void AYPPCustomGameMode::OnVoiceCredentialsReady(const FString& ProductUserId, FVoiceRoomCredentials Credentials)
+{
+    UE_LOG(LogTemp, Log, TEXT("[GameMode] Voice credentials ready for ProductUserId: %s"), *ProductUserId);
+
+    // Find the player controller that requested these credentials
+    APlayerController** FoundPC = PendingVoiceRequests.Find(ProductUserId);
+    if (!FoundPC || !*FoundPC)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[GameMode] No pending request found for ProductUserId: %s"), *ProductUserId);
+        return;
+    }
+
+    APlayerController* PlayerController = *FoundPC;
+    PendingVoiceRequests.Remove(ProductUserId);
+
+    if (AYellPointAndPrayPlayerController* PC = Cast<AYellPointAndPrayPlayerController>(PlayerController))
+    {
+        if (Credentials.bIsValid)
+        {
+            // Send credentials to client
+            UE_LOG(LogTemp, Log, TEXT("[GameMode] Sending voice credentials to client: Channel=%s, Token=%s (len=%d)"),
+                *Credentials.RoomName,
+                Credentials.ParticipantToken.IsEmpty() ? TEXT("None") : TEXT("Provided"),
+                Credentials.ParticipantToken.Len());
+            PC->Client_ReceiveVoiceCredentials(Credentials.RoomName, Credentials.ParticipantToken);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("[GameMode] Invalid credentials received for ProductUserId: %s"), *ProductUserId);
+        }
+    }
+}
+
+//END VOICE CHAT IMPLEMENTATION
 
 void AYPPCustomGameMode::PostLogin(APlayerController* NewPlayer)
 {

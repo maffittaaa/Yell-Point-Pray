@@ -9,6 +9,7 @@
 #include "GameFramework/GameModeBase.h"
 #include <GameFramework/GameMode.h>
 #include <GameFramework/GameSession.h>
+#include <Server/VoiceRoomManager.h>
 #include "YPPCustomGameMode.generated.h"
 
 /**
@@ -38,6 +39,29 @@ UCLASS()
 class YELLPOINTANDPRAY_API AYPPCustomGameMode : public AGameModeBase
 {
     GENERATED_BODY()
+public:
+	//VOICE CHAT
+    virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+
+    void RequestVoiceCredentialsForPlayer(APlayerController* PlayerController, const FString& ProductUserId);
+
+protected:
+    /** Map of pending voice credential requests (ProductUserId -> PlayerController) */
+    TMap<FString, APlayerController*> PendingVoiceRequests;
+
+    UPROPERTY()
+    AVoiceRoomManager* VoiceRoomManager;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Voice Chat")
+    FString MainVoiceChannelName = TEXT("MainChannel");
+
+    /** Initialize voice room manager */
+    void InitializeVoiceManager();
+
+    /** Handle voice credentials ready callback */
+    UFUNCTION()
+    void OnVoiceCredentialsReady(const FString& ProductUserId, FVoiceRoomCredentials Credentials);
+
 private:
     TArray<APawn*> PlayersArray;
 
