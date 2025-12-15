@@ -24,9 +24,9 @@ void AYellPointAndPrayPlayerController::BeginPlay()
 	
 	if (IsLocalPlayerController())
 	{
-		VoiceComp = NewObject<UVoiceChatComponent>(this);
-		VoiceComp->RegisterComponent();
-		VoiceComp->Initialize();
+		//VoiceComp = NewObject<UVoiceChatComponent>(this);
+		//VoiceComp->RegisterComponent();
+		//VoiceComp->Initialize();
 	}
 
 	// only spawn touch controls on local player controllers
