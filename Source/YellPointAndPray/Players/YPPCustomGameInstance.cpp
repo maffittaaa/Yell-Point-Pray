@@ -10,7 +10,7 @@ void UYPPCustomGameInstance::Init()
 
 void UYPPCustomGameInstance::PlayerTravelling(TSubclassOf<APawn> NewPawnClass, EPlayerType NewPlayerType, AYPPCustomPlayerState* NewPlayerState, const FPlayerInventoryInfo& InventoryInfo)
 {
-    if (!NewPawnClass || !NewPawnClass) return;
+    if (!NewPawnClass || !NewPlayerState) return;
 
     // Use the persistent Unique ID
     FUniqueNetIdRepl PlayerNetId = NewPlayerState->GetUniqueId();
@@ -31,9 +31,6 @@ void UYPPCustomGameInstance::PlayerTravelling(TSubclassOf<APawn> NewPawnClass, E
 
     DefaultClass = PlayerInfoArray[0].PawnClass;
     DefaultType = PlayerInfoArray[0].PlayerType;
-
-    FString UniqueIdString = PlayerNetId->ToString();
-    UE_LOG(LogTemp, Warning, TEXT("MI: Player Unique Net ID: %s"), *UniqueIdString);
 
     UE_LOG(LogTemp, Warning, TEXT("MI: New Player State was stored: %s"), *NewPlayerState->GetName());
     UE_LOG(LogTemp, Warning, TEXT("MI: New Player Class was stored: %s"), *NewPawnClass->GetName());
