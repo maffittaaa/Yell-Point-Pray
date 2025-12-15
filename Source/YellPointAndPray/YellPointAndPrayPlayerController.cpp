@@ -60,6 +60,14 @@ void AYellPointAndPrayPlayerController::InitializeVoiceChat()
 	}
 }
 
+void AYellPointAndPrayPlayerController::CloseVoiceChat()
+{
+	if (IsLocalPlayerController())
+	{
+		VoiceComp->CloseVoice();
+	}
+}
+
 bool AYellPointAndPrayPlayerController::Server_RequestVoiceCredentials_Validate(const FString& ProductUserId)
 {
 	return !ProductUserId.IsEmpty();

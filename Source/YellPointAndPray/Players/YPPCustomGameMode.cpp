@@ -399,6 +399,8 @@ void AYPPCustomGameMode::LoadLevel(FName LevelName)
                     {
                         if (AYellPointAndPrayPlayerController* YPPPlayerController = Cast<AYellPointAndPrayPlayerController>(PC)) 
                         {
+							YPPPlayerController->CloseVoiceChat();
+
                             if (AYPPCustomPlayerState* PlayerState = Cast<AYPPCustomPlayerState>(PC->PlayerState)) 
                             {
                                 if (AYellPointAndPrayCharacter* PlayerCharacter = Cast<AYellPointAndPrayCharacter>(PC->GetPawn()))

@@ -32,6 +32,8 @@ public:
 	//VOICE CHAT
 	void InitializeVoiceChat();
 
+	void CloseVoiceChat();
+
 	/** Server RPC: Request voice credentials for main channel */
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_RequestVoiceCredentials(const FString& ProductUserId);

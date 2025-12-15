@@ -25,6 +25,12 @@ void UVoiceChatComponent::BeginPlay()
 
 void UVoiceChatComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+    CloseVoice();
+    Super::EndPlay(EndPlayReason);
+}
+
+void UVoiceChatComponent::CloseVoice()
+{
     if (VoiceChat && VoiceUser)
     {
         VoiceChat->ReleaseUser(VoiceUser);
@@ -41,7 +47,6 @@ void UVoiceChatComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
     bIsReady = false;
     bIsInitializing = false;
     CurrentChannel.Empty();
-    Super::EndPlay(EndPlayReason);
 }
 
 //////////////////////////////////////////////////////////////////////////

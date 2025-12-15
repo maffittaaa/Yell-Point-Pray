@@ -38,6 +38,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Voice Chat")
     void Initialize();
 
+    UFUNCTION(BlueprintCallable, Category = "Voice Chat")
+    void CloseVoice();
+
     /** Join a voice channel using server-provided credentials */
     UFUNCTION(BlueprintCallable, Category = "Voice Chat")
     void JoinChannel(const FString& ChannelName, const FString& Token, bool bPositional = false);
