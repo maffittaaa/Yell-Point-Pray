@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Items/PickableItemsParent/PickableItem.h"
+#include "Components/AudioComponent.h"
 #include "RubberDuckPickable.generated.h"
 
 /**
@@ -23,12 +24,18 @@ private:
 	bool HasQuacked = false;
 
 
+
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USphereComponent* SphereCollider;
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UAudioComponent* DuckAudioPlayer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<USoundWave*> QuackSoundsList;
 
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, FVector NormalImpulse,const FHitResult& Hit);

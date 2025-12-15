@@ -16,6 +16,9 @@ ARubberDuckPickable::ARubberDuckPickable() {
 	SphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollider"));
 	SphereCollider->InitSphereRadius(50.0f);
 	SphereCollider->SetupAttachment(Mesh);
+
+	DuckAudioPlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("DuckAudioPlayer"));
+	DuckAudioPlayer->SetupAttachment(Mesh);
 }
 
 void ARubberDuckPickable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -37,6 +40,7 @@ void ARubberDuckPickable::BeginPlay()
 
 void ARubberDuckPickable::CallGuard() {
 	UE_LOG(LogTemp, Warning, TEXT("Quack Quack Bitch"));
+
 	UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld());
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGuard::StaticClass(), FoundActors);
@@ -69,6 +73,13 @@ void ARubberDuckPickable::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 		HasQuacked = true;
 		CallGuard();
 	}
+	
+	//START QUACK QUACK
+	int32 RandSound = FMath::RandRange(0, 3);
+	UE_LOG(LogTemp, Warning, TEXT("RandSound: %d"), RandSound);
+	DuckAudioPlayer->Sound = QuackSoundsList[RandSound];
+	DuckAudioPlayer->Play();
+	//END QUACK QUACK SOUND
 }
 
 
