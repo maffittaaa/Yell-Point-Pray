@@ -75,4 +75,6 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void GetLockDoor();
+
+	bool GetLocked();
 };
