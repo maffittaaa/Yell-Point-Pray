@@ -82,8 +82,17 @@ void ALockPickMiniGame::OnClick(AActor* User1)
 
     if (arrowY < min && arrowY > max) {
         Cast<AYellPointAndPrayPlayerController>(Owner)->Unlock(DoorOpening);
+        int rand = FMath::FRandRange(1.f, 5.f);
+        if (rand == 1) {
+            Cast<AYellPointAndPrayCharacter>(User)->InventoryComponent->DeleteInventorySlot(Cast<AYellPointAndPrayCharacter>(User)->InventoryComponent->CurrentItemSelected);
+            Cast<AYellPointAndPrayCharacter>(User)->ServerDeleteItem();
+        }
     }
+    else {
+        Cast<AYellPointAndPrayCharacter>(User)->InventoryComponent->DeleteInventorySlot(Cast<AYellPointAndPrayCharacter>(User)->InventoryComponent->CurrentItemSelected);
+        Cast<AYellPointAndPrayCharacter>(User)->ServerDeleteItem();
 
+    }
     GetWorldTimerManager().SetTimer(
         DelayHandle,
         this,

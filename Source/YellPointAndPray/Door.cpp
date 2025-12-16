@@ -191,3 +191,7 @@ void ADoor::GetLockDoor_Implementation() {
 	}
 }
 
+
+bool ADoor::GetLocked() {
+	return Locked;
+}

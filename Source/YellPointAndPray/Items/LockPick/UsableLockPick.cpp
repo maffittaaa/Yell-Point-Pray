@@ -51,7 +51,7 @@ void AUsableLockPick::UseReal_Implementation(AActor* User, UWorld* World, AYellP
             if (hitObject->IsA(ADoor::StaticClass()))
             {
                 ADoor* Door = Cast<ADoor>(hitObject);
-                if (Door)
+                if (Door && Door->GetLocked())
                 {
                     //Door->UnlockDoor();
                     PlayerController->StartMinigame(MiniGameActorClass, World, User, Door);

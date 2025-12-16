@@ -389,6 +389,11 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UFUNCTION(Server, Reliable)
 		void ThrowDuck(ARubberDuckUsable* Duck, int ItemSelect);
 
+		void DeleteItem();
+
+		UFUNCTION(Server, Reliable)
+		void ServerDeleteItem();
+
 	private:
 		ACharacter* ItemOwner;
 
@@ -409,11 +414,6 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UFUNCTION(Server, Reliable)
 		void ServerOnItemSelected(int SlotID);
-
-		UFUNCTION(Server, Reliable)
-		void ServerDeleteItem();
-
-		void DeleteItem();
 
 		UFUNCTION(Server, Reliable)
 		void Server_UseItem(int SlotID);
