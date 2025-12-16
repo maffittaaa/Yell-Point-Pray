@@ -185,26 +185,39 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 		}
 	}
 
-	
+	UE_LOG(LogTemp, Warning, TEXT("Player is going to Start Timer"));
+
 	FTimerHandle TimerHandle; 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYellPointAndPrayCharacter::RestoreTravelInventory, 0.5f, false);
 }
 
 void AYellPointAndPrayCharacter::Reset_Implementation()
 {
+	//UE_LOG(LogTemp, Warning, TEXT("Start Reset Implementation"));
+	
 	FRotator rotation = StartRotation.Rotator();
 	TeleportTo(StartLocation, rotation);
+	
+	//UE_LOG(LogTemp, Warning, TEXT("Teleport Completed"));
 
 	if (HoldingItem != nullptr)
 	{
 		ServerDeleteItem();
+		//UE_LOG(LogTemp, Warning, TEXT("Server deleted Holding Item"));
 	}	
 
 	KebabEffect = false;
 	GetWorld()->GetTimerManager().ClearTimer(KebabTimerHandle);
 
+	//UE_LOG(LogTemp, Warning, TEXT("Kebab Timer was cleared"));
+
 	RestoreTravelInventory();
+
+	//UE_LOG(LogTemp, Warning, TEXT("Travel Inventory was restored"));
+
 	Client_HideGameOver();
+
+	//UE_LOG(LogTemp, Warning, TEXT("Teleport Completed"));
 
 	//UE_LOG(LogTemp, Warning, TEXT("CHARACTER-specific reset called!"));
 }
@@ -215,18 +228,44 @@ void AYellPointAndPrayCharacter::RestoreTravelInventory()
 
 	if (UGameInstance* GameInstance = GetWorld()->GetGameInstance())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Has Game Instance"));
+
 		if (UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GameInstance))
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Has Custom Game Instance"));
+
 			if (AYPPCustomPlayerState* CustomPlayerState = Cast<AYPPCustomPlayerState>(GetPlayerState()))
 			{
+				UE_LOG(LogTemp, Warning, TEXT("Has Custom Player State"));
 				FPlayerInventoryInfo TravelInventory = CustomGameInstance->GetPlayerInventory(CustomPlayerState);
+				UE_LOG(LogTemp, Warning, TEXT("Has Travel Inventory"));
+
 				if (TravelInventory.InventorySlots.Num() > 0)
 				{
+					UE_LOG(LogTemp, Warning, TEXT("Restoring travel Inventory"));
 					InventoryComponent->RestoreInventoryWithTravelData(TravelInventory.InventorySlots);
+					UE_LOG(LogTemp, Warning, TEXT("Travel Inventory Restored"));
 					//UE_LOG(LogTemp, Warning, TEXT("Player: Restored travel inventory with %d slots"), TravelInventory.InventorySlots.Num());
 				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Travel Inventory Slots is 0"));
+				}
+
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("No Custom Player State found"));
 			}
 		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("No Custom Game Instance found"));
+		}
+	}
+	else 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Game Instance found"));
 	}
 }
 
