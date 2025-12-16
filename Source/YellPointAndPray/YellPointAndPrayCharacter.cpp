@@ -224,7 +224,11 @@ void AYellPointAndPrayCharacter::Reset_Implementation()
 
 void AYellPointAndPrayCharacter::RestoreTravelInventory()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Start Restoring Travelling Inventory"));
+	
 	if (!HasAuthority()) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Does Not Have Authority"));
 
 	if (UGameInstance* GameInstance = GetWorld()->GetGameInstance())
 	{
