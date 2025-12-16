@@ -575,6 +575,7 @@ void AYellPointAndPrayCharacter::ServerOnItemDroped_Implementation(int SlotID, F
 					AActor* Key = GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, NewPosition, FRotator::ZeroRotator, SpawnParams);
 
 					Cast<AKeyPickable>(Key)->KeyID = InventoryComponent->GetSlotKeyID(SlotID);
+					Cast<AKeyPickable>(Key)->KeyName = InventoryComponent->GetSlotKeyName(SlotID);
 					UE_LOG(LogTemp, Warning, TEXT("KeyID AAAAAAAAAAAAAset to: %d"), Cast<AKeyPickable>(Key)->KeyID);
 					return;
 				}

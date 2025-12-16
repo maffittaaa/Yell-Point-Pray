@@ -20,4 +20,7 @@ private:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	int KeyID = -1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	FString KeyName = "";
 };

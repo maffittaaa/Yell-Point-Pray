@@ -24,6 +24,7 @@ void AKeyUsable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
     DOREPLIFETIME(AKeyUsable, KeyID);
+    DOREPLIFETIME(AKeyUsable, KeyName);
 }
 
 void AKeyUsable::UseReal_Implementation(AActor* User, UWorld* World)

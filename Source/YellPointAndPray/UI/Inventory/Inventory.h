@@ -20,6 +20,9 @@ public:
 	int KeyID = -1;
 
 	UPROPERTY()
+	FString KeyName = "";
+
+	UPROPERTY()
 	FString Name = "DefaultName";
 
 	UPROPERTY()
@@ -84,6 +87,9 @@ public:
 	int GetSlotID(int SlotID);
 
 	int GetSlotKeyID(int SlotID);
+
+	UFUNCTION(BlueprintCallable)
+	FString GetSlotKeyName(int SlotID);
 
 	FString GetSlotName(int SlotID);
 	

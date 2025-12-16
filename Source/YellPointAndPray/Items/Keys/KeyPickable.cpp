@@ -14,4 +14,5 @@ void AKeyPickable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AKeyPickable, KeyID);
+	DOREPLIFETIME(AKeyPickable, KeyName);
 }

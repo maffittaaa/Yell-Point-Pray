@@ -34,10 +34,8 @@ void UInventory::StoreInitialInventory(TArray<FUInventoryStruct> InitialInventor
 void UInventory::RestoreInventoryWithTravelData(const TArray<FUInventoryStruct>& TravelData)
 {
 	// Clear current inventory
-	UE_LOG(LogTemp, Warning, TEXT("Start Restoring inventory"));
 	for (int i = 0; i < InventorySlots.Num(); i++)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("First Item: %d"), i);
 		if (InventorySlots[i].Item != nullptr)
 		{
 			FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
@@ -47,12 +45,9 @@ void UInventory::RestoreInventoryWithTravelData(const TArray<FUInventoryStruct>&
 		ResetSlotToDefaultValue(i);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("First Round Over"));
-
 	// Restore from travel data
 	for (int i = 0; i < TravelData.Num() && i < InventorySlots.Num(); i++)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Second Item: %d"), i);
 		InventorySlots[i] = TravelData[i];
 	}
 
@@ -84,7 +79,6 @@ void UInventory::ResetSlotToDefaultValue(int SlotID)
 	InventorySlots[SlotID].ID = -1;
 	InventorySlots[SlotID].Name = "DefaultName";
 	InventorySlots[SlotID].PreviewImage = nullptr;
-	InventorySlots[SlotID].KeyName = "";
 }
 
 int UInventory::GetInventorySize() 

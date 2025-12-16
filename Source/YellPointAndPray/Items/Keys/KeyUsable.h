@@ -20,6 +20,9 @@ public:
 	UPROPERTY(Replicated)
 	int KeyID = -1;
 
+	UPROPERTY(Replicated)
+	FString KeyName = "";
+
 	virtual void Use_Implementation(AActor* User) override;
 
 
