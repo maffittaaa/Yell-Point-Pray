@@ -394,7 +394,6 @@ void AYellPointAndPrayCharacter::MoveInput(const FInputActionValue& Value)
 
 	FVector2D MovementVector = Value.Get<FVector2D>();
 	DoMove(MovementVector.X, MovementVector.Y);
-
 }
 
 void AYellPointAndPrayCharacter::LookInput(const FInputActionValue& Value)
@@ -673,26 +672,44 @@ void AYellPointAndPrayCharacter::Server_UseItem_Implementation(int SlotID)
 
 void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Start ServerOnItemSelected"));
+
 	if (!HasAuthority()) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Has Authority"));
 
 	if (InventoryComponent->GetSlotID(SlotID) != -1)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Slot is != -1"));
+
 		if (!ItemCreated)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Item was not created yet"));
+
 			TSubclassOf<AActor> NewHoldingItemClass = InventoryComponent->GetSlotObj(SlotID)->GetClass();
 
 			if (NewHoldingItemClass)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("NewHoldingItemClass is not null"));
+
 				FActorSpawnParameters SpawnParams;
 				SpawnParams.Owner = this;
 				SpawnParams.Instigator = Cast<APawn>(this);
 
+				UE_LOG(LogTemp, Warning, TEXT("Spawn Params created"));
+
 				HoldingItem = GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+
+				UE_LOG(LogTemp, Warning, TEXT("Holding Item was created"));
 
 				if (AKeyUsable* KeyItem = Cast<AKeyUsable>(HoldingItem))
 				{
 					KeyItem->KeyID = InventoryComponent->GetSlotKeyID(SlotID);
 					UE_LOG(LogTemp, Warning, TEXT("KeyID set to: %d"), Cast<AKeyUsable>(HoldingItem)->KeyID);
+				}
+				else 
+				{
+					UE_LOG(LogTemp, Warning, TEXT("KeyItem is null"));
 				}
 
 				if (HoldingItem)
@@ -701,10 +718,26 @@ void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 					HoldingItem->SetReplicates(true);
 					ItemCreated = true;
 				}
+				else 
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Holding Item is null"));
+				}
 
 				OnRep_HoldingItem();
 			}
+			else 
+			{
+				UE_LOG(LogTemp, Warning, TEXT("NewHoldingItemClass is null"));
+			}
 		}
+		else 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Item was already Created"));
+		}
+	}
+	else 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SlotID is -1"));
 	}
 }
 
