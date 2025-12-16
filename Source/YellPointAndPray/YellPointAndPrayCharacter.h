@@ -118,6 +118,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 		UInputAction* EmoteWheelAction;
 
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		UInputAction* GoBackToAppartment;
+
 		//Animation State
 		UPROPERTY(ReplicatedUsing = OnRepAnimationState, BlueprintReadWrite, Category = "Animations")
 		TEnumAsByte<EAnimationState> animationState = Idle;
@@ -307,6 +310,14 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		UPROPERTY(EditAnywhere, Category = "Animations")
 		TSubclassOf<UUserWidget> emoteWheelWidgetClass;
+
+		UPROPERTY(Replicated)
+		bool IsOutSide = false;
+
+		void GoToAppartment();
+
+		UFUNCTION(Server, Reliable)
+		void Server_GoToAppartment();
 
 	protected:
 

@@ -143,6 +143,9 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		//EmoteWheel
 		EnhancedInputComponent->BindAction(EmoteWheelAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::TurnOnEmoteWheel);
 		EnhancedInputComponent->BindAction(EmoteWheelAction, ETriggerEvent::Completed, this, &AYellPointAndPrayCharacter::TurnOffEmoteWheel);
+
+		//GoBack
+		EnhancedInputComponent->BindAction(GoBackToAppartment, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::GoToAppartment);
 		
 	}
 	else
@@ -151,6 +154,8 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 void AYellPointAndPrayCharacter::BeginPlay() {
 	Super::BeginPlay();
+
+	GoToAppartment();
 
 	if (interactWidgetClass)
 		interactWidget = CreateWidget<UUserWidget>(GetWorld(), interactWidgetClass, FName("Interact"));
@@ -944,7 +949,8 @@ void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME(AYellPointAndPrayCharacter, DuckUsing);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, replicatedMouseUV);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, bReplicatedIsDrawing);
-	DOREPLIFETIME(AYellPointAndPrayCharacter, bClearBoard);
+	DOREPLIFETIME(AYellPointAndPrayCharacter, bClearBoard); 
+	DOREPLIFETIME(AYellPointAndPrayCharacter, IsOutSide);
 }
 
 void AYellPointAndPrayCharacter::Client_ShowGameOver_Implementation(bool State)
@@ -1332,6 +1338,19 @@ void AYellPointAndPrayCharacter::HandMovement(float DeltaTime)
 		Final *= ToBody.Length() - OriginalDiff;
 		Final += CurrentLocation;
 		Hands2->SetWorldLocation(Final);
+	}
+}
+
+void AYellPointAndPrayCharacter::GoToAppartment() {
+	UE_LOG(LogTemp, Warning, TEXT("Code Works im the best :D!"));
+	if (IsOutSide) {
+		Server_GoToAppartment();
+	}
+}
+
+void AYellPointAndPrayCharacter::Server_GoToAppartment_Implementation() {
+	if (IsOutSide) {
+		Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode())->BackToMainMenu();
 	}
 }
 
