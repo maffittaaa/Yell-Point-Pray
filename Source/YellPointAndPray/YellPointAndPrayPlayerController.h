@@ -32,6 +32,7 @@ public:
 	//VOICE CHAT
 	void InitializeVoiceChat();
 
+	UFUNCTION(Client, Reliable)
 	void CloseVoiceChat();
 
 	/** Server RPC: Request voice credentials for main channel */
