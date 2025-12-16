@@ -42,6 +42,7 @@ void AGuard::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	DOREPLIFETIME(AGuard, CurrentSuspicion);
 	DOREPLIFETIME(AGuard, Knocked);
 	DOREPLIFETIME(AGuard, World);
+	DOREPLIFETIME(AGuard, guardingState);
 }
 
 // Called when the game starts or when spawned
