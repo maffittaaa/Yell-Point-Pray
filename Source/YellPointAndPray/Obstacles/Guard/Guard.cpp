@@ -116,7 +116,7 @@ void AGuard::Tick(float DeltaTime)
 	}
 	if (Suspicious == true) {
 		//UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %f"), CurrentSuspicion)
-		guardingState = Patrolling;
+		guardingState = Chasing;
 		CurrentSuspicion -= DeltaTime * 10;
 		suspiciousMark->SetHiddenInGame(false);
 		float Distance = FVector::Dist(GetActorTransform().GetLocation(), LastSeenLocation);

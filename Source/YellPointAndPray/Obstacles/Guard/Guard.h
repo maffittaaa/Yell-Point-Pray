@@ -15,6 +15,7 @@ UENUM(BlueprintType, Category = "Animation")
 enum EGuardingStates : uint8
 {
 	Patrolling,
+	Chasing,
 	Alerted,
 	LookingForPlayer
 };
