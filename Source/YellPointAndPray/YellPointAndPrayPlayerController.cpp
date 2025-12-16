@@ -60,10 +60,11 @@ void AYellPointAndPrayPlayerController::InitializeVoiceChat()
 	}
 }
 
-void AYellPointAndPrayPlayerController::CloseVoiceChat()
+void AYellPointAndPrayPlayerController::CloseVoiceChat_Implementation()
 {
 	if (IsLocalPlayerController())
 	{
+		UE_LOG(LogTemp, Log, TEXT("[PlayerController] Close Voice Chat"));
 		VoiceComp->CloseVoice();
 	}
 }
