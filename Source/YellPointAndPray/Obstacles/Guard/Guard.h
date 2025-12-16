@@ -11,6 +11,14 @@
 #include "Door.h"
 #include "Guard.generated.h"
 
+UENUM(BlueprintType, Category = "Animation")
+enum EGuardingStates : uint8
+{
+	Patrolling,
+	Alerted,
+	LookingForPlayer
+};
+
 UCLASS()
 class YELLPOINTANDPRAY_API AGuard : public ACharacter, public IKnockable, public IReset
 {
@@ -20,6 +28,11 @@ public:
 	// Sets default values for this character's properties
 	AGuard();
 
+	UPROPERTY(ReplicatedUsing = OnRepAnimationState, BlueprintReadWrite, Category = "Animations")
+	TEnumAsByte<EGuardingStates> guardingState = Patrolling;
+
+	UFUNCTION()
+	void OnRepAnimationState();
 
 protected:
 	// Called when the game starts or when spawned
