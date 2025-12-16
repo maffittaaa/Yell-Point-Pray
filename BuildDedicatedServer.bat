@@ -76,7 +76,7 @@ call :log "Command: %UAT_PATH% BuildCookRun -nocompileeditor -project=\"%PROJECT
  -server ^
  -CrashReporter=False ^
  -prereqs ^
- -map=%MAP% >> "%BUILD_LOG%" 2>&1
+ -allmaps >> "%BUILD_LOG%" 2>&1
 
 set BUILD_RESULT=%ERRORLEVEL%
 
