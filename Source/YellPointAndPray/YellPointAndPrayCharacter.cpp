@@ -686,6 +686,8 @@ void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Item was not created yet"));
 
+			if (!InventoryComponent->GetSlotObj(SlotID)) return;
+			
 			TSubclassOf<AActor> NewHoldingItemClass = InventoryComponent->GetSlotObj(SlotID)->GetClass();
 
 			if (NewHoldingItemClass)
