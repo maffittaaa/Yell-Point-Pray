@@ -93,6 +93,7 @@ void AGuard::Tick(float DeltaTime)
 		}
 	}
 	if (Patroling == true) {
+		guardingState = Patrolling;
 		AActor* CurrentPoint = Waypoints[CurrentWaypoint];
 		if (CurrentPoint)
 		{
@@ -114,6 +115,7 @@ void AGuard::Tick(float DeltaTime)
 	}
 	if (Suspicious == true) {
 		//UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %f"), CurrentSuspicion)
+		guardingState = Patrolling;
 		CurrentSuspicion -= DeltaTime * 10;
 		suspiciousMark->SetHiddenInGame(false);
 		float Distance = FVector::Dist(GetActorTransform().GetLocation(), LastSeenLocation);
@@ -131,6 +133,7 @@ void AGuard::Tick(float DeltaTime)
 			Seen = false;
 			Suspicious = false;
 			suspiciousMark->SetHiddenInGame(true);
+			guardingState = Patrolling;
 		}
 	}
 	//FVector Dir = this->GetVelocity().GetSafeNormal();
@@ -138,6 +141,7 @@ void AGuard::Tick(float DeltaTime)
 	//SetActorRotation(NewRotation);
 	if (Seen == true) {
 		//UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %f"), CurrentSuspicion);
+		guardingState = Alerted;
 		if (TargetPlayer) {
 			AYellPointAndPrayCharacter* playerCharacter = Cast<AYellPointAndPrayCharacter>(TargetPlayer);
 			if (playerCharacter && playerCharacter->cheatsComponent && playerCharacter->cheatsComponent->bNotDetectedByGuards)
@@ -239,6 +243,7 @@ void AGuard::SeenPlayer(APawn* Pawn) {
 	LastSeenLocation = TargetPlayer->GetActorLocation();
 	Patroling = false;
 	Seen = true;
+	guardingState = Alerted;
 	Suspicious = false;
 	ExtraRotation = 0;
 	invert = 1;
@@ -334,23 +339,28 @@ void AGuard::UnKnockMySelf()
 
 void AGuard::LookAround(float DeltaTime) 
 {
-	FRotator CurrentRotation = GetActorRotation();
+	guardingState = LookingForPlayer;
+	// FRotator CurrentRotation = GetActorRotation();
+	//
+	// if (ExtraRotation >= 90) {
+	// 	invert = -1;
+	// 	ExtraRotation = 90;
+	// }
+	// if (ExtraRotation <= -90) {
+	// 	ExtraRotation = 0;
+	// 	invert = 1;
+	// 	CurrentSuspicion = 0;
+	// 	return;
+	// }
+	//
+	// float RotationThisFrame = 100.f * DeltaTime * invert;
+	// UE_LOG(LogTemp, Warning, TEXT("AAAAAAAAAAAAAAAAAAAt:  %f"), RotationThisFrame)
+	// ExtraRotation += RotationThisFrame;
+	//
+	// CurrentRotation.Yaw += RotationThisFrame;
+	// SetActorRotation(CurrentRotation);
+}
 
-	if (ExtraRotation >= 90) {
-		invert = -1;
-		ExtraRotation = 90;
-	}
-	if (ExtraRotation <= -90) {
-		ExtraRotation = 0;
-		invert = 1;
-		CurrentSuspicion = 0;
-		return;
-	}
-
-	float RotationThisFrame = 100.f * DeltaTime * invert;
-	UE_LOG(LogTemp, Warning, TEXT("AAAAAAAAAAAAAAAAAAAt:  %f"), RotationThisFrame)
-	ExtraRotation += RotationThisFrame;
-
-	CurrentRotation.Yaw += RotationThisFrame;
-	SetActorRotation(CurrentRotation);
+void AGuard::OnRepAnimationState() {
+	
 }
