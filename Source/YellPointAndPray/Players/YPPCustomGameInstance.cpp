@@ -13,11 +13,11 @@ void UYPPCustomGameInstance::PlayerTravelling(TSubclassOf<APawn> NewPawnClass, E
     if (!NewPawnClass || !NewPlayerState) return;
 
     // Use the persistent Unique ID
-    FUniqueNetIdRepl PlayerNetId = NewPlayerState->GetUniqueId();
+    int32 PlayerNetId = NewPlayerState->GetPlayerId();
 
     // Check if the player is already in the array (e.g., if they are re-traveling) and update, otherwise add
     int32 Index = GetPlayerInfoIndexByUniqueId(PlayerNetId);
-
+        
     if (Index == INDEX_NONE)
     {
         // Add new player info using the Unique ID
@@ -32,6 +32,7 @@ void UYPPCustomGameInstance::PlayerTravelling(TSubclassOf<APawn> NewPawnClass, E
     DefaultClass = PlayerInfoArray[0].PawnClass;
     DefaultType = PlayerInfoArray[0].PlayerType;
 
+    UE_LOG(LogTemp, Warning, TEXT("MI: FUniqueID String: %d"), NewPlayerState->GetPlayerId());
     UE_LOG(LogTemp, Warning, TEXT("MI: New Player State was stored: %s"), *NewPlayerState->GetName());
     UE_LOG(LogTemp, Warning, TEXT("MI: New Player Class was stored: %s"), *NewPawnClass->GetName());
     UE_LOG(LogTemp, Warning, TEXT("MI: New Player Type was stored: %d"), NewPlayerType);
@@ -61,7 +62,9 @@ FPlayerInventoryInfo UYPPCustomGameInstance::GetPlayerInventory(AYPPCustomPlayer
 EPlayerType UYPPCustomGameInstance::GetPlayerType(AYPPCustomPlayerState* PlayerState)
 {
     int index = GetPlayerIndex(PlayerState);
-    
+
+    UE_LOG(LogTemp, Warning, TEXT("MI: GET FUniqueID String: %d"), PlayerState->GetPlayerId());
+
     if (index == -1) 
     {
         UE_LOG(LogTemp, Warning, TEXT("MI: Index is -1, Player state: %s"), *PlayerState->GetName());
@@ -97,11 +100,11 @@ void UYPPCustomGameInstance::ClearPlayerInfoArray()
     PlayerInfoArray.Empty();
 }
 
-int32 UYPPCustomGameInstance::GetPlayerInfoIndexByUniqueId(const FUniqueNetIdRepl& UniqueId)
+int32 UYPPCustomGameInstance::GetPlayerInfoIndexByUniqueId(int32 UniqueId)
 {
     for (int32 i = 0; i < PlayerInfoArray.Num(); ++i)
     {
-        if (PlayerInfoArray[i].UniqueId.IsValid() && *PlayerInfoArray[i].UniqueId == *UniqueId)
+        if (PlayerInfoArray[i].UniqueId != 0 && PlayerInfoArray[i].UniqueId == UniqueId)
         {
             return i;
         }
@@ -112,5 +115,5 @@ int32 UYPPCustomGameInstance::GetPlayerInfoIndexByUniqueId(const FUniqueNetIdRep
 int32 UYPPCustomGameInstance::GetPlayerIndex(AYPPCustomPlayerState* PlayerState)
 {
     if (!PlayerState) return INDEX_NONE;
-    return GetPlayerInfoIndexByUniqueId(PlayerState->GetUniqueId());
+    return GetPlayerInfoIndexByUniqueId(PlayerState->GetPlayerId());
 }

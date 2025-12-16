@@ -190,7 +190,7 @@ void AYPPCustomGameMode::SpawnPlayer(APlayerController* NewPlayer, EPlayerType A
 
     if (PawnClassToSpawn)
     {
-        UE_LOG(LogTemp, Warning, TEXT("GI: Has pawn class"));
+        UE_LOG(LogTemp, Warning, TEXT("GI: Has pawn class: %s"), *PawnClassToSpawn->GetName());
 
         if (NewPlayer)
         {

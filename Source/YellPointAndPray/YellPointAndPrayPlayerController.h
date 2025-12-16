@@ -95,6 +95,7 @@ protected:
 
 	/** Gameplay initialization */
 	virtual void BeginPlay() override;
+	virtual void OnPossess(APawn* InPawn) override;
 
 	/** Input mapping context setup */
 	virtual void SetupInputComponent() override;

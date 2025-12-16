@@ -33,7 +33,7 @@ struct FPlayerInfo
 	GENERATED_BODY()
 
 	UPROPERTY()
-	FUniqueNetIdRepl UniqueId;
+	int32 UniqueId;
 
 	UPROPERTY()
 	EPlayerType PlayerType = EPlayerType::None;
@@ -47,9 +47,9 @@ struct FPlayerInfo
 	UPROPERTY() // Add this
 	FPlayerInventoryInfo InventoryInfo;
 
-	FPlayerInfo() : UniqueId(FUniqueNetIdRepl()), PlayerType(EPlayerType::None), PawnClass(nullptr), bIsHost(false) {}
+	FPlayerInfo() : UniqueId(0), PlayerType(EPlayerType::None), PawnClass(nullptr), bIsHost(false) {}
 
-	FPlayerInfo(const FUniqueNetIdRepl& NetId, EPlayerType NewPlayerType, TSubclassOf<APawn> NewPawnClass, bool IsHost, const FPlayerInventoryInfo& Inventory)
+	FPlayerInfo(int32 NetId, EPlayerType NewPlayerType, TSubclassOf<APawn> NewPawnClass, bool IsHost, const FPlayerInventoryInfo& Inventory)
 		: UniqueId(NetId), PlayerType(NewPlayerType), PawnClass(NewPawnClass), bIsHost(IsHost), InventoryInfo(Inventory) {
 	}
 };
@@ -86,7 +86,7 @@ protected:
 
 	bool GoingUp = true;
 	
-	int32 GetPlayerInfoIndexByUniqueId(const FUniqueNetIdRepl& UniqueId);
+	int32 GetPlayerInfoIndexByUniqueId(int32 UniqueId);
 
 	int32 GetPlayerIndex(AYPPCustomPlayerState* PlayerState);
 

@@ -23,7 +23,7 @@ void AYPPCustomPlayerState::BeginPlay()
 	if (!HasAuthority()) return;
 
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYPPCustomPlayerState::ReplacePlayerPawn, 0.5f, false);
+	//GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYPPCustomPlayerState::ReplacePlayerPawn, 0.5f, false);
 }
 
 void AYPPCustomPlayerState::ReplacePlayerPawn()
@@ -36,6 +36,16 @@ void AYPPCustomPlayerState::ReplacePlayerPawn()
 		return;
 	} 
     
+	if (PlayerType != EPlayerType::None) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PS: Player Type already exists, not creating again")); 
+		return;
+	}
+	else 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PS: Player Type does not exist, creating..."));
+	}
+
 	if (CustomGameInstance->GetPlayerType(this) != EPlayerType::None)
 	{
 		AController* PlayerController = GetPlayerController();

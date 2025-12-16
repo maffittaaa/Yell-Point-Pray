@@ -109,6 +109,20 @@ void AYellPointAndPrayPlayerController::Client_ReceiveVoiceCredentials_Implement
 
 //END VOICE CHAT IMPLEMENTATION
 
+void AYellPointAndPrayPlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+	if (AYPPCustomPlayerState* CustomPlayerState = Cast<AYPPCustomPlayerState>(PlayerState)) 
+	{
+		UE_LOG(LogTemp, Log, TEXT("Has Player State"));
+		CustomPlayerState->ReplacePlayerPawn();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("Does not have Player State"));
+	}
+}
+
 void AYellPointAndPrayPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
