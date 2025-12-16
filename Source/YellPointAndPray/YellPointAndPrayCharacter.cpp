@@ -64,6 +64,11 @@ AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 	HandsPos = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hands Position"));
 	HandsPos->SetupAttachment(FirstPersonCameraComponent);
 
+	PlayerLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("PlayerLight"));
+	PlayerLight->SetupAttachment(GetRootComponent());
+	PlayerLight->Intensity = 7000.f;
+	PlayerLight->SetVisibility(false);
+
 	// configure the character comps
 	GetMesh()->SetOwnerNoSee(true);
 	GetMesh()->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::WorldSpaceRepresentation;

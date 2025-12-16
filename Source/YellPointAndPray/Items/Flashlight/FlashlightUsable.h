@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Items/UsableItemsParent/UsableItem.h"
 #include <Components/SpotLightComponent.h>
+#include "YellPointAndPrayCharacter.h"
 #include "FlashlightUsable.generated.h"
 
 /**
@@ -32,4 +33,7 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_ToggleLight();
+
+	UPROPERTY(Replicated)
+	AYellPointAndPrayCharacter* UserStored;
 };

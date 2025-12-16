@@ -16,6 +16,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Players/ACCheats.h"
 #include "Components/AudioComponent.h"
+#include <Components/SpotLightComponent.h>
 #include "YellPointAndPrayCharacter.generated.h"
 
 class UInputComponent;
@@ -134,6 +135,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		bool UseActive = true;
 
 	public:
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Light")
+		USpotLightComponent* PlayerLight;
+
 		void SetUseActive(bool Active);
 
 		void ChangeKebabEffect(bool state);

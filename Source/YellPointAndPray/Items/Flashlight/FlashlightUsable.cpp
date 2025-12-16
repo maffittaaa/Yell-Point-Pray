@@ -22,7 +22,9 @@ AFlashlightUsable::AFlashlightUsable()
 void AFlashlightUsable::Use_Implementation(AActor* User)
 {
     bIsLightOn = !bIsLightOn;
-    Light->SetVisibility(bIsLightOn);
+    UserStored = Cast<AYellPointAndPrayCharacter>(User);
+    
+    UserStored->PlayerLight->SetVisibility(bIsLightOn);
 
     if (GetLocalRole() == ROLE_AutonomousProxy)
     {
@@ -36,16 +38,17 @@ void AFlashlightUsable::Use_Implementation(AActor* User)
 void AFlashlightUsable::Server_ToggleLight_Implementation()
 {
     bIsLightOn = !bIsLightOn;
-    Light->SetVisibility(bIsLightOn);
+    UserStored->PlayerLight->SetVisibility(bIsLightOn);
 }
 
 void AFlashlightUsable::OnRep_IsLightOn()
 {
-    Light->SetVisibility(bIsLightOn);
+    UserStored->PlayerLight->SetVisibility(bIsLightOn);
 }
 
 void AFlashlightUsable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(AFlashlightUsable, bIsLightOn);
+    DOREPLIFETIME(AFlashlightUsable, UserStored);
 }
