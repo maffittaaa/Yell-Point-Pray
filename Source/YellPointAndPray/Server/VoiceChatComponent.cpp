@@ -31,17 +31,26 @@ void UVoiceChatComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void UVoiceChatComponent::CloseVoice()
 {
+    if (VoiceUser && !CurrentChannel.IsEmpty())
+    {
+        // Use a synchronous leave - fire and forget since we're shutting down
+        VoiceUser->LeaveChannel(
+            CurrentChannel,
+            FOnVoiceChatChannelLeaveCompleteDelegate::CreateLambda([](const FString&, const FVoiceChatResult&) {})
+        );
+    }
+
     if (VoiceChat && VoiceUser)
     {
         VoiceChat->ReleaseUser(VoiceUser);
         VoiceUser = nullptr;
     }
 
-    if (!GIsEditor && VoiceChat)
-    {
-        VoiceChat->Disconnect(FOnVoiceChatDisconnectCompleteDelegate::CreateLambda([](const FVoiceChatResult&) {}));
-        VoiceChat->Uninitialize();
-    }
+    //if (VoiceChat)
+    //{
+    //    VoiceChat->Disconnect(FOnVoiceChatDisconnectCompleteDelegate::CreateLambda([](const FVoiceChatResult&) {}));
+    //    VoiceChat->Uninitialize();
+    //}
 
     VoiceChat = nullptr;
     bIsReady = false;
