@@ -41,8 +41,11 @@ void UInventory::RestoreInventoryWithTravelData(const TArray<FUInventoryStruct>&
 		if (InventorySlots[i].Item != nullptr)
 		{
 			FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
-			InventorySlots[i].Item->DetachFromActor(DetachRules);
-			InventorySlots[i].Item->Destroy();
+
+			AUsableItem* UsableItem = Cast<AUsableItem>(InventorySlots[i].Item->GetDefaultObject());
+
+			UsableItem->DetachFromActor(DetachRules);
+			UsableItem->Destroy();
 		}
 		ResetSlotToDefaultValue(i);
 	}
@@ -73,8 +76,11 @@ void UInventory::DeleteInventorySlot_Implementation(int SlotID)
 	}
 
 	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
-	InventorySlots[SlotID].Item->DetachFromActor(DetachRules);
-	InventorySlots[SlotID].Item->Destroy();
+
+	AUsableItem* UsableItem = Cast<AUsableItem>(InventorySlots[SlotID].Item->GetDefaultObject());
+
+	UsableItem->DetachFromActor(DetachRules);
+	UsableItem->Destroy();
 	ResetSlotToDefaultValue(SlotID);
 }
 
@@ -124,7 +130,7 @@ void UInventory::SetInventory(APickableItem* Item)
 
 				if (Item->Obj->IsChildOf(AUsableItem::StaticClass()))
 				{
-					InventorySlots[i].Item = UsableItem;
+					InventorySlots[i].Item = UsableItem->GetClass();
 					InventorySlots[i].ID = UsableItem->ID;
 					InventorySlots[i].Name = UsableItem->Name;
 					InventorySlots[i].PreviewImage = UsableItem->PreviewImage;
@@ -151,7 +157,7 @@ void UInventory::SetInventory(APickableItem* Item)
 	}
 }
 
-AUsableItem* UInventory::GetSlotObj(int SlotID)
+TSubclassOf<AUsableItem> UInventory::GetSlotObj(int SlotID)
 {
 	return InventorySlots[SlotID].Item;
 }

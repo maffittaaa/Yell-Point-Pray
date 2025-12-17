@@ -29,7 +29,7 @@ public:
 	UTexture2D* PreviewImage = nullptr;
 
 	UPROPERTY()
-	AUsableItem* Item = nullptr;
+	TSubclassOf<AUsableItem> Item = nullptr;
 };
 
 USTRUCT(BlueprintType)
@@ -72,7 +72,7 @@ public:
 	
 	void RestoreInventoryWithTravelData(const TArray<FUInventoryStruct>& TravelData);
 
-	void RestoreInventoryWithInitalItems();
+	//void RestoreInventoryWithInitalItems();
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -93,7 +93,7 @@ public:
 
 	FString GetSlotName(int SlotID);
 	
-	AUsableItem* GetSlotObj(int SlotID);
+	TSubclassOf<AUsableItem> GetSlotObj(int SlotID);
 
 	UFUNCTION()
 	void SetInventory(APickableItem* Item);

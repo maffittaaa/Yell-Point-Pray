@@ -483,9 +483,11 @@ void AYellPointAndPrayCharacter::ThrowDuck_Implementation(ARubberDuckUsable* Duc
 
 	if (InventoryComponent->GetSlotID(ItemSelect) != -1)
 	{
-		if (InventoryComponent->GetSlotObj(ItemSelect)->Obj->IsChildOf(APickableItem::StaticClass()))
+		AUsableItem* UsableItem = Cast<AUsableItem>(InventoryComponent->GetSlotObj(ItemSelect)->GetDefaultObject());
+
+		if (UsableItem->Obj->IsChildOf(APickableItem::StaticClass()))
 		{
-			APickableItem* PickableItem = Cast<APickableItem>(InventoryComponent->GetSlotObj(ItemSelect)->Obj->GetDefaultObject());
+			APickableItem* PickableItem = Cast<APickableItem>(UsableItem->Obj->GetDefaultObject());
 
 			TSubclassOf<AActor> NewHoldingItemClass = PickableItem->GetClass();
 
@@ -561,9 +563,13 @@ void AYellPointAndPrayCharacter::ServerOnItemDroped_Implementation(int SlotID, F
 
 	if (InventoryComponent->GetSlotID(SlotID) != -1)
 	{
-		if (InventoryComponent->GetSlotObj(SlotID)->Obj->IsChildOf(APickableItem::StaticClass())) 
+		AUsableItem* UsableItem = Cast<AUsableItem>(InventoryComponent->GetSlotObj(SlotID)->GetDefaultObject());
+
+		//if (!UsableItem) return;
+
+		if (UsableItem->Obj->IsChildOf(APickableItem::StaticClass()))
 		{
-			APickableItem* PickableItem = Cast<APickableItem>(InventoryComponent->GetSlotObj(SlotID)->Obj->GetDefaultObject());
+			APickableItem* PickableItem = Cast<APickableItem>(UsableItem->Obj->GetDefaultObject());
 
 			TSubclassOf<AActor> NewHoldingItemClass = PickableItem->GetClass();
 
@@ -645,12 +651,18 @@ void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 	{
 		if (!ItemCreated)
 		{
-			if (!InventoryComponent->GetSlotObj(SlotID)) return;
+			if (!InventoryComponent->GetSlotObj(SlotID)) 
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("Player: No slot Obj"));
+				return;
+			}
 			
-			TSubclassOf<AActor> NewHoldingItemClass = InventoryComponent->GetSlotObj(SlotID)->GetClass();
+			TSubclassOf<AActor> NewHoldingItemClass = InventoryComponent->GetSlotObj(SlotID);
 
 			if (NewHoldingItemClass)
 			{
+				//UE_LOG(LogTemp, Warning, TEXT("Player: Has NewHoldingItem"));
+
 				FActorSpawnParameters SpawnParams;
 				SpawnParams.Owner = this;
 				SpawnParams.Instigator = Cast<APawn>(this);
@@ -660,17 +672,23 @@ void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 				if (AKeyUsable* KeyItem = Cast<AKeyUsable>(HoldingItem))
 				{
 					KeyItem->KeyID = InventoryComponent->GetSlotKeyID(SlotID);
-					UE_LOG(LogTemp, Warning, TEXT("KeyID set to: %d"), Cast<AKeyUsable>(HoldingItem)->KeyID);
+					UE_LOG(LogTemp, Warning, TEXT("Player: KeyID set to: %d"), Cast<AKeyUsable>(HoldingItem)->KeyID);
 				}
 
 				if (HoldingItem)
 				{
+					//UE_LOG(LogTemp, Warning, TEXT("Player: Has HoldingItem"));
+
 					HoldingItem->SetActorEnableCollision(false);
 					HoldingItem->SetReplicates(true);
 					ItemCreated = true;
 				}
 
 				OnRep_HoldingItem();
+			}
+			else 
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("Player: No NewHoldingItem"));
 			}
 		}
 	}
