@@ -3,6 +3,8 @@
 
 #include "OutSide.h"
 #include "YellPointAndPrayCharacter.h"
+#include <Players/YPPCustomGameMode.h>
+#include <Items/Treasure/TreasureUsable.h>
 
 // Sets default values
 AOutSide::AOutSide()
@@ -23,12 +25,33 @@ void AOutSide::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Other
 	AYellPointAndPrayCharacter* player = Cast<AYellPointAndPrayCharacter>(OtherActor);
 	if (player) {
 		player->IsOutSide = true;
+
+		CheckForTreasure(player);
 	}
 }
+
+
 
 void AOutSide::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
 	AYellPointAndPrayCharacter* player = Cast<AYellPointAndPrayCharacter>(OtherActor);
 	if (player) {
 		player->IsOutSide = false;
+	}
+}
+
+void AOutSide::CheckForTreasure_Implementation(AYellPointAndPrayCharacter* player) {
+	for (int i = 0; i < 3; i++) {
+		if (player->InventoryComponent->GetSlotID(i) == -1) continue;
+
+		if (player->InventoryComponent->GetSlotObj(i)->IsChildOf(ATreasureUsable::StaticClass()))
+		{
+			AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
+
+			if (GameMode)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Called Game won"));
+				GameMode->GameOver(true);
+			}
+		}
 	}
 }

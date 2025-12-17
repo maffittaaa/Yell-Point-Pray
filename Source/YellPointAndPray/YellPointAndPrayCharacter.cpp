@@ -1004,18 +1004,18 @@ void AYellPointAndPrayCharacter::ServerInteract_Implementation(AActor* hitObject
 
 	if (hitObject->GetClass()->ImplementsInterface(UInteractable::StaticClass())) 
 	{
-		ATreasurePickable* Treasure = Cast<ATreasurePickable>(hitObject);
+		//ATreasurePickable* Treasure = Cast<ATreasurePickable>(hitObject);
 
-		if (Treasure)
-		{
-			AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
+		//if (Treasure)
+		//{
+		//	AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
 
-			if (GameMode)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Called Game won"));
-				GameMode->GameOver(true);
-			}
-		}
+		//	if (GameMode)
+		//	{
+		//		UE_LOG(LogTemp, Warning, TEXT("Called Game won"));
+		//		GameMode->GameOver(true);
+		//	}
+		//}
 
 		if (hitObject->GetClass()->GetName().Contains("BP_WhiteBoard") && !(enumVariable == InWhiteboard)) {
 			Server_SetEnumVariable(InWhiteboard);

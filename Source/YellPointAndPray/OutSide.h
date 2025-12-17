@@ -29,4 +29,7 @@ public:
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	UFUNCTION(Server, Reliable)
+	void CheckForTreasure(AYellPointAndPrayCharacter* player);
+
 };
