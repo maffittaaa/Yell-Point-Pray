@@ -10,6 +10,8 @@ ALockPickMiniGame::ALockPickMiniGame()
 {
     PrimaryActorTick.bCanEverTick = true;
     PrimaryActorTick.bStartWithTickEnabled = true;
+
+    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }
 
 void ALockPickMiniGame::BeginPlay() {

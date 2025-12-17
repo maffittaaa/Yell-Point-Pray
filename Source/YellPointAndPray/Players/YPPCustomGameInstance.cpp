@@ -6,6 +6,15 @@
 void UYPPCustomGameInstance::Init()
 {
     Super::Init();
+
+	PreviewImageList.Add(PreviewImageTreasure);
+    PreviewImageList.Add(PreviewImageToyHammer);
+    PreviewImageList.Add(PreviewImageWalkieTalkie);
+    PreviewImageList.Add(PreviewImageLockPick);
+    PreviewImageList.Add(PreviewImageRubberDuck);
+    PreviewImageList.Add(PreviewImageFlashlight);
+    PreviewImageList.Add(PreviewImageKeys);
+    PreviewImageList.Add(PreviewImageKebab);
 }
 
 void UYPPCustomGameInstance::PlayerTravelling(TSubclassOf<APawn> NewPawnClass, EPlayerType NewPlayerType, AYPPCustomPlayerState* NewPlayerState, FPlayerInventoryInfo InventoryInfo)

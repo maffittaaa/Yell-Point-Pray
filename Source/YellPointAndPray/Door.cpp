@@ -25,6 +25,8 @@ ADoor::ADoor()
 
 	bReplicates = true;
 
+	SuccessAudioPlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("SuccessAudioPlayer"));
+	SuccessAudioPlayer->SetupAttachment(Mesh);
 }
 
 void ADoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -138,12 +140,20 @@ void ADoor::ServerInteract_Implementation(AActor* Interactor) {
 
 void ADoor::UnlockDoor_Implementation() {
 	UE_LOG(LogTemp, Warning, TEXT("Door Unlocked."));
+	if (SuccessAudioPlayer)
+	{
+		SuccessAudioPlayer->Play();
+	}
 	Locked = false;
 }
 
 void ADoor::KeyUnlockDoor_Implementation(int KeyID) {
 	if (KeyID == DoorID) {
 		UE_LOG(LogTemp, Warning, TEXT("Door Unlocked."));
+		if (SuccessAudioPlayer)
+		{
+			SuccessAudioPlayer->Play();
+		}
 		Locked = false;
 	}
 }

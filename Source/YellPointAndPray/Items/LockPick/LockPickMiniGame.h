@@ -25,6 +25,7 @@ public:
 	AActor* Owner;
 
 protected:
+	
 	UWidget* Arrow;
 	UWidget* HitSpot;
 	UWidget* Bar;

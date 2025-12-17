@@ -3,6 +3,7 @@
 #include <Net/UnrealNetwork.h>
 #include "Items/Keys/KeyUsable.h"
 #include "Items/Keys/KeyPickable.h"
+#include <Players/YPPCustomGameInstance.h>
 
 
 using namespace std;
@@ -192,7 +193,18 @@ UTexture2D* UInventory::GetSlotItem(int SlotID)
 		return nullptr;
 	}
 
-	return Cast<AUsableItem>(InventorySlots[SlotID].Item->GetDefaultObject())->PreviewImage;
+	if (UGameInstance* GameInstance = GetWorld()->GetGameInstance()) 
+	{
+		if (UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GameInstance)) 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("GetSlotItem: SlotID %d"), InventorySlots[SlotID].ID);
+			UE_LOG(LogTemp, Warning, TEXT("GetSlotItem: PreviewImageList Num(): %d"), CustomGameInstance->PreviewImageList.Num());
+
+			return CustomGameInstance->PreviewImageList[InventorySlots[SlotID].ID];
+		}
+	}
+
+	return nullptr;
 }
 
 // Called every frame

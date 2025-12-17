@@ -7,6 +7,7 @@
 #include "Interfaces/Interactable.h"
 #include "Interfaces/Reset.h"
 #include <Components/TimelineComponent.h>
+#include "Components/AudioComponent.h"
 #include "Door.generated.h"
 
 UCLASS()
@@ -28,6 +29,9 @@ public:
 	UStaticMeshComponent* DoorNobMesh;
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UAudioComponent* SuccessAudioPlayer;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

@@ -76,6 +76,34 @@ public:
 	void ClearPlayerInfoArray();
 	
 	TArray<FPlayerInfo> PlayerInfoArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PreviewImage")
+	TArray<UTexture2D*> PreviewImageList;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PreviewImage")
+	UTexture2D* PreviewImageTreasure;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PreviewImage")
+	UTexture2D* PreviewImageToyHammer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PreviewImage")
+	UTexture2D* PreviewImageWalkieTalkie;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PreviewImage")
+	UTexture2D* PreviewImageLockPick;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PreviewImage")
+	UTexture2D* PreviewImageRubberDuck;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PreviewImage")
+	UTexture2D* PreviewImageFlashlight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PreviewImage")
+	UTexture2D* PreviewImageKeys;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PreviewImage")
+	UTexture2D* PreviewImageKebab;
+
 protected:
 
 	UPROPERTY()
