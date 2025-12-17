@@ -41,7 +41,7 @@ void AOutSide::CheckForTreasure_Implementation(AYellPointAndPrayCharacter* playe
 	for (int i = 0; i < 3; i++) {
 		if (player->InventoryComponent->GetSlotID(i) == -1) continue;
 
-		if (player->InventoryComponent->GetSlotObj(i)->IsChildOf(ATreasureUsable::StaticClass()))
+		if (player->InventoryComponent->GetSlotID(i) == 0)
 		{
 			AYPPCustomGameMode* GameMode = Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode());
 
