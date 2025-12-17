@@ -203,83 +203,41 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 
 void AYellPointAndPrayCharacter::Reset_Implementation()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Start Reset Implementation"));
-	
 	FRotator rotation = StartRotation.Rotator();
 	TeleportTo(StartLocation, rotation);
-	
-	//UE_LOG(LogTemp, Warning, TEXT("Teleport Completed"));
 
 	if (HoldingItem != nullptr)
 	{
 		ServerDeleteItem();
-		//UE_LOG(LogTemp, Warning, TEXT("Server deleted Holding Item"));
 	}	
 
 	KebabEffect = false;
 	GetWorld()->GetTimerManager().ClearTimer(KebabTimerHandle);
 
-	//UE_LOG(LogTemp, Warning, TEXT("Kebab Timer was cleared"));
-
 	RestoreTravelInventory();
 
-	//UE_LOG(LogTemp, Warning, TEXT("Travel Inventory was restored"));
-
 	Client_HideGameOver();
-
-	//UE_LOG(LogTemp, Warning, TEXT("Teleport Completed"));
-
-	//UE_LOG(LogTemp, Warning, TEXT("CHARACTER-specific reset called!"));
 }
 
 void AYellPointAndPrayCharacter::RestoreTravelInventory()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Start Restoring Travelling Inventory"));
-	
 	if (!HasAuthority()) return;
-
-	UE_LOG(LogTemp, Warning, TEXT("Does Not Have Authority"));
 
 	if (UGameInstance* GameInstance = GetWorld()->GetGameInstance())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Has Game Instance"));
-
 		if (UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GameInstance))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Has Custom Game Instance"));
-
 			if (AYPPCustomPlayerState* CustomPlayerState = Cast<AYPPCustomPlayerState>(GetPlayerState()))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Has Custom Player State"));
 				FPlayerInventoryInfo TravelInventory = CustomGameInstance->GetPlayerInventory(CustomPlayerState);
-				UE_LOG(LogTemp, Warning, TEXT("Has Travel Inventory"));
 
 				if (TravelInventory.InventorySlots.Num() > 0)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Restoring travel Inventory"));
 					InventoryComponent->RestoreInventoryWithTravelData(TravelInventory.InventorySlots);
-					UE_LOG(LogTemp, Warning, TEXT("Travel Inventory Restored"));
 					//UE_LOG(LogTemp, Warning, TEXT("Player: Restored travel inventory with %d slots"), TravelInventory.InventorySlots.Num());
 				}
-				else
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Travel Inventory Slots is 0"));
-				}
-
-			}
-			else
-			{
-				UE_LOG(LogTemp, Warning, TEXT("No Custom Player State found"));
 			}
 		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("No Custom Game Instance found"));
-		}
-	}
-	else 
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No Game Instance found"));
 	}
 }
 
@@ -674,49 +632,30 @@ void AYellPointAndPrayCharacter::Server_UseItem_Implementation(int SlotID)
 	}
 }
 
-
 void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Start ServerOnItemSelected"));
-
 	if (!HasAuthority()) return;
-
-	UE_LOG(LogTemp, Warning, TEXT("Has Authority"));
 
 	if (InventoryComponent->GetSlotID(SlotID) != -1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Slot is != -1"));
-
 		if (!ItemCreated)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Item was not created yet"));
-
 			if (!InventoryComponent->GetSlotObj(SlotID)) return;
 			
 			TSubclassOf<AActor> NewHoldingItemClass = InventoryComponent->GetSlotObj(SlotID)->GetClass();
 
 			if (NewHoldingItemClass)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("NewHoldingItemClass is not null"));
-
 				FActorSpawnParameters SpawnParams;
 				SpawnParams.Owner = this;
 				SpawnParams.Instigator = Cast<APawn>(this);
 
-				UE_LOG(LogTemp, Warning, TEXT("Spawn Params created"));
-
 				HoldingItem = GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
-
-				UE_LOG(LogTemp, Warning, TEXT("Holding Item was created"));
 
 				if (AKeyUsable* KeyItem = Cast<AKeyUsable>(HoldingItem))
 				{
 					KeyItem->KeyID = InventoryComponent->GetSlotKeyID(SlotID);
 					UE_LOG(LogTemp, Warning, TEXT("KeyID set to: %d"), Cast<AKeyUsable>(HoldingItem)->KeyID);
-				}
-				else 
-				{
-					UE_LOG(LogTemp, Warning, TEXT("KeyItem is null"));
 				}
 
 				if (HoldingItem)
@@ -725,26 +664,10 @@ void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 					HoldingItem->SetReplicates(true);
 					ItemCreated = true;
 				}
-				else 
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Holding Item is null"));
-				}
 
 				OnRep_HoldingItem();
 			}
-			else 
-			{
-				UE_LOG(LogTemp, Warning, TEXT("NewHoldingItemClass is null"));
-			}
 		}
-		else 
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Item was already Created"));
-		}
-	}
-	else 
-	{
-		UE_LOG(LogTemp, Warning, TEXT("SlotID is -1"));
 	}
 }
 

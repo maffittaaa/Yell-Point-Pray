@@ -8,7 +8,7 @@ void UYPPCustomGameInstance::Init()
     Super::Init();
 }
 
-void UYPPCustomGameInstance::PlayerTravelling(TSubclassOf<APawn> NewPawnClass, EPlayerType NewPlayerType, AYPPCustomPlayerState* NewPlayerState, const FPlayerInventoryInfo& InventoryInfo)
+void UYPPCustomGameInstance::PlayerTravelling(TSubclassOf<APawn> NewPawnClass, EPlayerType NewPlayerType, AYPPCustomPlayerState* NewPlayerState, FPlayerInventoryInfo InventoryInfo)
 {
     if (!NewPawnClass || !NewPlayerState) return;
 
@@ -39,15 +39,15 @@ void UYPPCustomGameInstance::PlayerTravelling(TSubclassOf<APawn> NewPawnClass, E
     UE_LOG(LogTemp, Warning, TEXT("MI: Inventory slots stored: %d"), InventoryInfo.InventorySlots.Num());
 }
 
-void UYPPCustomGameInstance::StorePlayerInventory(AYPPCustomPlayerState* PlayerState, TArray<FUInventoryStruct>& Inventory)
-{
-    int index = GetPlayerIndex(PlayerState);
-    if (index != -1)
-    {
-        PlayerInfoArray[index].InventoryInfo = FPlayerInventoryInfo(Inventory);
-        //UE_LOG(LogTemp, Warning, TEXT("MI: Stored inventory for player: %s, slots: %d"), *PlayerState->GetName(), Inventory.Num());
-    }
-}
+//void UYPPCustomGameInstance::StorePlayerInventory(AYPPCustomPlayerState* PlayerState, TArray<FUInventoryStruct>& Inventory)
+//{
+//    int index = GetPlayerIndex(PlayerState);
+//    if (index != -1)
+//    {
+//        PlayerInfoArray[index].InventoryInfo = FPlayerInventoryInfo(Inventory);
+//        //UE_LOG(LogTemp, Warning, TEXT("MI: Stored inventory for player: %s, slots: %d"), *PlayerState->GetName(), Inventory.Num());
+//    }
+//}
 
 FPlayerInventoryInfo UYPPCustomGameInstance::GetPlayerInventory(AYPPCustomPlayerState* PlayerState)
 {

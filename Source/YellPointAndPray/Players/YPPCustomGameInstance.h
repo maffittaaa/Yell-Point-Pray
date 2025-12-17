@@ -49,7 +49,7 @@ struct FPlayerInfo
 
 	FPlayerInfo() : UniqueId(0), PlayerType(EPlayerType::None), PawnClass(nullptr), bIsHost(false) {}
 
-	FPlayerInfo(int32 NetId, EPlayerType NewPlayerType, TSubclassOf<APawn> NewPawnClass, bool IsHost, const FPlayerInventoryInfo& Inventory)
+	FPlayerInfo(int32 NetId, EPlayerType NewPlayerType, TSubclassOf<APawn> NewPawnClass, bool IsHost, FPlayerInventoryInfo Inventory)
 		: UniqueId(NetId), PlayerType(NewPlayerType), PawnClass(NewPawnClass), bIsHost(IsHost), InventoryInfo(Inventory) {
 	}
 };
@@ -60,9 +60,9 @@ class YELLPOINTANDPRAY_API UYPPCustomGameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public:
-	void PlayerTravelling(TSubclassOf<APawn> NewPawnClass, EPlayerType NewPlayerType, AYPPCustomPlayerState* PlayerState, const FPlayerInventoryInfo& InventoryInfo);
+	void PlayerTravelling(TSubclassOf<APawn> NewPawnClass, EPlayerType NewPlayerType, AYPPCustomPlayerState* PlayerState, FPlayerInventoryInfo InventoryInfo);
 
-	void StorePlayerInventory(AYPPCustomPlayerState* PlayerState, TArray<FUInventoryStruct>& Inventory);
+	//void StorePlayerInventory(AYPPCustomPlayerState* PlayerState, TArray<FUInventoryStruct>& Inventory);
 
 	FPlayerInventoryInfo GetPlayerInventory(AYPPCustomPlayerState* PlayerState);
 

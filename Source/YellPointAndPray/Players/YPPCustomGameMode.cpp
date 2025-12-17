@@ -409,7 +409,7 @@ void AYPPCustomGameMode::LoadLevel(FName LevelName)
                                     TArray<FUInventoryStruct> CurrentInventory = PlayerCharacter->InventoryComponent->GetAllInventory();
 
                                     // Store in GameInstance
-                                    CustomGameInstance->StorePlayerInventory(PlayerState, CurrentInventory);
+                                    //CustomGameInstance->StorePlayerInventory(PlayerState, CurrentInventory);
 
                                     UE_LOG(LogTemp, Warning, TEXT("Travelling: Character: %s"), *PlayerCharacter->GetName());
                                     UE_LOG(LogTemp, Warning, TEXT("Travelling: PlayerType: %d"), PlayerState->PlayerType);
