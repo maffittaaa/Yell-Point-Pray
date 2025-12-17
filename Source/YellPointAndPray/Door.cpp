@@ -142,7 +142,7 @@ void ADoor::UnlockDoor_Implementation() {
 	UE_LOG(LogTemp, Warning, TEXT("Door Unlocked."));
 	if (SuccessAudioPlayer)
 	{
-		SuccessAudioPlayer->Play();
+		//SuccessAudioPlayer->Play();
 	}
 	Locked = false;
 }
@@ -152,7 +152,7 @@ void ADoor::KeyUnlockDoor_Implementation(int KeyID) {
 		UE_LOG(LogTemp, Warning, TEXT("Door Unlocked."));
 		if (SuccessAudioPlayer)
 		{
-			SuccessAudioPlayer->Play();
+			//SuccessAudioPlayer->Play();
 		}
 		Locked = false;
 	}
