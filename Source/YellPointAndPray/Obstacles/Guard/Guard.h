@@ -35,6 +35,9 @@ public:
 	UFUNCTION()
 	void OnRepAnimationState();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnAnimationStateModified(EGuardingStates newState);
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

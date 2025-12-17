@@ -363,5 +363,5 @@ void AGuard::LookAround(float DeltaTime)
 }
 
 void AGuard::OnRepAnimationState() {
-	
+	OnAnimationStateModified(guardingState);
 }
