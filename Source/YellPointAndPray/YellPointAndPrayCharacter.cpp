@@ -197,8 +197,9 @@ void AYellPointAndPrayCharacter::BeginPlay() {
 
 	UE_LOG(LogTemp, Warning, TEXT("Player is going to Start Timer"));
 
-	FTimerHandle TimerHandle; 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYellPointAndPrayCharacter::RestoreTravelInventory, 0.5f, false);
+	//RestoreTravelInventory();
+	//FTimerHandle TimerHandle; 
+	//GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYellPointAndPrayCharacter::RestoreTravelInventory, 0.5f, false);
 }
 
 void AYellPointAndPrayCharacter::Reset_Implementation()
@@ -225,14 +226,22 @@ void AYellPointAndPrayCharacter::RestoreTravelInventory()
 
 	if (UGameInstance* GameInstance = GetWorld()->GetGameInstance())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Player: Game Instance Exists"));
+
 		if (UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GameInstance))
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Player: Custom Game Instance Exists"));
+
 			if (AYPPCustomPlayerState* CustomPlayerState = Cast<AYPPCustomPlayerState>(GetPlayerState()))
 			{
+				UE_LOG(LogTemp, Warning, TEXT("Player: Custom Player State Exists"));
+
 				FPlayerInventoryInfo TravelInventory = CustomGameInstance->GetPlayerInventory(CustomPlayerState);
 
 				if (TravelInventory.InventorySlots.Num() > 0)
 				{
+					UE_LOG(LogTemp, Warning, TEXT("Player: TravelInventory is > 0"));
+
 					InventoryComponent->RestoreInventoryWithTravelData(TravelInventory.InventorySlots);
 					//UE_LOG(LogTemp, Warning, TEXT("Player: Restored travel inventory with %d slots"), TravelInventory.InventorySlots.Num());
 				}

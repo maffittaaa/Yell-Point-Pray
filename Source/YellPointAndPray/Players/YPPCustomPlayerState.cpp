@@ -21,9 +21,6 @@ void AYPPCustomPlayerState::BeginPlay()
 	Super::BeginPlay();
 
 	if (!HasAuthority()) return;
-
-	FTimerHandle TimerHandle;
-	//GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AYPPCustomPlayerState::ReplacePlayerPawn, 0.5f, false);
 }
 
 void AYPPCustomPlayerState::ReplacePlayerPawn()
@@ -84,6 +81,13 @@ void AYPPCustomPlayerState::ReplacePlayerPawn()
 			PlayerController->Possess(NewPawn);
 			Cast<AYPPCustomGameMode>(GetWorld()->GetAuthGameMode())->AddPlayerAfterChangedMap(NewPawn);
 			
+			AYellPointAndPrayCharacter* Character = Cast<AYellPointAndPrayCharacter>(NewPawn);
+
+			if (Character) 
+			{
+				Character->RestoreTravelInventory();
+			}
+
 			UE_LOG(LogTemp, Warning, TEXT("PS: Has Player Possessing now, PlayerType: %d"), CustomGameInstance->GetPlayerType(this));
 		}
 		else 

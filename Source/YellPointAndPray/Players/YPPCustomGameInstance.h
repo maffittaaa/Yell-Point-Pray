@@ -24,7 +24,7 @@ struct FPlayerInventoryInfo
 	TArray<FUInventoryStruct> InventorySlots;
 
 	FPlayerInventoryInfo() {}
-	FPlayerInventoryInfo(const TArray<FUInventoryStruct>& Slots) : InventorySlots(Slots) {}
+	FPlayerInventoryInfo(TArray<FUInventoryStruct> Slots) : InventorySlots(Slots) {}
 };
 
 USTRUCT(BlueprintType)
