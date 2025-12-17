@@ -26,9 +26,6 @@ public:
 	FString Name = "DefaultName";
 
 	UPROPERTY()
-	UTexture2D* PreviewImage = nullptr;
-
-	UPROPERTY()
 	TSubclassOf<AUsableItem> Item = nullptr;
 };
 
@@ -63,6 +60,7 @@ protected:
 
 	void ResetSlotToDefaultValue(int SlotID);
 
+	UPROPERTY()
 	TArray<FUInventoryStruct> TravelInventory;
 	
 public:	
@@ -91,8 +89,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FString GetSlotKeyName(int SlotID);
 
+	UFUNCTION()
 	FString GetSlotName(int SlotID);
-	
+
+	UFUNCTION()
 	TSubclassOf<AUsableItem> GetSlotObj(int SlotID);
 
 	UFUNCTION()

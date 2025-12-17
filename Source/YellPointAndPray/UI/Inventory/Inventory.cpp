@@ -89,7 +89,6 @@ void UInventory::ResetSlotToDefaultValue(int SlotID)
 	InventorySlots[SlotID].Item = nullptr;
 	InventorySlots[SlotID].ID = -1;
 	InventorySlots[SlotID].Name = "DefaultName";
-	InventorySlots[SlotID].PreviewImage = nullptr;
 	InventorySlots[SlotID].KeyName = "";
 }
 
@@ -133,7 +132,6 @@ void UInventory::SetInventory(APickableItem* Item)
 					InventorySlots[i].Item = UsableItem->GetClass();
 					InventorySlots[i].ID = UsableItem->ID;
 					InventorySlots[i].Name = UsableItem->Name;
-					InventorySlots[i].PreviewImage = UsableItem->PreviewImage;
 					if (AKeyPickable* UsableKey = Cast<AKeyPickable>(Item)) {
 						InventorySlots[i].KeyID = UsableKey->KeyID;
 						InventorySlots[i].KeyName = UsableKey->KeyName;
@@ -149,7 +147,6 @@ void UInventory::SetInventory(APickableItem* Item)
 			{
 				InventorySlots[i].ID = Item->ID;
 				InventorySlots[i].Name = Item->Name;
-				InventorySlots[i].PreviewImage = Item->PreviewImage;
 			}
 			
 			break;
@@ -195,7 +192,7 @@ UTexture2D* UInventory::GetSlotItem(int SlotID)
 		return nullptr;
 	}
 
-	return InventorySlots[SlotID].PreviewImage;
+	return Cast<AUsableItem>(InventorySlots[SlotID].Item->GetDefaultObject())->PreviewImage;
 }
 
 // Called every frame
