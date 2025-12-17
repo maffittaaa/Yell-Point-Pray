@@ -131,7 +131,6 @@ private:
     // Cleanup
     void Cleanup();
 
-private:
     IVoiceChat* VoiceChat = nullptr;
     IVoiceChatUser* VoiceUser = nullptr;
 

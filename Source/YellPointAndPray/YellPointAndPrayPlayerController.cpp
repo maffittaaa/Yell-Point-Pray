@@ -117,6 +117,22 @@ void AYellPointAndPrayPlayerController::OnPossess(APawn* InPawn)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Has Player State"));
 		CustomPlayerState->ReplacePlayerPawn();
+
+		if (VoiceComp) 
+		{
+			if (CustomPlayerState->PlayerType == EPlayerType::Mute)
+			{
+				VoiceComp->SetOutputVolume(0);
+			}
+			else if (CustomPlayerState->PlayerType == EPlayerType::Deaf)
+			{
+				VoiceComp->SetInputVolume(0);
+			}
+		}
+		else 
+		{
+			UE_LOG(LogTemp, Log, TEXT("Does not have Player State"));
+		}
 	}
 	else
 	{
