@@ -594,7 +594,7 @@ void AYellPointAndPrayCharacter::ServerOnItemDroped_Implementation(int SlotID, F
 					UE_LOG(LogTemp, Warning, TEXT("No Key"));
 					UE_LOG(LogTemp, Warning, TEXT("Key Class %s"), *NewHoldingItemClass->GetName());
 				}
-
+				Multicast_TurnOffLight();
 				GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, NewPosition, FRotator::ZeroRotator, SpawnParams);
 			}
 		}
@@ -630,6 +630,11 @@ void AYellPointAndPrayCharacter::Server_UseItem_Implementation(int SlotID)
 	{
 		IUsable::Execute_Use(HoldingItem, this);
 	}
+}
+
+void AYellPointAndPrayCharacter::Multicast_TurnOffLight_Implementation()
+{
+	PlayerLight->SetVisibility(false);
 }
 
 void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
@@ -673,6 +678,7 @@ void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 
 void AYellPointAndPrayCharacter::ServerDeleteItem_Implementation()
 {
+	Multicast_TurnOffLight();
 	if (HoldingItem != nullptr)
 	{
 		HoldingItem->Destroy();
@@ -914,6 +920,7 @@ void AYellPointAndPrayCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME(AYellPointAndPrayCharacter, bReplicatedIsDrawing);
 	DOREPLIFETIME(AYellPointAndPrayCharacter, bClearBoard); 
 	DOREPLIFETIME(AYellPointAndPrayCharacter, IsOutSide);
+	DOREPLIFETIME(AYellPointAndPrayCharacter, PlayerLight);
 }
 
 void AYellPointAndPrayCharacter::Client_ShowGameOver_Implementation(bool State)

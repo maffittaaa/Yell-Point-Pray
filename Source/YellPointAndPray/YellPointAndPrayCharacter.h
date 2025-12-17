@@ -135,7 +135,7 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		bool UseActive = true;
 
 	public:
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Light")
+		UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Light")
 		USpotLightComponent* PlayerLight;
 
 		void SetUseActive(bool Active);
@@ -144,6 +144,8 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		void PlayKebabEffect();
 		void CallGuard();
 
+		UFUNCTION(NetMulticast, Reliable)
+		void Multicast_TurnOffLight();
 
 		FInputModeGameOnly PreviousInputMode;
 
