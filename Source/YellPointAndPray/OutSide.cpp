@@ -30,8 +30,6 @@ void AOutSide::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Other
 	}
 }
 
-
-
 void AOutSide::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
 	AYellPointAndPrayCharacter* player = Cast<AYellPointAndPrayCharacter>(OtherActor);
 	if (player) {
