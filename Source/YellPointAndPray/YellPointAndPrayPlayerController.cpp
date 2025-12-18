@@ -242,6 +242,7 @@ void AYellPointAndPrayPlayerController::PauseMenu_Implementation(UWorld* World, 
 	Cast<AYellPointAndPrayCharacter>(User1)->SetMovementInputEnabled(Paused);
 	Cast<AYellPointAndPrayCharacter>(User1)->SetLookInputEnabled(Paused);
 	Cast<AYellPointAndPrayCharacter>(User1)->SetUseActive(Paused);
+	bShowMouseCursor = !Paused;
 
 	if (!Paused) {
 		FActorSpawnParameters SpawnParams;
@@ -250,6 +251,8 @@ void AYellPointAndPrayPlayerController::PauseMenu_Implementation(UWorld* World, 
 	}
 	else {
 		if(Newwidget) Newwidget->CloseMenu();
+		FInputModeGameOnly InputMode;
+		SetInputMode(InputMode);
 	}
 
 	Paused = !Paused;
