@@ -238,6 +238,23 @@ void AYellPointAndPrayPlayerController::StartMinigame_Implementation(TSubclassOf
 	Cast<AYellPointAndPrayCharacter>(User)->SetUseActive(false);
 }
 
+void AYellPointAndPrayPlayerController::PauseMenu_Implementation(UWorld* World, AActor* User1) {
+	Cast<AYellPointAndPrayCharacter>(User1)->SetMovementInputEnabled(Paused);
+	Cast<AYellPointAndPrayCharacter>(User1)->SetLookInputEnabled(Paused);
+	Cast<AYellPointAndPrayCharacter>(User1)->SetUseActive(Paused);
+
+	if (!Paused) {
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		Newwidget = World->SpawnActor<AInGameMenu>(PauseActor, SpawnParams);
+	}
+	else {
+		if(Newwidget) Newwidget->CloseMenu();
+	}
+
+	Paused = !Paused;
+}
+
 void AYellPointAndPrayPlayerController::SendClickToWidget()
 {
 	if (widget) {
