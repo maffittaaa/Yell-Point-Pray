@@ -31,6 +31,9 @@ ACamera::ACamera() {
 	alertedMark->SetHiddenInGame(true);
 
 	SuspicionMax = 100;
+
+	CameraAudioPlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("BonkAudioPlayer"));
+	CameraAudioPlayer->SetupAttachment(skeletalMeshComponent);
 }
 
 void ACamera::BeginPlay() {
@@ -103,7 +106,7 @@ void ACamera::PlayerInVision(float DeltaTime) {
 
 void ACamera::NoPlayerInVision(float DeltaTime) {
 	TArray<AActor*> ToDelete;
-	
+
 	for (auto& Elem : PlayersNotSeenList) {
 		suspiciousAmount = Elem.Value - (50 * DeltaTime);
 		Elem.Value = suspiciousAmount;
@@ -115,6 +118,13 @@ void ACamera::NoPlayerInVision(float DeltaTime) {
 			continue;
 		}
 	}
+
+	//SOUND PLAY
+	if (!CameraAudioPlayer->IsPlaying()) 
+	{
+		CameraAudioPlayer->Sound = CameraSound;
+		CameraAudioPlayer->Play();
+	}
 	
 	for (int i = 0; i < ToDelete.Num(); i++) {
 		PlayersNotSeenList.Remove(ToDelete[i]);
@@ -125,10 +135,17 @@ void ACamera::NoPlayerInVision(float DeltaTime) {
 }
 
 void ACamera::StopAnimation() {
-	if (skeletalMeshComponent && skeletalMeshComponent->GetAnimInstance()) {
+	if (skeletalMeshComponent && skeletalMeshComponent->GetAnimInstance()) 
+	{
 		bIsAnimationStopped = true;
 		skeletalMeshComponent->SetComponentTickEnabled(false);
-		UE_LOG(LogTemp, Warning, TEXT("Camera animation stopped"));
+	
+		//SOUND STOP
+		if (CameraAudioPlayer->IsPlaying())
+		{
+			CameraAudioPlayer->Sound = CameraSound;
+			CameraAudioPlayer->Stop();
+		}
 	}
 }
 
@@ -137,6 +154,12 @@ void ACamera::ResumeCameraAnimation() {
 	bIsAnimationStopped = false;
 	collisionCone->SetMaterial(0, undetectedMaterialInstance);
 	skeletalMeshComponent->SetComponentTickEnabled(true);
+	//SOUND PLAY
+	if (!CameraAudioPlayer->IsPlaying())
+	{
+		CameraAudioPlayer->Sound = CameraSound;
+		CameraAudioPlayer->Play();
+	}
 }
 
 void ACamera::ResetCameraObstacle() {

@@ -69,6 +69,12 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UAudioComponent* FartAudioPlayer;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UAudioComponent* EatAudioPlayer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UAudioComponent* BonkAudioPlayer;
+
 	protected:
 
 		/** Jump Input Action */
@@ -131,6 +137,12 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		
 		UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<USoundWave*> KebabFartSoundsList;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		USoundWave* BonkSound;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		USoundWave* EatSound;
 
 		bool KebabEffect = false;
 		FTimerHandle KebabTimerHandle;

@@ -26,6 +26,12 @@ class YELLPOINTANDPRAY_API AGuard : public ACharacter, public IKnockable, public
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UAudioComponent* CaughtAudioPlayer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundWave* CaughtSound;
+
 	// Sets default values for this character's properties
 	AGuard();
 

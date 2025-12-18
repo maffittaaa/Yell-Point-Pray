@@ -28,6 +28,9 @@ AGuard::AGuard()
 	alertedMark->SetupAttachment(RootComponent);
 	alertedMark->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	alertedMark->SetHiddenInGame(true);
+
+	CaughtAudioPlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("FlashlightAudioPlayer"));
+	CaughtAudioPlayer->SetupAttachment(RootComponent);
 }
 
 void AGuard::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -161,6 +164,11 @@ void AGuard::Tick(float DeltaTime)
 			if (TargetPlayer && TargetPlayer->GetClass()->ImplementsInterface(UCaughtable::StaticClass()))
 			{
 				CurrentSuspicion = 0;
+				if (!CaughtAudioPlayer->IsPlaying())
+				{
+					CaughtAudioPlayer->Sound = CaughtSound;
+					CaughtAudioPlayer->Play();
+				}
 				ICaughtable::Execute_Caught(TargetPlayer);
 			}
 		}

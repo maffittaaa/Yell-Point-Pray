@@ -7,6 +7,7 @@
 #include "Containers/Map.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Reset.h"
+#include "Components/AudioComponent.h"
 #include "Camera.generated.h"
 
 UCLASS(Blueprintable)
@@ -63,6 +64,12 @@ class YELLPOINTANDPRAY_API ACamera : public AActor, public IReset
 		void NoPlayerInVision(float DeltaTime);
 
 	public:
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+		UAudioComponent* CameraAudioPlayer;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		USoundWave* CameraSound;
+
 		// Called every frame
 		virtual void Tick(float DeltaTime) override;
 

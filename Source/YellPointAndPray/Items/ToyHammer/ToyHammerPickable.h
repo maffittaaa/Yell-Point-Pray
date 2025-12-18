@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Items/PickableItemsParent/PickableItem.h"
+#include "Components/AudioComponent.h"
 #include "ToyHammerPickable.generated.h"
 
 /**
@@ -16,4 +17,7 @@ class YELLPOINTANDPRAY_API AToyHammerPickable : public APickableItem
 
 private:
 	AToyHammerPickable();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UAudioComponent* ToyHammerAudioPlayer;
 };

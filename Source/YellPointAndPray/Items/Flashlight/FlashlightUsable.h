@@ -28,6 +28,12 @@ private:
 	void OnRep_IsLightOn();
 
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UAudioComponent* FlashlightAudioPlayer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundWave* FlashlightSound;
+
 	virtual void Use_Implementation(AActor* User) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 

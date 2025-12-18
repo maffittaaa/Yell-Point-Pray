@@ -17,10 +17,19 @@ AFlashlightUsable::AFlashlightUsable()
     Light->SetVisibility(bIsLightOn);
     
     bReplicates = true;
+
+    FlashlightAudioPlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("FlashlightAudioPlayer"));
+    FlashlightAudioPlayer->SetupAttachment(Mesh);
 }
 
 void AFlashlightUsable::Use_Implementation(AActor* User)
 {
+    if (!FlashlightAudioPlayer->IsPlaying())
+    {
+        FlashlightAudioPlayer->Sound = FlashlightSound;
+        FlashlightAudioPlayer->Play();
+    }
+
     bIsLightOn = !bIsLightOn;
     UserStored = Cast<AYellPointAndPrayCharacter>(User);
     

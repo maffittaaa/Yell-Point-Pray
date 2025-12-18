@@ -86,6 +86,8 @@ AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 	bReplicates = true;
 
 	FartAudioPlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("FartAudioPlayer"));
+	BonkAudioPlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("BonkAudioPlayer"));
+	EatAudioPlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("EatAudioPlayer"));
 
 	//Cesar Stuff -------------------------------------------------------
 
@@ -358,6 +360,9 @@ void AYellPointAndPrayCharacter::Server_KnockGuard_Implementation(AActor* Curren
 {
 	if (CurrentKnockableActor && CurrentKnockableActor->GetClass()->ImplementsInterface(UKnockable::StaticClass()))
 	{
+		//SOUND
+		BonkAudioPlayer->Sound = BonkSound;
+		BonkAudioPlayer->Play();
 		IKnockable::Execute_Knock(CurrentKnockableActor);
 		UE_LOG(LogTemp, Warning, TEXT("Server knocking guard via player RPC"));
 	}
@@ -1272,6 +1277,9 @@ void AYellPointAndPrayCharacter::ChangeKebabEffect(bool state)
 
 	FTimerHandle NewTimerHandle;
 	KebabTimerHandle = NewTimerHandle;
+
+	EatAudioPlayer->Sound = EatSound;
+	EatAudioPlayer->Play();
 
 	GetWorld()->GetTimerManager().SetTimer(KebabTimerHandle, this, &AYellPointAndPrayCharacter::PlayKebabEffect, RandTime, false);
 }

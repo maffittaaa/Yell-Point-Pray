@@ -76,8 +76,12 @@ void ARubberDuckPickable::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 	//START QUACK QUACK
 	int32 RandSound = FMath::RandRange(0, 3);
 	UE_LOG(LogTemp, Warning, TEXT("RandSound: %d"), RandSound);
-	DuckAudioPlayer->Sound = QuackSoundsList[RandSound];
-	DuckAudioPlayer->Play();
+
+	if (!DuckAudioPlayer->IsPlaying())
+	{
+		DuckAudioPlayer->Sound = QuackSoundsList[RandSound];
+		DuckAudioPlayer->Play();
+	}
 	//END QUACK QUACK SOUND
 }
 

@@ -7,6 +7,9 @@ AToyHammerPickable::AToyHammerPickable()
 {
 	Name = "Toy Hammer Pickable";
 	ID = 1;
+
+	ToyHammerAudioPlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("ToyHammerAudioPlayer"));
+	ToyHammerAudioPlayer->SetupAttachment(Mesh);
 }
 
 
