@@ -124,32 +124,40 @@ void UInventory::SetInventory(APickableItem* Item)
 	{
 		if (InventorySlots[i].ID == -1)
 		{
-			if (Item->Obj) 
+			if (UGameInstance* GameInstance = GetWorld()->GetGameInstance())
 			{
-				AUsableItem* UsableItem = Cast<AUsableItem>(Item->Obj->GetDefaultObject());
+				if (UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GameInstance))
+				{
+					UE_LOG(LogTemp, Warning, TEXT("[Inventory] UsableItems Array: %d"), CustomGameInstance->ItemsUsableArray.Num());
 
-				if (Item->Obj->IsChildOf(AUsableItem::StaticClass()))
-				{
-					InventorySlots[i].Item = UsableItem->GetClass();
-					InventorySlots[i].ID = UsableItem->ID;
-					InventorySlots[i].Name = UsableItem->Name;
-					if (AKeyPickable* UsableKey = Cast<AKeyPickable>(Item)) {
-						InventorySlots[i].KeyID = UsableKey->KeyID;
-						InventorySlots[i].KeyName = UsableKey->KeyName;
+					FActorSpawnParameters SpawnParams;
+					AActor* UsableItemActor = GetWorld()->SpawnActor<AActor>(CustomGameInstance->ItemsUsableArray[Item->ID], FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);;
+
+					AUsableItem* UsableItem = Cast<AUsableItem>(UsableItemActor);
+
+					if (UsableItem) 
+					{
+						if (CustomGameInstance->ItemsUsableArray[Item->ID]->IsChildOf(AUsableItem::StaticClass()))
+						{
+							InventorySlots[i].Item = CustomGameInstance->ItemsUsableArray[Item->ID];
+							InventorySlots[i].ID = UsableItem->ID;
+							InventorySlots[i].Name = UsableItem->Name;
+
+							if (AKeyPickable* UsableKey = Cast<AKeyPickable>(Item)) {
+								InventorySlots[i].KeyID = UsableKey->KeyID;
+								InventorySlots[i].KeyName = UsableKey->KeyName;
+							}
+						}
+						else
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Item is not a Usable item class"));
+							UE_LOG(LogTemp, Warning, TEXT("Actual parent class: %s"), *CustomGameInstance->ItemsUsableArray[Item->ID]->GetSuperClass()->GetName());
+						}
 					}
-				}
-				else
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Item is not a Usable item class"));
-					UE_LOG(LogTemp, Warning, TEXT("Actual parent class: %s"), *Item->Obj->GetSuperClass()->GetName());
+
+					UsableItemActor->Destroy();
 				}
 			}
-			else 
-			{
-				InventorySlots[i].ID = Item->ID;
-				InventorySlots[i].Name = Item->Name;
-			}
-			
 			break;
 		}
 	}

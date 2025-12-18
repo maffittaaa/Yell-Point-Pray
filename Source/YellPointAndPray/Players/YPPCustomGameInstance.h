@@ -77,6 +77,12 @@ public:
 	
 	TArray<FPlayerInfo> PlayerInfoArray;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
+	TArray<UClass*> ItemsPickableArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
+	TArray<UClass*> ItemsUsableArray;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PreviewImage")
 	TArray<UTexture2D*> PreviewImageList;
 

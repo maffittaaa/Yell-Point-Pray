@@ -9,6 +9,12 @@ AKebabUsable::AKebabUsable() {
 	ID = 7;
 }
 
+void AKebabUsable::BeginPlay() {
+	Super::BeginPlay();
+	Name = "Kebab Usable";
+	ID = 7;
+}
+
 void AKebabUsable::Use_Implementation(AActor* User)
 {
 	if (!HasAuthority()) return;

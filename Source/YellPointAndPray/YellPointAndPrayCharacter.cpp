@@ -494,24 +494,28 @@ void AYellPointAndPrayCharacter::ThrowDuck_Implementation(ARubberDuckUsable* Duc
 	{
 		AUsableItem* UsableItem = Cast<AUsableItem>(InventoryComponent->GetSlotObj(ItemSelect)->GetDefaultObject());
 
-		if (UsableItem->Obj->IsChildOf(APickableItem::StaticClass()))
+		if (UGameInstance* GameInstance = GetWorld()->GetGameInstance())
 		{
-			APickableItem* PickableItem = Cast<APickableItem>(UsableItem->Obj->GetDefaultObject());
-
-			TSubclassOf<AActor> NewHoldingItemClass = PickableItem->GetClass();
-
-			if (NewHoldingItemClass)
+			if (UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GameInstance))
 			{
-				FVector NewPosition;
-				if (HitPointVector != FVector::Zero())
+				if (CustomGameInstance->ItemsPickableArray[InventoryComponent->GetSlotID(ItemSelect)]->IsChildOf(APickableItem::StaticClass()))
 				{
-					NewPosition = HitPointVector;
+					TSubclassOf<AActor> NewHoldingItemClass = CustomGameInstance->ItemsPickableArray[InventoryComponent->GetSlotID(ItemSelect)];
+
+					if (NewHoldingItemClass)
+					{
+						FVector NewPosition;
+						if (HitPointVector != FVector::Zero())
+						{
+							NewPosition = HitPointVector;
+						}
+						else
+						{
+							NewPosition = end;
+						}
+						DuckUsing->Throw(this, GetWorld(), NewHoldingItemClass, NewPosition, dir);
+					}
 				}
-				else
-				{
-					NewPosition = end;
-				}
-				DuckUsing->Throw(this, GetWorld(), NewHoldingItemClass, NewPosition, dir);
 			}
 		}
 	}
@@ -576,41 +580,48 @@ void AYellPointAndPrayCharacter::ServerOnItemDroped_Implementation(int SlotID, F
 
 		//if (!UsableItem) return;
 
-		if (UsableItem->Obj->IsChildOf(APickableItem::StaticClass()))
+		if (UGameInstance* GameInstance = GetWorld()->GetGameInstance())
 		{
-			APickableItem* PickableItem = Cast<APickableItem>(UsableItem->Obj->GetDefaultObject());
-
-			TSubclassOf<AActor> NewHoldingItemClass = PickableItem->GetClass();
-
-			if (NewHoldingItemClass)
+			if (UYPPCustomGameInstance* CustomGameInstance = Cast<UYPPCustomGameInstance>(GameInstance))
 			{
-				//FVector NewPosition = start + (dir.Vector() * 150);
-				FVector NewPosition;
-				if (HitPoint != FVector::Zero()) 
+				if (CustomGameInstance->ItemsPickableArray[SlotID]->IsChildOf(APickableItem::StaticClass()))
 				{
-					NewPosition = HitPoint;
-				}
-				else 
-				{
-					NewPosition = SpacePoint;
-				}
-				FActorSpawnParameters SpawnParams;
-				if (Cast<AKeyPickable>(PickableItem))
-				{
-					AActor* Key = GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, NewPosition, FRotator::ZeroRotator, SpawnParams);
+					TSubclassOf<AActor> NewHoldingItemClass = CustomGameInstance->ItemsPickableArray[InventoryComponent->GetSlotID(SlotID)];
 
-					Cast<AKeyPickable>(Key)->KeyID = InventoryComponent->GetSlotKeyID(SlotID);
-					Cast<AKeyPickable>(Key)->KeyName = InventoryComponent->GetSlotKeyName(SlotID);
-					UE_LOG(LogTemp, Warning, TEXT("KeyID AAAAAAAAAAAAAset to: %d"), Cast<AKeyPickable>(Key)->KeyID);
-					return;
+					if (NewHoldingItemClass)
+					{
+						//FVector NewPosition = start + (dir.Vector() * 150);
+						FVector NewPosition;
+						if (HitPoint != FVector::Zero())
+						{
+							NewPosition = HitPoint;
+						}
+						else
+						{
+							NewPosition = SpacePoint;
+						}
+						FActorSpawnParameters SpawnParams;
+						if (InventoryComponent->GetSlotID(SlotID) == 6)
+						{
+							AActor* Key = GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, NewPosition, FRotator::ZeroRotator, SpawnParams);
+
+							AKeyPickable* KeyItem = Cast<AKeyPickable>(Key);
+
+							KeyItem->KeyID = InventoryComponent->GetSlotKeyID(SlotID);
+							KeyItem->KeyName = InventoryComponent->GetSlotKeyName(SlotID);
+
+							UE_LOG(LogTemp, Warning, TEXT("KeyID AAAAAAAAAAAAAset to: %d"), Cast<AKeyPickable>(Key)->KeyID);
+							return;
+						}
+						else
+						{
+							UE_LOG(LogTemp, Warning, TEXT("No Key"));
+							UE_LOG(LogTemp, Warning, TEXT("Key Class %s"), *NewHoldingItemClass->GetName());
+						}
+						Multicast_TurnOffLight();
+						GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, NewPosition, FRotator::ZeroRotator, SpawnParams);
+					}
 				}
-				else 
-				{
-					UE_LOG(LogTemp, Warning, TEXT("No Key"));
-					UE_LOG(LogTemp, Warning, TEXT("Key Class %s"), *NewHoldingItemClass->GetName());
-				}
-				Multicast_TurnOffLight();
-				GetWorld()->SpawnActor<AActor>(NewHoldingItemClass, NewPosition, FRotator::ZeroRotator, SpawnParams);
 			}
 		}
 	}
@@ -667,6 +678,7 @@ void AYellPointAndPrayCharacter::ServerOnItemSelected_Implementation(int SlotID)
 			}
 			
 			TSubclassOf<AActor> NewHoldingItemClass = InventoryComponent->GetSlotObj(SlotID);
+			//UE_LOG(LogTemp, Warning, TEXT("Player: KeyID set to: %d"), Cast<AKeyUsable>(HoldingItem)->KeyID);
 
 			if (NewHoldingItemClass)
 			{

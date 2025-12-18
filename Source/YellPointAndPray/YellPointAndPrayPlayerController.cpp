@@ -27,6 +27,27 @@ void AYellPointAndPrayPlayerController::BeginPlay()
 		VoiceComp = NewObject<UVoiceChatComponent>(this);
 		VoiceComp->RegisterComponent();
 		VoiceComp->Initialize();
+
+		UE_LOG(LogTemp, Warning, TEXT("[Controller] Has VoiceComp"));
+
+		if (AYPPCustomPlayerState* CustomPlayerState = Cast<AYPPCustomPlayerState>(PlayerState)) 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[Controller] Has PlayerState"));
+			if (CustomPlayerState->PlayerType == EPlayerType::Mute)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("[Controller] Output Volume to 0"));
+				VoiceComp->SetOutputVolume(0);
+			}
+			else if (CustomPlayerState->PlayerType == EPlayerType::Deaf)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("[Controller] Input Volume to 0"));
+				VoiceComp->SetInputVolume(0);
+			}
+		}
+		else 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[Controller] Does not have PlayerState"));
+		}
 	}
 
 	// only spawn touch controls on local player controllers
@@ -115,23 +136,16 @@ void AYellPointAndPrayPlayerController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 	if (AYPPCustomPlayerState* CustomPlayerState = Cast<AYPPCustomPlayerState>(PlayerState)) 
 	{
-		UE_LOG(LogTemp, Log, TEXT("Has Player State"));
+		//UE_LOG(LogTemp, Log, TEXT("[Controller] Has Player State"));
 		CustomPlayerState->ReplacePlayerPawn();
 
 		if (VoiceComp) 
 		{
-			if (CustomPlayerState->PlayerType == EPlayerType::Mute)
-			{
-				VoiceComp->SetOutputVolume(0);
-			}
-			else if (CustomPlayerState->PlayerType == EPlayerType::Deaf)
-			{
-				VoiceComp->SetInputVolume(0);
-			}
+
 		}
 		else 
 		{
-			UE_LOG(LogTemp, Log, TEXT("Does not have Player State"));
+			UE_LOG(LogTemp, Error, TEXT("[Controller] Does Not Have VoiceComp"));
 		}
 	}
 	else

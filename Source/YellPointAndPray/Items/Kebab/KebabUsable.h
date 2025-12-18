@@ -15,6 +15,6 @@ class YELLPOINTANDPRAY_API AKebabUsable : public AUsableItem
 	GENERATED_BODY()
 private:
 	AKebabUsable();
-
+	virtual void BeginPlay() override;
 	virtual void Use_Implementation(AActor* User) override;
 };
