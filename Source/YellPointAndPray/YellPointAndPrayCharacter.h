@@ -122,6 +122,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 		UInputAction* GoBackToAppartment;
 
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+		UInputAction* PauseAction;
+
 		//Animation State
 		UPROPERTY(ReplicatedUsing = OnRepAnimationState, BlueprintReadWrite, Category = "Animations")
 		TEnumAsByte<EAnimationState> animationState = Idle;
@@ -139,6 +142,8 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 		USpotLightComponent* PlayerLight;
 
 		void SetUseActive(bool Active);
+
+		void Pause();
 
 		void ChangeKebabEffect(bool state);
 		void PlayKebabEffect();

@@ -10,6 +10,7 @@
 #include "InputAction.h"
 #include "Door.h"
 #include <Server/VoiceChatComponent.h>
+#include "Menus/InGameMenu.h"
 #include "YellPointAndPrayPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -76,6 +77,16 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void StartMinigame(TSubclassOf<AActor> MiniGameActorClass, UWorld* World, AActor* User1, ADoor* Door);
+
+	UFUNCTION(Client, Reliable)
+	void PauseMenu(UWorld* World, AActor* User1);
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> PauseActor;
+
+	AInGameMenu* Newwidget;
+
+	bool Paused = false;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* LeftClickAction;

@@ -151,6 +151,9 @@ void AYellPointAndPrayCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		//GoBack
 		EnhancedInputComponent->BindAction(GoBackToAppartment, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::GoToAppartment);
+
+		//GoBack
+		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Started, this, &AYellPointAndPrayCharacter::Pause);
 		
 	}
 	else
@@ -344,6 +347,11 @@ void AYellPointAndPrayCharacter::Client_KnockGuard_Implementation(AActor* Curren
 {
 	// This runs on the client that owns this character
 	Server_KnockGuard(CurrentKnockableActor);
+}
+
+void AYellPointAndPrayCharacter::Pause()
+{
+	Cast<AYellPointAndPrayPlayerController>(GetController())->PauseMenu(GetWorld(), this);
 }
 
 void AYellPointAndPrayCharacter::Server_KnockGuard_Implementation(AActor* CurrentKnockableActor)
