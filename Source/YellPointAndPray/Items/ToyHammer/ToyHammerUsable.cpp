@@ -20,5 +20,8 @@ void AToyHammerUsable::Use_Implementation(AActor* User)
 
     Player->Client_KnockGuard(KnockableActor);
 
+    Cast<AYellPointAndPrayCharacter>(User)->InventoryComponent->DeleteInventorySlot(Cast<AYellPointAndPrayCharacter>(User)->InventoryComponent->CurrentItemSelected);
+    Cast<AYellPointAndPrayCharacter>(User)->ServerDeleteItem();
+
     UE_LOG(LogTemp, Warning, TEXT("Toy Hammer Used CARALHOOO!"));
 }

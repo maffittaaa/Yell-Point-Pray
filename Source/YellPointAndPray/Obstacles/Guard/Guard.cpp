@@ -71,6 +71,7 @@ void AGuard::Reset_Implementation()
 	TeleportTo(StartLocation, rotation);
 	CurrentWaypoint = 0;
 	CurrentSuspicion = 0;
+	Patrol();
 
 	UE_LOG(LogTemp, Warning, TEXT("Guard-specific reset called!"));
 }
