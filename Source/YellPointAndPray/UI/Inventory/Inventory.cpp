@@ -215,6 +215,11 @@ UTexture2D* UInventory::GetSlotItem(int SlotID)
 	return nullptr;
 }
 
+void UInventory::SetCurrentItemSelected_Implementation(int SlotID) 
+{
+	CurrentItemSelected = SlotID;
+}
+
 // Called every frame
 void UInventory::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {

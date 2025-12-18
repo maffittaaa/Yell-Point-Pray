@@ -170,15 +170,15 @@ void AYellPointAndPrayPlayerController::Tick(float DeltaTime)
 		if (VoiceComp && CustomPlayerState)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("[Controller] Has PlayerState & VoiceComponent"));
-			if (CustomPlayerState->PlayerType == EPlayerType::Mute)
+			if (CustomPlayerState->PlayerType == EPlayerType::Blind)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("[Controller] Output Volume to 0"));
-				VoiceComp->SetOutputVolume(0);
+				VoiceComp->SetOutputVolume(0.f);
 			}
-			else if (CustomPlayerState->PlayerType == EPlayerType::Deaf)
+			else if (CustomPlayerState->PlayerType == EPlayerType::Mute)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("[Controller] Input Volume to 0"));
-				VoiceComp->SetInputVolume(0);
+				VoiceComp->SetInputVolume(0.f);
 			}
 
 			ChangedVoiceChat = true;

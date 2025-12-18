@@ -64,6 +64,9 @@ protected:
 	TArray<FUInventoryStruct> TravelInventory;
 	
 public:	
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void SetCurrentItemSelected(int SlotID);
+	 
 	TArray<FUInventoryStruct> GetAllInventory();
 	
 	void StoreInitialInventory(TArray<FUInventoryStruct> InitialInventory);

@@ -65,8 +65,7 @@ AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 	HandsPos->SetupAttachment(FirstPersonCameraComponent);
 
 	PlayerLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("PlayerLight"));
-	PlayerLight->SetupAttachment(GetRootComponent());
-	PlayerLight->Intensity = 7000.f;
+	PlayerLight->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("spine_05"));
 	PlayerLight->SetVisibility(false);
 
 	// configure the character comps
@@ -650,12 +649,13 @@ void AYellPointAndPrayCharacter::Use()
 
 		if (HoldingItem)
 		{
-
 			if (HoldingItem->GetClass()->ImplementsInterface(UUsable::StaticClass()))
 			{
 				IUsable::Execute_Use(HoldingItem, this);
 				if (GetNetMode() == NM_Client)
 				{
+					UE_LOG(LogTemp, Warning, TEXT("CurrentItemSelected: %d"), InventoryComponent->CurrentItemSelected);
+
 					Server_UseItem(InventoryComponent->CurrentItemSelected);
 				}
 			}
@@ -667,6 +667,7 @@ void AYellPointAndPrayCharacter::Server_UseItem_Implementation(int SlotID)
 {
 	if (HoldingItem && HoldingItem->GetClass()->ImplementsInterface(UUsable::StaticClass()))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("CurrentItemSelected: %d"), InventoryComponent->CurrentItemSelected);
 		IUsable::Execute_Use(HoldingItem, this);
 	}
 }
@@ -1265,7 +1266,7 @@ void AYellPointAndPrayCharacter::Tick(float DeltaTime)
 	HandMovement(DeltaTime);
 }
 
-void AYellPointAndPrayCharacter::ChangeKebabEffect(bool state)
+void AYellPointAndPrayCharacter::ChangeKebabEffect_Implementation(bool state)
 {
 	KebabEffect = state;
 	InventoryComponent->DeleteInventorySlot(InventoryComponent->CurrentItemSelected);

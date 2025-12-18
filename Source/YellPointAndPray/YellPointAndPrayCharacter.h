@@ -157,7 +157,9 @@ class AYellPointAndPrayCharacter : public ACharacter, public ICaughtable, public
 
 		void Pause();
 
+		UFUNCTION(Server, Reliable)
 		void ChangeKebabEffect(bool state);
+
 		void PlayKebabEffect();
 		void CallGuard();
 

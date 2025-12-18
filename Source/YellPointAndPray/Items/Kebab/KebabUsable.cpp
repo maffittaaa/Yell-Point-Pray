@@ -23,6 +23,7 @@ void AKebabUsable::Use_Implementation(AActor* User)
 
 	if (Player) 
 	{
+		UE_LOG(LogTemp, Warning, TEXT("CurrentItemSelected: %d"), Player->InventoryComponent->CurrentItemSelected);
 		Player->ChangeKebabEffect(true);
 		UE_LOG(LogTemp, Warning, TEXT("Kebab Used CARALHOOO!"));
 		Destroy();
