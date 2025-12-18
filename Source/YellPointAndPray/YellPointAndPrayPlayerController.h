@@ -94,6 +94,8 @@ protected:
 	//VOICE CHAT
 	UVoiceChatComponent* VoiceComp;
 
+	bool ChangedVoiceChat = false;
+
 	/** Input Mapping Contexts */
 	UPROPERTY(EditAnywhere, Category="Input|Input Mappings")
 	TArray<UInputMappingContext*> MobileExcludedMappingContexts;
