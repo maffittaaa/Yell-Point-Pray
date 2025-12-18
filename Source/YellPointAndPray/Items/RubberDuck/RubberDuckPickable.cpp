@@ -46,8 +46,7 @@ void ARubberDuckPickable::CallGuard() {
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGuard::StaticClass(), FoundActors);
 	for (auto& FoundActor : FoundActors)
 	{
-		if (!Cast<AGuard>(FoundActor))
-			break;
+		if (!Cast<AGuard>(FoundActor))continue;
 			
 
 		FVector Loc = FoundActor->GetActorTransform().GetLocation();
@@ -62,7 +61,7 @@ void ARubberDuckPickable::CallGuard() {
 		if (da < 4000) {
 			UE_LOG(LogTemp, Warning, TEXT("Close Enough"));	
 
-			FVector duckLoc = GetActorTransform().GetLocation();
+			FVector duckLoc = Loc2;
 			Cast<AGuard>(FoundActor)->Called(duckLoc);
 		}
 	}

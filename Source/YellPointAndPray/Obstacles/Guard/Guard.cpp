@@ -66,6 +66,9 @@ void AGuard::Reset_Implementation()
 	UnKnockMySelf();
 	FRotator rotation = StartRotation.Rotator();
 	TeleportTo(StartLocation, rotation);
+	CurrentWaypoint = 0;
+	CurrentSuspicion = 0;
+
 	UE_LOG(LogTemp, Warning, TEXT("Guard-specific reset called!"));
 }
 
@@ -107,7 +110,7 @@ void AGuard::Tick(float DeltaTime)
 					}
 				}
 				else if (CurrentWaypoint == Waypoints.Num() - 1) {
-					CurrentWaypoint = 0;
+					CurrentWaypoint = -1;
 				}
 				CurrentWaypoint += Looper;
 				Patrol();
@@ -115,7 +118,7 @@ void AGuard::Tick(float DeltaTime)
 		}
 	}
 	if (Suspicious == true) {
-		//UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %f"), CurrentSuspicion)
+		UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %f"), CurrentSuspicion)
 		guardingState = Chasing;
 		CurrentSuspicion -= DeltaTime * 10;
 		suspiciousMark->SetHiddenInGame(false);
@@ -141,7 +144,7 @@ void AGuard::Tick(float DeltaTime)
 	//FRotator NewRotation = FRotationMatrix::MakeFromX(Dir).Rotator();
 	//SetActorRotation(NewRotation);
 	if (Seen == true) {
-		//UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %f"), CurrentSuspicion);
+		UE_LOG(LogTemp, Warning, TEXT("Suspicious Amount:  %f"), CurrentSuspicion);
 		guardingState = Alerted;
 		if (TargetPlayer) {
 			AYellPointAndPrayCharacter* playerCharacter = Cast<AYellPointAndPrayCharacter>(TargetPlayer);
