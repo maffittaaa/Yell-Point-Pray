@@ -37,6 +37,25 @@ void AMatchmakingLevelScript::BeginPlay() {
 		}
 		ServerListScrollBoxWidget = Cast<UScrollBox>(MatchmakingWidget->GetWidgetFromName(TEXT("ScrollBox")));
 	}
+
+	FString LevelName = GetWorld()->GetMapName();
+	LevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
+
+	if (LevelName != "MainMenu")
+	{
+		return;
+	}
+
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	if (PC)
+	{
+		// Implementation for UI locking goes here
+		FInputModeUIOnly InputMode;
+		PC->SetInputMode(InputMode);
+		PC->bShowMouseCursor = true;
+	}
+
 }
 
 void AMatchmakingLevelScript::EndPlay(const EEndPlayReason::Type EndPlayReason) {

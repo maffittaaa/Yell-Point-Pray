@@ -27,8 +27,6 @@ void AYellPointAndPrayPlayerController::BeginPlay()
 		VoiceComp = NewObject<UVoiceChatComponent>(this);
 		VoiceComp->RegisterComponent();
 		VoiceComp->Initialize();
-
-
 	}
 
 	// only spawn touch controls on local player controllers
@@ -48,6 +46,10 @@ void AYellPointAndPrayPlayerController::BeginPlay()
 
 		}
 	}
+
+	FInputModeGameOnly InputMode;
+	SetInputMode(InputMode);
+	bShowMouseCursor = false;
 }
 
 //START VOICE CHAT IMPLEMENTATION
