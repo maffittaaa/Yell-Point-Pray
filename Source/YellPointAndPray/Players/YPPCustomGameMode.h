@@ -29,10 +29,16 @@ struct FPickableItemData
     UPROPERTY()
     FString ItemName;
 
+    UPROPERTY()
+    int KeyID;
+    
+    UPROPERTY()
+    FString KeyName;
+
     FPickableItemData(){}
     
-    FPickableItemData(TSubclassOf<APickableItem> ItemClass, FTransform Transform, FString ItemName)
-        : ItemClass(ItemClass), Transform(Transform), ItemName(ItemName){}
+    FPickableItemData(TSubclassOf<APickableItem> ItemClass, FTransform Transform, FString ItemName, int KeyID, FString KeyName)
+        : ItemClass(ItemClass), Transform(Transform), ItemName(ItemName), KeyID(KeyID), KeyName(KeyName) {}
 };
 
 UCLASS()

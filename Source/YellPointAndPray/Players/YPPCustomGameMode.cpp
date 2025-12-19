@@ -12,6 +12,7 @@
 #include <Kismet/GameplayStatics.h>
 #include <YellPointAndPrayPlayerController.h>
 #include "YPPCustomGameInstance.h"
+#include <Items/Keys/KeyPickable.h>
 
 AYPPCustomGameMode::AYPPCustomGameMode()
 {
@@ -254,8 +255,17 @@ void AYPPCustomGameMode::StoreAllItemsInMap()
         APickableItem* PickableItem = Cast<APickableItem>(Actor);
         if (PickableItem && PickableItem->IsValidLowLevel())
         {
-            FPickableItemData ItemData = FPickableItemData(PickableItem->GetClass(), PickableItem->GetActorTransform(), PickableItem->GetName());
-            
+            FPickableItemData ItemData;
+
+            if (AKeyPickable* Key = Cast<AKeyPickable>(PickableItem))
+            {
+                ItemData = FPickableItemData(PickableItem->GetClass(), PickableItem->GetActorTransform(), PickableItem->GetName(), Key->KeyID, Key->KeyName);
+            }
+            else 
+            {
+                ItemData = FPickableItemData(PickableItem->GetClass(), PickableItem->GetActorTransform(), PickableItem->GetName(), -1, "DefaultName");
+            }
+
             InitialItemsSpawned.Add(ItemData);
             
             UE_LOG(LogTemp, Warning, TEXT("Stored PickableItem: %s at location %s"), 
@@ -296,6 +306,12 @@ void AYPPCustomGameMode::RestoreAllItemsInMap()
             
             if (NewItem)
             {
+                if (AKeyPickable* Key = Cast<AKeyPickable>(NewItem))
+                {
+					Key->KeyID = ItemData.KeyID;
+					Key->KeyName = ItemData.KeyName;
+                }
+              
                 UE_LOG(LogTemp, Warning, TEXT("Restored PickableItem: %s"), *ItemData.ItemName);
             }
             else
