@@ -65,7 +65,7 @@ AYellPointAndPrayCharacter::AYellPointAndPrayCharacter()
 	HandsPos->SetupAttachment(FirstPersonCameraComponent);
 
 	PlayerLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("PlayerLight"));
-	PlayerLight->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("spine_05"));
+	PlayerLight->SetupAttachment(GetRootComponent());
 	PlayerLight->SetVisibility(false);
 
 	// configure the character comps
