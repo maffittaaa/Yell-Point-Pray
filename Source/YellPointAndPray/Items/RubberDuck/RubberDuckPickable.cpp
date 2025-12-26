@@ -26,6 +26,9 @@ void ARubberDuckPickable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ARubberDuckPickable, HasQuacked);
+	DOREPLIFETIME(ARubberDuckPickable, CanMakeSound);
+	DOREPLIFETIME(ARubberDuckPickable, DuckAudioPlayer);
+	DOREPLIFETIME(ARubberDuckPickable, QuackSoundsList);
 
 }
 
@@ -67,21 +70,26 @@ void ARubberDuckPickable::CallGuard() {
 	}
 }
 
-void ARubberDuckPickable::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit){
-	if (!HasQuacked && HasAuthority()) {
+void ARubberDuckPickable::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (!HasAuthority()) return;
+
+	CanMakeSound = true;
+
+	if (!HasQuacked) {
 		HasQuacked = true;
 		CallGuard();
 	}
-	
-	//START QUACK QUACK
-	int32 RandSound = FMath::RandRange(0, 3);
-	UE_LOG(LogTemp, Warning, TEXT("RandSound: %d"), RandSound);
 
-	if (!DuckAudioPlayer->IsPlaying())
-	{
-		DuckAudioPlayer->Sound = QuackSoundsList[RandSound];
-		DuckAudioPlayer->Play();
-	}
+	//START QUACK QUACK
+	//int32 RandSound = FMath::RandRange(0, 3);
+	//UE_LOG(LogTemp, Warning, TEXT("RandSound: %s"), *HitComp->GetName());
+
+	//if (!DuckAudioPlayer->IsPlaying())
+	//{
+	//	DuckAudioPlayer->Sound = QuackSoundsList[RandSound];
+	//	DuckAudioPlayer->Play();
+	//}
 	//END QUACK QUACK SOUND
 }
 

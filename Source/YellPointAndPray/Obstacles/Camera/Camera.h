@@ -64,11 +64,17 @@ class YELLPOINTANDPRAY_API ACamera : public AActor, public IReset
 		void NoPlayerInVision(float DeltaTime);
 
 	public:
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+		UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 		UAudioComponent* CameraAudioPlayer;
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		USoundWave* CameraSound;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+		bool CanPlaySound = false;
+
+		UFUNCTION(Server, Reliable)
+		void ChangeCanPlaySound(bool state);
 
 		// Called every frame
 		virtual void Tick(float DeltaTime) override;

@@ -23,19 +23,20 @@ private:
 	UPROPERTY(Replicated)
 	bool HasQuacked = false;
 
-
-
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USphereComponent* SphereCollider;
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UAudioComponent* DuckAudioPlayer;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	TArray<USoundWave*> QuackSoundsList;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	bool CanMakeSound = false;
 
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, FVector NormalImpulse,const FHitResult& Hit);

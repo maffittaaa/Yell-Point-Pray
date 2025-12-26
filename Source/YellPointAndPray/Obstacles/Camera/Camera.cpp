@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Interfaces/Caughtable.h"
 #include "Kismet/KismetMathLibrary.h"
+#include <Net/UnrealNetwork.h>
 
 ACamera::ACamera() {
 	PrimaryActorTick.bCanEverTick = true;
@@ -38,6 +39,8 @@ ACamera::ACamera() {
 
 void ACamera::BeginPlay() {
 	Super::BeginPlay();
+
+	ChangeCanPlaySound(true);
 
 	if (collisionCone && skeletalMeshComponent)
 			collisionCone->AttachToComponent(skeletalMeshComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("CameraSight"));
@@ -120,10 +123,11 @@ void ACamera::NoPlayerInVision(float DeltaTime) {
 	}
 
 	//SOUND PLAY
+	ChangeCanPlaySound(true);
+
 	if (!CameraAudioPlayer->IsPlaying()) 
 	{
-		CameraAudioPlayer->Sound = CameraSound;
-		CameraAudioPlayer->Play();
+		//CameraAudioPlayer->Play();
 	}
 	
 	for (int i = 0; i < ToDelete.Num(); i++) {
@@ -141,10 +145,11 @@ void ACamera::StopAnimation() {
 		skeletalMeshComponent->SetComponentTickEnabled(false);
 	
 		//SOUND STOP
+		ChangeCanPlaySound(false);
+
 		if (CameraAudioPlayer->IsPlaying())
 		{
-			CameraAudioPlayer->Sound = CameraSound;
-			CameraAudioPlayer->Stop();
+			//CameraAudioPlayer->Stop();
 		}
 	}
 }
@@ -154,12 +159,19 @@ void ACamera::ResumeCameraAnimation() {
 	bIsAnimationStopped = false;
 	collisionCone->SetMaterial(0, undetectedMaterialInstance);
 	skeletalMeshComponent->SetComponentTickEnabled(true);
+	
 	//SOUND PLAY
+	ChangeCanPlaySound(true);
+	
 	if (!CameraAudioPlayer->IsPlaying())
 	{
-		CameraAudioPlayer->Sound = CameraSound;
-		CameraAudioPlayer->Play();
+		//CameraAudioPlayer->Play();
 	}
+}
+
+void ACamera::ChangeCanPlaySound_Implementation(bool state) 
+{
+	CanPlaySound = true;
 }
 
 void ACamera::ResetCameraObstacle() {
@@ -177,3 +189,10 @@ void ACamera::Tick(float DeltaTime) {
 		NoPlayerInVision(DeltaTime);
 }
 
+void ACamera::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ACamera, CanPlaySound);
+	DOREPLIFETIME(ACamera, CameraAudioPlayer);
+}
