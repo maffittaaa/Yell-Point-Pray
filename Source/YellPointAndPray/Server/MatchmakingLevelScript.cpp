@@ -4,7 +4,7 @@
 #include "MatchmakingSubsystem.h"
 #include "SteamSessionManager.h"
 #include "BackendSettings.h"
-#include "Core/ServerButton.h"
+#include "ServerButton.h"
 #include "Components/Button.h"
 #include "Components/ScrollBox.h"
 #include "Components/VerticalBox.h"
@@ -117,7 +117,7 @@ void AMatchmakingLevelScript::OnHostSteamClicked() {
             TEXT("Steam P2P Game"),
             8,
             TEXT("Default"),
-            TEXT("/Game/ThirdPerson/Lvl_ThirdPerson"),
+            TEXT("/Game/FirstPerson/Lvl_Lobby"),
             false
         );
     }
