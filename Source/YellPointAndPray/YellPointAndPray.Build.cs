@@ -25,11 +25,16 @@ public class YellPointAndPray : ModuleRules
             "NavigationSystem",
 			"OnlineSubsystem",
 			"OnlineSubsystemUtils",
+			"OnlineSubsystemSteam",
 			"OnlineSubsystemEOS",
 			"OnlineServicesInterface",
 			"OnlineServicesEOS",
 			"VoiceChat",
-			"EOSVoiceChat"
+			"EOSVoiceChat",
+			"AdvancedSessions",
+			"AdvancedSteamSessions",
+			"SteamSockets",
+			"Steamworks"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] {

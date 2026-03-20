@@ -27,7 +27,7 @@ DECLARE_LOG_CATEGORY_EXTERN(AdvancedSessionsLog, Log, All);
 
 
 UCLASS()
-class UAdvancedSessionsLibrary : public UBlueprintFunctionLibrary
+class ADVANCEDSESSIONS_API UAdvancedSessionsLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:
@@ -159,6 +159,10 @@ public:
 		// Get the unique net id of a network player attached to the given controller
 		UFUNCTION(BlueprintPure, Category = "Online|AdvancedSessions|PlayerInfo|PlayerID")
 		static void GetUniqueNetID(APlayerController *PlayerController, FBPUniqueNetId &UniqueNetId);
+
+		// Get the unique net id of a network player attached to the given controller
+		UFUNCTION(BlueprintPure, Category = "Online|AdvancedSessions|PlayerInfo|PlayerID")
+		static void GetUniqueNetIdOfSessionOwner(FBlueprintSessionResult SessionResult, FBPUniqueNetId& UniqueNetId);
 
 		// Get the unique net id of a network player who is assigned the the given player state
 		UFUNCTION(BlueprintPure, Category = "Online|AdvancedSessions|PlayerInfo|PlayerID")

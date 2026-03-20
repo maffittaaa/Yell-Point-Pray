@@ -56,6 +56,14 @@
 			"Name": "OnlineSubsystemEOS",
 			"Enabled": true
 		},
+        {
+          "Name": "OnlineSubsystemSteam",
+          "Enabled": true
+        },
+        {
+          "Name": "SteamSockets",
+          "Enabled": true
+        },
 		{
 			"Name": "AdvancedSteamSessions",
 			"Enabled": false
@@ -64,6 +72,8 @@
 			"Name": "AdvancedSessions",
 			"Enabled": false
 		}
+      
+        
 	],
 	"TargetPlatforms": [
 		"Windows"

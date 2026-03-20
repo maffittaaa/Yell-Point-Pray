@@ -3,58 +3,130 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "MatchSessionInfo.h"
-#include "TCPClientRunnable.h"
 #include "MatchmakingSubsystem.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSessionsUpdated, const TArray<FMatchSessionInfo>&, Sessions);
+class FTCPClientRunnable;
+class USteamSessionManager;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHostRequested,FString, Adress, int32, Port);
+// Delegate for when session list is updated
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMatchmakingOnSessionsUpdated, const TArray<FMatchSessionInfo>&, Sessions);
 
+// Delegate for when host request is confirmed by server
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FMatchmakingOnHostRequested, int32, SessionId, FString, ServerIp, int32, ServerPort);
+
+// Delegate for when connection status changes
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMatchmakingOnConnectionStatusChanged, bool, bIsConnected);
 
-class FTCPClientRunnable;
+// Delegate for when join is successful
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FMatchmakingOnJoinSuccess, int32, SessionId, FString, ServerIp, int32, ServerPort);
 
+// Delegate for when disconnect is confirmed
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMatchmakingOnDisconnectSuccess);
+
+// Delegate for when session shutdown is confirmed
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMatchmakingOnShutdownSuccess, int32, SessionId);
+
+// Delegate for when server sends an error
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMatchmakingOnServerError, FString, ErrorCode);
+
+// Delegate for when Steam P2P session registration response is received
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FMatchmakingOnSteamP2PRegistered, bool, bSuccess, const FString&, SessionId);
+
+// Delegate for when Steam P2P session unregistration response is received
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMatchmakingOnSteamP2PUnregistered, bool, bSuccess);
+
+/**
+ * Game Instance Subsystem for managing matchmaking connection.
+ * All communication goes through a single TCP connection to the matchmaking server.
+ */
 UCLASS()
+class YELLPOINTANDPRAY_API UMatchmakingSubsystem : public UGameInstanceSubsystem
+{
+    GENERATED_BODY()
 
-class YELLPOINTANDPRAY_API UMatchmakingSubsystem : public UGameInstanceSubsystem {
-	GENERATED_BODY()
 public:
-	// Subsystem lifecycle
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void Deinitialize() override;
-	// Public API
-	UFUNCTION(BlueprintCallable)
-	void ConnectToMatchmakingServer();
+    virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+    virtual void Deinitialize() override;
 
-	UFUNCTION(BlueprintCallable)
-	void HostNewGame(const FString& Name, int32 Port);
+    UFUNCTION(BlueprintCallable, Category = "Matchmaking")
+    void ConnectToMatchmakingServer();
 
-	UFUNCTION(BlueprintCallable)
-	void RefreshSessionList();
+    UFUNCTION(BlueprintCallable, Category = "Matchmaking")
+    void HostNewGame(const FString& Name);
 
-	UFUNCTION(BlueprintCallable)
-	bool IsConnected() const;
-	const TArray<FMatchSessionInfo>& GetSessions() const { return Sessions; }
+    UFUNCTION(BlueprintCallable, Category = "Matchmaking")
+    void RefreshSessionList();
 
-	UPROPERTY(BlueprintAssignable)
-	FOnSessionsUpdated OnSessionsUpdated;
+    UFUNCTION(BlueprintCallable, Category = "Matchmaking")
+    void JoinSession(int32 SessionId);
 
-	UPROPERTY(BlueprintAssignable)
-	FOnHostRequested OnHostRequested;
+    UFUNCTION(BlueprintCallable, Category = "Matchmaking")
+    void DisconnectFromSession();
 
-	UPROPERTY(BlueprintAssignable)
-	FMatchmakingOnConnectionStatusChanged OnConnectionStatusChanged;
-	// Called by the runnable on the game thread
-	void HandleServerMessage(const FString& ServerMessage);
+    UFUNCTION(BlueprintCallable, Category = "Matchmaking")
+    void ShutdownSession(int32 SessionId);
 
-	// Called by the runnable when connection status changes
-	void HandleConnectionStatusChanged(bool bIsConnected);
+    /** Register a Steam P2P session with the matchmaking server */
+    UFUNCTION(BlueprintCallable, Category = "Matchmaking|Steam")
+    void RegisterSteamP2PSession(const FString& SessionName, const FString& HostSteamId,
+        const FString& HostPlayerName, const FString& GameMode, int32 MaxPlayers,
+        const FString& SteamLobbyId, bool bIsPrivate);
+
+    /** Send heartbeat for an active Steam P2P session */
+    UFUNCTION(BlueprintCallable, Category = "Matchmaking|Steam")
+    void SendSteamHeartbeat(const FString& SessionId, int32 CurrentPlayers, const FString& MapName);
+
+    /** Unregister a Steam P2P session from the matchmaking server */
+    UFUNCTION(BlueprintCallable, Category = "Matchmaking|Steam")
+    void UnregisterSteamP2PSession(const FString& SessionId, const FString& HostSteamId);
+
+    UFUNCTION(BlueprintCallable, Category = "Matchmaking")
+    bool IsConnected() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Matchmaking")
+    const TArray<FMatchSessionInfo>& GetSessions() const { return Sessions; }
+
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Matchmaking|Steam")
+    USteamSessionManager* GetSteamSessionManager() const;
+
+    /** Join a session based on its type (handles both dedicated and steam_p2p) */
+    UFUNCTION(BlueprintCallable, Category = "Matchmaking")
+    void JoinSessionByInfo(const FMatchSessionInfo& SessionInfo);
+
+    void HandleServerMessage(const FString& ServerMessage);
+    void HandleConnectionStatusChanged(bool bIsConnected);
+
+    UPROPERTY(BlueprintAssignable, Category = "Matchmaking")
+    FMatchmakingOnSessionsUpdated OnSessionsUpdated;
+
+    UPROPERTY(BlueprintAssignable, Category = "Matchmaking")
+    FMatchmakingOnHostRequested OnHostRequested;
+
+    UPROPERTY(BlueprintAssignable, Category = "Matchmaking")
+    FMatchmakingOnConnectionStatusChanged OnConnectionStatusChanged;
+
+    UPROPERTY(BlueprintAssignable, Category = "Matchmaking")
+    FMatchmakingOnJoinSuccess OnJoinSuccess;
+
+    UPROPERTY(BlueprintAssignable, Category = "Matchmaking")
+    FMatchmakingOnDisconnectSuccess OnDisconnectSuccess;
+
+    UPROPERTY(BlueprintAssignable, Category = "Matchmaking")
+    FMatchmakingOnShutdownSuccess OnShutdownSuccess;
+
+    UPROPERTY(BlueprintAssignable, Category = "Matchmaking")
+    FMatchmakingOnServerError OnServerError;
+
+    UPROPERTY(BlueprintAssignable, Category = "Matchmaking|Steam")
+    FMatchmakingOnSteamP2PRegistered OnSteamP2PRegistered;
+
+    UPROPERTY(BlueprintAssignable, Category = "Matchmaking|Steam")
+    FMatchmakingOnSteamP2PUnregistered OnSteamP2PUnregistered;
 
 private:
-	// Owned runnable that talks to the matchmaking server
-	FTCPClientRunnable* ClientRunnable = nullptr;
-	// Stored sessions (value types)
-	TArray<FMatchSessionInfo> Sessions;
-	// Helpers
-	void ParseAndSetSessions(const FString& ServerMessage);
+    void ParseAndSetSessions(const FString& ServerMessage);
+
+    FTCPClientRunnable* ClientRunnable;
+    TArray<FMatchSessionInfo> Sessions;
+    int32 CurrentSessionId = -1;
 };

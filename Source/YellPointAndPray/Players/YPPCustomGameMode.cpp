@@ -47,17 +47,17 @@ void AYPPCustomGameMode::InitializeVoiceManager()
     UE_LOG(LogTemp, Log, TEXT("[GameMode] Initializing Voice Room Manager..."));
 
     // Spawn voice room manager
-    VoiceRoomManager = GetWorld()->SpawnActor<AVoiceRoomManager>();
-    if (VoiceRoomManager)
-    {
+    //VoiceRoomManager = GetWorld()->SpawnActor<AVoiceRoomManager>();
+    //if (VoiceRoomManager)
+    //{
         // Bind to credentials ready event
-        VoiceRoomManager->OnVoiceCredentialsReady.AddDynamic(this, &AYPPCustomGameMode::OnVoiceCredentialsReady);
-        UE_LOG(LogTemp, Log, TEXT("[GameMode] Voice Room Manager initialized"));
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("[GameMode] Failed to spawn Voice Room Manager"));
-    }
+        //VoiceRoomManager->OnVoiceCredentialsReady.AddDynamic(this, &AYPPCustomGameMode::OnVoiceCredentialsReady);
+        //UE_LOG(LogTemp, Log, TEXT("[GameMode] Voice Room Manager initialized"));
+    //}
+    //else
+    //{
+        //UE_LOG(LogTemp, Error, TEXT("[GameMode] Failed to spawn Voice Room Manager"));
+    //}
 }
 
 void AYPPCustomGameMode::RequestVoiceCredentialsForPlayer(APlayerController* PlayerController, const FString& ProductUserId)
