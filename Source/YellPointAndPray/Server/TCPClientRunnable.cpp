@@ -1,11 +1,12 @@
-#include "Server/TCPClientRunnable.h"
-
+#include "TCPClientRunnable.h"
 #include "Sockets.h"
 #include "SocketSubsystem.h"
 #include "IPAddress.h"
-#include "Server/MatchmakingSubsystem.h"
+#include "MatchmakingSubsystem.h"
 #include "Async/Async.h"
 #include <Interfaces/IPv4/IPv4Address.h>
+
+void TCPClientRunnable_Dummy() {}
 
 FTCPClientRunnable::FTCPClientRunnable(UMatchmakingSubsystem* InOwner, const FString& InServerIP, int32 InServerPort)
     : Thread(nullptr)

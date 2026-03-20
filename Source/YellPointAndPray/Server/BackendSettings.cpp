@@ -1,4 +1,4 @@
-#include "Server/BackendSettings.h"
+#include "BackendSettings.h"
 #include "Misc/ConfigCacheIni.h"
 
 void UBackendSettings::Initialize(FSubsystemCollectionBase& Collection)
@@ -9,6 +9,8 @@ void UBackendSettings::Initialize(FSubsystemCollectionBase& Collection)
     UE_LOG(LogTemp, Log, TEXT("BackendSettings initialized - Server: %s:%d"),
         *BackendIP, BackendPort);
 }
+
+void BackendSettings_Dummy() {}
 
 void UBackendSettings::SetBackendIP(const FString& NewIP)
 {

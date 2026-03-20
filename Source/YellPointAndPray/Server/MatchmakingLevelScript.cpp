@@ -14,8 +14,23 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 
+void BackendSettings_Dummy();
+void MatchmakingSubsystem_Dummy();
+void SteamSessionManager_Dummy();
+void TCPClientRunnable_Dummy();
+
+void ForceLinkExcludedFiles()
+{
+    BackendSettings_Dummy();
+    MatchmakingSubsystem_Dummy();
+    SteamSessionManager_Dummy();
+    TCPClientRunnable_Dummy();
+}
+
 void AMatchmakingLevelScript::BeginPlay() {
     Super::BeginPlay();
+    
+    ForceLinkExcludedFiles();
 
     PrimaryActorTick.bCanEverTick = true;
     PrimaryActorTick.bStartWithTickEnabled = true;

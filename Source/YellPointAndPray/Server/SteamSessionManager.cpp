@@ -1,5 +1,5 @@
-#include "Server/SteamSessionManager.h"
-#include "Server/MatchmakingSubsystem.h"
+#include "SteamSessionManager.h"
+#include "MatchmakingSubsystem.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
@@ -8,6 +8,8 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "TimerManager.h"
+
+void SteamSessionManager_Dummy() {}
 
 void USteamSessionManager::Initialize(FSubsystemCollectionBase& Collection)
 {

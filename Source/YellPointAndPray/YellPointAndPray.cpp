@@ -6,3 +6,4 @@
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, YellPointAndPray, "YellPointAndPray" );
 
 DEFINE_LOG_CATEGORY(LogYellPointAndPray)
+

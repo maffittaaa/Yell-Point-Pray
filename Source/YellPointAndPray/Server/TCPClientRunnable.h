@@ -42,6 +42,7 @@ public:
     /** Unregister a Steam P2P session from the matchmaking server
      *  Format: u|sessionid|hoststeamid|# */
     void UnregisterSteamP2PSession(const FString& SessionId, const FString& HostSteamId);
+    
 
 private:
     void SendRawString(const FString& Message);

@@ -1,12 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Server/MatchmakingSubsystem.h"
+#include "MatchmakingSubsystem.h"
 #include "TCPClientRunnable.h"
 #include "BackendSettings.h"
 #include "SteamSessionManager.h"
 #include "Async/Async.h"
 #include "Engine/Engine.h"
 #include "MatchSessionInfo.h"
+
+void MatchmakingSubsystem_Dummy() {}
 
 void UMatchmakingSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
     Super::Initialize(Collection);
