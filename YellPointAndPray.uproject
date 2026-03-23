@@ -46,7 +46,7 @@
 		},
 		{
 			"Name": "OnlineServicesEOS",
-			"Enabled": true
+			"Enabled": false
 		},
 		{
 			"Name": "OnlineServicesEOSGS",
@@ -54,7 +54,7 @@
 		},
 		{
 			"Name": "OnlineSubsystemEOS",
-			"Enabled": true
+			"Enabled": false
 		},
         {
           "Name": "OnlineSubsystemSteam",
